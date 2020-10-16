@@ -27,7 +27,7 @@ async function run(): Promise<void> {
             core.error(error.message);
         }
 
-        if (strictMode) {
+        if (strictMode && (errors.length !== 0 || missedFiles.length !== 0)) {
             core.setFailed(
                 `${errors.length} error(s) and ${missedFiles.length} warning(s) found. Warnings are treated as errors.`
             );
