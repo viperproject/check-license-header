@@ -1,42 +1,108 @@
-// The MIT License (MIT)
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// Copyright (c) 2011-2020 ETH Zurich.
 
-// Copyright (c) 2018 GitHub, Inc. and contributors
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
-import * as process from 'process';
-import * as cp from 'child_process';
 import * as path from 'path';
 import * as assert from 'assert';
+import * as fs from 'fs';
+import * as tmp from 'tmp';
+import {
+    checkLicensesWithConfig,
+    CheckResult,
+    checkLicenses,
+    getUncoveredFiles,
+    filterFailures
+} from '../src/check';
+import Config from '../src/Config';
 
-// shows how the runner will run a javascript action with env / stdout protocol
-test('test runs', () => {
-  process.env['INPUT_TAG_NAME'] = 'Bla';
-  const ip = path.join(__dirname, '..', 'lib', 'main.js');
-  const options: cp.ExecSyncOptions = {
-    env: process.env
-  };
-  try {
-    cp.execSync(`node ${ip}`, options);
-  } catch (ex) {
-    return;
-  }
-  // an exception is expected as the GITHUB_TOKEN is not set
-  assert.fail('main.js did not reject missing GITHUB_TOKEN');
+const FILES_PATH = path.join(__dirname, 'data', 'files');
+const HEADERS_PATH = path.join(__dirname, 'data', 'headers');
+
+test('test check outdated license', async () => {
+    const config: Config = [
+        {
+            include: ['mplv2-2019.scala'],
+            license: path.join(HEADERS_PATH, 'MPLv2.txt')
+        }
+    ];
+    const results = await checkLicensesWithConfig(FILES_PATH, config);
+    assert.strictEqual(results.length, 1);
+    assert.strictEqual(results[0].success, false);
+    assert.strictEqual(
+        results[0].filePath,
+        path.join(FILES_PATH, 'mplv2-2019.scala')
+    );
+});
+
+test('test check valid license', async () => {
+    const filename = 'mplv2-year.scala';
+
+    const transform = (origContent: string) => {
+        const currentYear = new Date().getFullYear();
+        return origContent.replace('%year%', currentYear.toString());
+    };
+    const config: Config = [
+        {
+            include: [filename],
+            license: path.join(HEADERS_PATH, 'MPLv2.txt')
+        }
+    ];
+    const {
+        tmpFolderPath: tmpFolderPath,
+        result: result
+    } = await runTestInTmpDir(filename, FILES_PATH, transform, config);
+    assert.strictEqual(result.success, true);
+    assert.strictEqual(result.filePath, path.join(tmpFolderPath, filename));
+});
+
+/**
+ * Creates a temporary directory and copies the file with 'filename' in 'origFolderPath' into the temp directory. Optionally, a transformation is applied on the content.
+ * The resulting file in the temporary directory will have the same filename as the original one.
+ * The function returns the path to the temporary folder (although it won't exist anymore) as well as the check result (the check runs in the temp directory)
+ */
+async function runTestInTmpDir(
+    filename: string,
+    origFolderPath: string,
+    transformContent: ((origContent: string) => string) | null,
+    config: Config
+): Promise<{tmpFolderPath: string; result: CheckResult}> {
+    // create a temporary directory
+    const tmpDir = tmp.dirSync({unsafeCleanup: true});
+    try {
+        const origFile = path.join(origFolderPath, filename);
+        const destFile = path.join(tmpDir.name, filename);
+        if (transformContent) {
+            const origContent = fs.readFileSync(origFile, 'utf8');
+            const transformedContent = transformContent(origContent);
+            fs.writeFileSync(destFile, transformedContent);
+        } else {
+            fs.copyFileSync(origFile, destFile);
+        }
+
+        // run now the check:
+        const results = await checkLicensesWithConfig(tmpDir.name, config);
+        assert.strictEqual(results.length, 1);
+        return {tmpFolderPath: tmpDir.name, result: results[0]};
+    } finally {
+        // mark the temporary directory as safe to be deleted:
+        tmpDir.removeCallback();
+    }
+}
+
+test('all files in this repository should be covered', async () => {
+    const workingDir = path.join(__dirname, '..');
+    const configFile = path.join(
+        __dirname,
+        '..',
+        '.github',
+        'license-check',
+        'license-config.json'
+    );
+    const results = await checkLicenses(workingDir, configFile);
+    const failures = filterFailures(results);
+    assert.strictEqual(failures.length, 0);
+    const missingFiles = await getUncoveredFiles(workingDir, configFile);
+    assert.strictEqual(missingFiles.length, 0);
 });

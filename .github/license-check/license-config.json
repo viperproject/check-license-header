@@ -1,0 +1,38 @@
+[
+    {
+        "include": [
+            "**/*.ts"
+        ],
+        "exclude": [
+            "src/test/main.test.ts",
+            "node_modules/**"
+        ],
+        "license": "./.github/license-check/header-ETH-MPLv2.txt"
+    },
+    {
+        "include": [
+            "action.yml"
+        ],
+        "license": "./.github/license-check/header-ETH-MPLv2-hashtag.txt"
+    },
+    {
+        "include": [
+            ".eslintrc.json",
+            "jest.config.js",
+            "tsconfig.json"
+        ],
+        "license": "./.github/license-check/header-GitHub-MIT.txt"
+    },
+    {
+        "include": [
+            "node_modules/**",
+            "dist/**",
+            "lib/**",
+            "test/data/**",
+            "**/*.json",
+            ".github/liense-check/**",
+            "README.md",
+            "LICENSE"
+        ]
+    }
+]

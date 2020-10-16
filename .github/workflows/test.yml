@@ -49,4 +49,6 @@ jobs:
           # This token is provided by Actions, you do not need to create your own token
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          milliseconds: 1000
+          path: ./
+          config: ./.github/license-check/license-config.json
+          strict: true
