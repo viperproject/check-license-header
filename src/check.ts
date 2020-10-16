@@ -5,6 +5,7 @@
 // Copyright (c) 2011-2020 ETH Zurich.
 
 import * as fs from 'fs';
+import * as path from 'path';
 import {parseConfig} from './parse';
 import {findFiles} from './find';
 import {Config, LicenseConfig} from './Config';
@@ -55,16 +56,16 @@ export async function getUncoveredFilesWithConfig(
     return [...remainingFiles];
 }
 
+export function filterFailures(results: CheckResult[]): CheckFailure[] {
+    return results.filter(r => !r.success).map(f => f as CheckFailure);
+}
+
 function setminus<T>(set1: Set<T>, set2: Set<T>): Set<T> {
     const copy = new Set(set1);
     for (const elem of set2) {
         copy.delete(elem);
     }
     return copy;
-}
-
-export function filterFailures(results: CheckResult[]): CheckFailure[] {
-    return results.filter(r => !r.success).map(f => f as CheckFailure);
 }
 
 async function checkLicense(
@@ -75,9 +76,15 @@ async function checkLicense(
         // no license provided
         return [];
     }
+    let licensePath: string;
+    if (path.isAbsolute(licenseConfig.license)) {
+        licensePath = licenseConfig.license;
+    } else {
+        licensePath = path.join(cwd, licenseConfig.license);
+    }
     const errorMessageGenerator = (file: string): string =>
-        `'${file}' does not contain license from '${licenseConfig.license}'`;
-    const licenseString = fs.readFileSync(licenseConfig.license, 'utf8');
+        `'${file}' does not contain license from '${licensePath}'`;
+    const licenseString = fs.readFileSync(licensePath, 'utf8');
     const licenseRegex = convertHeaderToRegex(licenseString);
     const files = await getFiles(cwd, licenseConfig);
     return await Promise.all(
@@ -94,12 +101,8 @@ function getFiles(
 }
 
 function convertHeaderToRegex(header: string): RegExp {
-    // replace first special sequence to their actual values:
-    const currentYear = new Date().getFullYear();
-    let modifiedHeader = header.replace(
-        CURRENT_YEAR_IDENTIFIER,
-        currentYear.toString()
-    );
+    let modifiedHeader = header;
+    
     // escape characters that have a special meaning in a regex
     // taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
     modifiedHeader = modifiedHeader.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -110,6 +113,12 @@ function convertHeaderToRegex(header: string): RegExp {
     modifiedHeader = modifiedHeader.replace(
         /%regexp:\\\\d\\{(\d+)\\}%/g,
         '\\d{$1}'
+    );
+
+    // replace "%year%" by a regex that matches 4 digits:
+    modifiedHeader = modifiedHeader.replace(
+        /%year%/g,
+        '\\d{4}'
     );
     return new RegExp(modifiedHeader);
 }
@@ -139,6 +148,14 @@ function contains(
             }
         });
     });
+}
+
+function flatten<T>(matrix: T[][]): T[] {
+    const res: T[] = [];
+    for (const elem of matrix) {
+        res.push(...elem);
+    }
+    return res;
 }
 
 export interface CheckResult {
@@ -182,12 +199,4 @@ export class CheckFailure implements CheckResult {
     get message(): string {
         return this.msg;
     }
-}
-
-function flatten<T>(matrix: T[][]): T[] {
-    const res: T[] = [];
-    for (const elem of matrix) {
-        res.push(...elem);
-    }
-    return res;
 }

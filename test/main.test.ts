@@ -29,7 +29,8 @@ test('test check outdated license', async () => {
     ];
     const results = await checkLicensesWithConfig(FILES_PATH, config);
     assert.strictEqual(results.length, 1);
-    assert.strictEqual(results[0].success, false);
+    // %year% matches any year, doesn't have to be the current one
+    assert.strictEqual(results[0].success, true);
     assert.strictEqual(
         results[0].filePath,
         path.join(FILES_PATH, 'mplv2-2019.scala')
