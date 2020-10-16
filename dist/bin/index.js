@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-require('./sourcemap-register.js');module.exports =
+module.exports =
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
@@ -17943,4 +17943,3 @@ module.exports = require("util");
 /******/ 	return __webpack_require__(__webpack_require__.s = 3370);
 /******/ })()
 ;
-//# sourceMappingURL=index.js.map
