@@ -45,9 +45,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./
-        env:
-          # This token is provided by Actions, you do not need to create your own token
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           path: ./
           config: ./.github/license-check/license-config.json
