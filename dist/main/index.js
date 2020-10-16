@@ -11399,7 +11399,7 @@ function run() {
             for (const error of errors) {
                 core.error(error.message);
             }
-            if (strictMode) {
+            if (strictMode && (errors.length !== 0 || missedFiles.length !== 0)) {
                 core.setFailed(`${errors.length} error(s) and ${missedFiles.length} warning(s) found. Warnings are treated as errors.`);
             }
             else if (errors.length !== 0) {
