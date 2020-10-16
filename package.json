@@ -1,9 +1,9 @@
 {
   "name": "check-license-header",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "GitHub action to check whether all files have a specified copyright license header",
   "main": "lib/main.js",
-  "bin": "dist/bin.js",
+  "bin": "dist/bin/index.js",
   "scripts": {
     "build": "tsc",
     "format": "prettier --write **/*.ts",
