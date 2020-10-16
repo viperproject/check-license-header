@@ -102,7 +102,7 @@ function getFiles(
 
 function convertHeaderToRegex(header: string): RegExp {
     let modifiedHeader = header;
-    
+
     // escape characters that have a special meaning in a regex
     // taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
     modifiedHeader = modifiedHeader.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -116,10 +116,7 @@ function convertHeaderToRegex(header: string): RegExp {
     );
 
     // replace "%year%" by a regex that matches 4 digits:
-    modifiedHeader = modifiedHeader.replace(
-        /%year%/g,
-        '\\d{4}'
-    );
+    modifiedHeader = modifiedHeader.replace(CURRENT_YEAR_IDENTIFIER, '\\d{4}');
     return new RegExp(modifiedHeader);
 }
 

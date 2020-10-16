@@ -8,20 +8,29 @@ import * as yargs from 'yargs';
 import {checkLicenses, filterFailures, getUncoveredFiles} from './check';
 
 // entry point for the binary version, e.g. when locally running it using `npx`
+
+// turn no-console es-lint errors off for this file:
+/* eslint no-console: 0 */
 async function run(): Promise<void> {
     try {
         const argv = yargs
             .usage('Usage: $0 <command> [options]')
-            .command('check', 'Check license headers', function(yargs) {
-                return yargs
-                    .option('strict', {
-                        description: 'Specifies whether files not covered by the configuration should be treated as errors',
-                        type: 'boolean',
-                        default: false
-                    });
+            .command('check', 'Check license headers', function (y) {
+                return y.option('strict', {
+                    description:
+                        'Specifies whether files not covered by the configuration should be treated as errors',
+                    type: 'boolean',
+                    default: false
+                });
             })
-            .example('$0 check --config config.js', 'Check license headers using configuration stored in config.js')
-            .command('update', 'Update license headers. Currently, only updating "%year%" to the current year is supported')
+            .example(
+                '$0 check --config config.js',
+                'Check license headers using configuration stored in config.js'
+            )
+            .command(
+                'update',
+                'Update license headers. Currently, only updating "%year%" to the current year is supported'
+            )
             // at least one command is required
             .demand(1, 'Please specify one of the commands!')
             .strict()
@@ -32,18 +41,17 @@ async function run(): Promise<void> {
                 demand: 'Please specify path to config file',
                 nargs: 1,
                 describe: 'Path to JSON config file',
-                global: true,
+                global: true
             })
             .option('path', {
                 description: 'Path to working directory',
                 type: 'string',
                 default: process.cwd(),
-                global: true,
+                global: true
             })
             .help('h')
-            .alias('h', 'help')
-            .argv;
-        
+            .alias('h', 'help').argv;
+
         const path: string = argv.path;
         const configPath: string = argv.c;
         if (argv._.length === 1 && argv._[0] === 'check') {
@@ -59,7 +67,11 @@ async function run(): Promise<void> {
     }
 }
 
-async function check(path: string, configPath: string, strictMode: boolean): Promise<void> {
+async function check(
+    path: string,
+    configPath: string,
+    strictMode: boolean
+): Promise<void> {
     const results = await checkLicenses(path, configPath);
     const errors = filterFailures(results);
     const missedFiles = await getUncoveredFiles(path, configPath);
