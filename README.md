@@ -40,7 +40,7 @@ Multiple config 'blocks' can be declared. A config block has to have the `includ
 `exclude` optionally defines glob patterns for files that would be included but should be ignored.
 `license` is another optional field specifying the path to the file containing the license header that the specified files should have. 
 The path can either be absolute or relative to the input argument `path`.
-Specifying no `license` field means that the licenses for these filed do not matter.
+Specifying no `license` field means that the licenses for these files do not matter.
 In particular, warnings are emitted for files that are not covered by any pattern.
 In the example above, no header check is performed for files in the folder "node_modules" and in addition no warning is emitted for them.
 
