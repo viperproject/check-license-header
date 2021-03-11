@@ -21,9 +21,10 @@ const FILES_PATH = path.join(__dirname, 'data', 'files');
 const HEADERS_PATH = path.join(__dirname, 'data', 'headers');
 
 test('test check outdated license', async () => {
+    const filename = 'mplv2-2019.scala';
     const config: Config = [
         {
-            include: ['mplv2-2019.scala'],
+            include: [filename],
             license: path.join(HEADERS_PATH, 'MPLv2.txt')
         }
     ];
@@ -33,11 +34,11 @@ test('test check outdated license', async () => {
     assert.strictEqual(results[0].success, true);
     assert.strictEqual(
         results[0].filePath,
-        path.join(FILES_PATH, 'mplv2-2019.scala')
+        path.join(FILES_PATH, filename)
     );
 });
 
-test('test check valid license', async () => {
+test('test check license with current year', async () => {
     const filename = 'mplv2-year.scala';
 
     const transform = (origContent: string) => {
@@ -56,6 +57,24 @@ test('test check valid license', async () => {
     } = await runTestInTmpDir(filename, FILES_PATH, transform, config);
     assert.strictEqual(result.success, true);
     assert.strictEqual(result.filePath, path.join(tmpFolderPath, filename));
+});
+
+test('test check file with wrong license', async () => {
+    const filename = 'cc0.gobra';
+    const config: Config = [
+        {
+            include: [filename],
+            license: path.join(HEADERS_PATH, 'MPLv2.txt')
+        }
+    ];
+    const results = await checkLicensesWithConfig(FILES_PATH, config);
+    assert.strictEqual(results.length, 1);
+    // %year% matches any year, doesn't have to be the current one
+    assert.strictEqual(results[0].success, false);
+    assert.strictEqual(
+        results[0].filePath,
+        path.join(FILES_PATH, filename)
+    );
 });
 
 /**
