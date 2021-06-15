@@ -1,24 +1,23 @@
 #!/usr/bin/env node
 
-module.exports =
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 4941:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var compileSchema = __webpack_require__(875)
-  , resolve = __webpack_require__(3896)
-  , Cache = __webpack_require__(3679)
-  , SchemaObject = __webpack_require__(7605)
-  , stableStringify = __webpack_require__(969)
-  , formats = __webpack_require__(6627)
-  , rules = __webpack_require__(8561)
-  , $dataMetaSchema = __webpack_require__(1412)
-  , util = __webpack_require__(6578);
+var compileSchema = __nccwpck_require__(875)
+  , resolve = __nccwpck_require__(3896)
+  , Cache = __nccwpck_require__(3679)
+  , SchemaObject = __nccwpck_require__(7605)
+  , stableStringify = __nccwpck_require__(969)
+  , formats = __nccwpck_require__(6627)
+  , rules = __nccwpck_require__(8561)
+  , $dataMetaSchema = __nccwpck_require__(1412)
+  , util = __nccwpck_require__(6578);
 
 module.exports = Ajv;
 
@@ -35,14 +34,14 @@ Ajv.prototype.errorsText = errorsText;
 Ajv.prototype._addSchema = _addSchema;
 Ajv.prototype._compile = _compile;
 
-Ajv.prototype.compileAsync = __webpack_require__(890);
-var customKeyword = __webpack_require__(3297);
+Ajv.prototype.compileAsync = __nccwpck_require__(890);
+var customKeyword = __nccwpck_require__(3297);
 Ajv.prototype.addKeyword = customKeyword.add;
 Ajv.prototype.getKeyword = customKeyword.get;
 Ajv.prototype.removeKeyword = customKeyword.remove;
 Ajv.prototype.validateKeyword = customKeyword.validate;
 
-var errorClasses = __webpack_require__(5726);
+var errorClasses = __nccwpck_require__(5726);
 Ajv.ValidationError = errorClasses.Validation;
 Ajv.MissingRefError = errorClasses.MissingRef;
 Ajv.$dataMetaSchema = $dataMetaSchema;
@@ -451,11 +450,11 @@ function addFormat(name, format) {
 function addDefaultMetaSchema(self) {
   var $dataSchema;
   if (self._opts.$data) {
-    $dataSchema = __webpack_require__(6835);
+    $dataSchema = __nccwpck_require__(6835);
     self.addMetaSchema($dataSchema, $dataSchema.$id, true);
   }
   if (self._opts.meta === false) return;
-  var metaSchema = __webpack_require__(38);
+  var metaSchema = __nccwpck_require__(38);
   if (self._opts.$data) metaSchema = $dataMetaSchema(metaSchema, META_SUPPORT_DATA);
   self.addMetaSchema(metaSchema, META_SCHEMA_ID, true);
   self._refs['http://json-schema.org/schema'] = META_SCHEMA_ID;
@@ -553,12 +552,12 @@ Cache.prototype.clear = function Cache_clear() {
 /***/ }),
 
 /***/ 890:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var MissingRefError = __webpack_require__(5726).MissingRef;
+var MissingRefError = __nccwpck_require__(5726).MissingRef;
 
 module.exports = compileAsync;
 
@@ -651,12 +650,12 @@ function compileAsync(schema, meta, callback) {
 /***/ }),
 
 /***/ 5726:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var resolve = __webpack_require__(3896);
+var resolve = __nccwpck_require__(3896);
 
 module.exports = {
   Validation: errorSubclass(ValidationError),
@@ -693,12 +692,12 @@ function errorSubclass(Subclass) {
 /***/ }),
 
 /***/ 6627:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var util = __webpack_require__(6578);
+var util = __nccwpck_require__(6578);
 
 var DATE = /^(\d\d\d\d)-(\d\d)-(\d\d)$/;
 var DAYS = [0,31,28,31,30,31,30,31,31,30,31,30,31];
@@ -843,24 +842,24 @@ function regex(str) {
 /***/ }),
 
 /***/ 875:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var resolve = __webpack_require__(3896)
-  , util = __webpack_require__(6578)
-  , errorClasses = __webpack_require__(5726)
-  , stableStringify = __webpack_require__(969);
+var resolve = __nccwpck_require__(3896)
+  , util = __nccwpck_require__(6578)
+  , errorClasses = __nccwpck_require__(5726)
+  , stableStringify = __nccwpck_require__(969);
 
-var validateGenerator = __webpack_require__(9585);
+var validateGenerator = __nccwpck_require__(9585);
 
 /**
  * Functions below are used inside compiled validations function
  */
 
 var ucs2length = util.ucs2length;
-var equal = __webpack_require__(8206);
+var equal = __nccwpck_require__(8206);
 
 // this error is thrown by async schemas to return validation errors via exception
 var ValidationError = errorClasses.Validation;
@@ -1238,16 +1237,16 @@ function vars(arr, statement) {
 /***/ }),
 
 /***/ 3896:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var URI = __webpack_require__(20)
-  , equal = __webpack_require__(8206)
-  , util = __webpack_require__(6578)
-  , SchemaObject = __webpack_require__(7605)
-  , traverse = __webpack_require__(2533);
+var URI = __nccwpck_require__(20)
+  , equal = __nccwpck_require__(8206)
+  , util = __nccwpck_require__(6578)
+  , SchemaObject = __nccwpck_require__(7605)
+  , traverse = __nccwpck_require__(2533);
 
 module.exports = resolve;
 
@@ -1516,13 +1515,13 @@ function resolveIds(schema) {
 /***/ }),
 
 /***/ 8561:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var ruleModules = __webpack_require__(5810)
-  , toHash = __webpack_require__(6578).toHash;
+var ruleModules = __nccwpck_require__(5810)
+  , toHash = __nccwpck_require__(6578).toHash;
 
 module.exports = function rules() {
   var RULES = [
@@ -1590,12 +1589,12 @@ module.exports = function rules() {
 /***/ }),
 
 /***/ 7605:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var util = __webpack_require__(6578);
+var util = __nccwpck_require__(6578);
 
 module.exports = SchemaObject;
 
@@ -1635,7 +1634,7 @@ module.exports = function ucs2length(str) {
 /***/ }),
 
 /***/ 6578:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
@@ -1649,8 +1648,8 @@ module.exports = {
   toHash: toHash,
   getProperty: getProperty,
   escapeQuotes: escapeQuotes,
-  equal: __webpack_require__(8206),
-  ucs2length: __webpack_require__(4580),
+  equal: __nccwpck_require__(8206),
+  ucs2length: __nccwpck_require__(4580),
   varOccurences: varOccurences,
   varReplace: varReplace,
   schemaHasRules: schemaHasRules,
@@ -1939,12 +1938,12 @@ module.exports = function (metaSchema, keywordsJsonPointers) {
 /***/ }),
 
 /***/ 458:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var metaSchema = __webpack_require__(38);
+var metaSchema = __nccwpck_require__(38);
 
 module.exports = {
   $id: 'https://github.com/ajv-validator/ajv/blob/master/lib/definition_schema.js',
@@ -3485,41 +3484,41 @@ module.exports = function generate_if(it, $keyword, $ruleType) {
 /***/ }),
 
 /***/ 5810:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
 //all requires must be explicit because browserify won't work with dynamic requires
 module.exports = {
-  '$ref': __webpack_require__(2393),
-  allOf: __webpack_require__(9443),
-  anyOf: __webpack_require__(3093),
-  '$comment': __webpack_require__(134),
-  const: __webpack_require__(1661),
-  contains: __webpack_require__(5964),
-  dependencies: __webpack_require__(2591),
-  'enum': __webpack_require__(163),
-  format: __webpack_require__(3847),
-  'if': __webpack_require__(862),
-  items: __webpack_require__(4408),
-  maximum: __webpack_require__(7404),
-  minimum: __webpack_require__(7404),
-  maxItems: __webpack_require__(4683),
-  minItems: __webpack_require__(4683),
-  maxLength: __webpack_require__(2114),
-  minLength: __webpack_require__(2114),
-  maxProperties: __webpack_require__(1142),
-  minProperties: __webpack_require__(1142),
-  multipleOf: __webpack_require__(9772),
-  not: __webpack_require__(750),
-  oneOf: __webpack_require__(6106),
-  pattern: __webpack_require__(3912),
-  properties: __webpack_require__(2924),
-  propertyNames: __webpack_require__(9195),
-  required: __webpack_require__(8420),
-  uniqueItems: __webpack_require__(4995),
-  validate: __webpack_require__(9585)
+  '$ref': __nccwpck_require__(2393),
+  allOf: __nccwpck_require__(9443),
+  anyOf: __nccwpck_require__(3093),
+  '$comment': __nccwpck_require__(134),
+  const: __nccwpck_require__(1661),
+  contains: __nccwpck_require__(5964),
+  dependencies: __nccwpck_require__(2591),
+  'enum': __nccwpck_require__(163),
+  format: __nccwpck_require__(3847),
+  'if': __nccwpck_require__(862),
+  items: __nccwpck_require__(4408),
+  maximum: __nccwpck_require__(7404),
+  minimum: __nccwpck_require__(7404),
+  maxItems: __nccwpck_require__(4683),
+  minItems: __nccwpck_require__(4683),
+  maxLength: __nccwpck_require__(2114),
+  minLength: __nccwpck_require__(2114),
+  maxProperties: __nccwpck_require__(1142),
+  minProperties: __nccwpck_require__(1142),
+  multipleOf: __nccwpck_require__(9772),
+  not: __nccwpck_require__(750),
+  oneOf: __nccwpck_require__(6106),
+  pattern: __nccwpck_require__(3912),
+  properties: __nccwpck_require__(2924),
+  propertyNames: __nccwpck_require__(9195),
+  required: __nccwpck_require__(8420),
+  uniqueItems: __nccwpck_require__(4995),
+  validate: __nccwpck_require__(9585)
 };
 
 
@@ -5444,14 +5443,14 @@ module.exports = function generate_validate(it, $keyword, $ruleType) {
 /***/ }),
 
 /***/ 3297:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
 var IDENTIFIER = /^[a-z_$][a-z0-9_$-]*$/i;
-var customRuleCode = __webpack_require__(5912);
-var definitionSchema = __webpack_require__(458);
+var customRuleCode = __nccwpck_require__(5912);
+var definitionSchema = __nccwpck_require__(458);
 
 module.exports = {
   add: addKeyword,
@@ -5597,196 +5596,6 @@ function validateKeyword(definition, throwError) {
 
 /***/ }),
 
-/***/ 5063:
-/***/ ((module) => {
-
-"use strict";
-
-
-module.exports = ({onlyFirst = false} = {}) => {
-	const pattern = [
-		'[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
-		'(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))'
-	].join('|');
-
-	return new RegExp(pattern, onlyFirst ? undefined : 'g');
-};
-
-
-/***/ }),
-
-/***/ 2068:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-/* module decorator */ module = __webpack_require__.nmd(module);
-
-
-const wrapAnsi16 = (fn, offset) => (...args) => {
-	const code = fn(...args);
-	return `\u001B[${code + offset}m`;
-};
-
-const wrapAnsi256 = (fn, offset) => (...args) => {
-	const code = fn(...args);
-	return `\u001B[${38 + offset};5;${code}m`;
-};
-
-const wrapAnsi16m = (fn, offset) => (...args) => {
-	const rgb = fn(...args);
-	return `\u001B[${38 + offset};2;${rgb[0]};${rgb[1]};${rgb[2]}m`;
-};
-
-const ansi2ansi = n => n;
-const rgb2rgb = (r, g, b) => [r, g, b];
-
-const setLazyProperty = (object, property, get) => {
-	Object.defineProperty(object, property, {
-		get: () => {
-			const value = get();
-
-			Object.defineProperty(object, property, {
-				value,
-				enumerable: true,
-				configurable: true
-			});
-
-			return value;
-		},
-		enumerable: true,
-		configurable: true
-	});
-};
-
-/** @type {typeof import('color-convert')} */
-let colorConvert;
-const makeDynamicStyles = (wrap, targetSpace, identity, isBackground) => {
-	if (colorConvert === undefined) {
-		colorConvert = __webpack_require__(6931);
-	}
-
-	const offset = isBackground ? 10 : 0;
-	const styles = {};
-
-	for (const [sourceSpace, suite] of Object.entries(colorConvert)) {
-		const name = sourceSpace === 'ansi16' ? 'ansi' : sourceSpace;
-		if (sourceSpace === targetSpace) {
-			styles[name] = wrap(identity, offset);
-		} else if (typeof suite === 'object') {
-			styles[name] = wrap(suite[targetSpace], offset);
-		}
-	}
-
-	return styles;
-};
-
-function assembleStyles() {
-	const codes = new Map();
-	const styles = {
-		modifier: {
-			reset: [0, 0],
-			// 21 isn't widely supported and 22 does the same thing
-			bold: [1, 22],
-			dim: [2, 22],
-			italic: [3, 23],
-			underline: [4, 24],
-			inverse: [7, 27],
-			hidden: [8, 28],
-			strikethrough: [9, 29]
-		},
-		color: {
-			black: [30, 39],
-			red: [31, 39],
-			green: [32, 39],
-			yellow: [33, 39],
-			blue: [34, 39],
-			magenta: [35, 39],
-			cyan: [36, 39],
-			white: [37, 39],
-
-			// Bright color
-			blackBright: [90, 39],
-			redBright: [91, 39],
-			greenBright: [92, 39],
-			yellowBright: [93, 39],
-			blueBright: [94, 39],
-			magentaBright: [95, 39],
-			cyanBright: [96, 39],
-			whiteBright: [97, 39]
-		},
-		bgColor: {
-			bgBlack: [40, 49],
-			bgRed: [41, 49],
-			bgGreen: [42, 49],
-			bgYellow: [43, 49],
-			bgBlue: [44, 49],
-			bgMagenta: [45, 49],
-			bgCyan: [46, 49],
-			bgWhite: [47, 49],
-
-			// Bright color
-			bgBlackBright: [100, 49],
-			bgRedBright: [101, 49],
-			bgGreenBright: [102, 49],
-			bgYellowBright: [103, 49],
-			bgBlueBright: [104, 49],
-			bgMagentaBright: [105, 49],
-			bgCyanBright: [106, 49],
-			bgWhiteBright: [107, 49]
-		}
-	};
-
-	// Alias bright black as gray (and grey)
-	styles.color.gray = styles.color.blackBright;
-	styles.bgColor.bgGray = styles.bgColor.bgBlackBright;
-	styles.color.grey = styles.color.blackBright;
-	styles.bgColor.bgGrey = styles.bgColor.bgBlackBright;
-
-	for (const [groupName, group] of Object.entries(styles)) {
-		for (const [styleName, style] of Object.entries(group)) {
-			styles[styleName] = {
-				open: `\u001B[${style[0]}m`,
-				close: `\u001B[${style[1]}m`
-			};
-
-			group[styleName] = styles[styleName];
-
-			codes.set(style[0], style[1]);
-		}
-
-		Object.defineProperty(styles, groupName, {
-			value: group,
-			enumerable: false
-		});
-	}
-
-	Object.defineProperty(styles, 'codes', {
-		value: codes,
-		enumerable: false
-	});
-
-	styles.color.close = '\u001B[39m';
-	styles.bgColor.close = '\u001B[49m';
-
-	setLazyProperty(styles.color, 'ansi', () => makeDynamicStyles(wrapAnsi16, 'ansi16', ansi2ansi, false));
-	setLazyProperty(styles.color, 'ansi256', () => makeDynamicStyles(wrapAnsi256, 'ansi256', ansi2ansi, false));
-	setLazyProperty(styles.color, 'ansi16m', () => makeDynamicStyles(wrapAnsi16m, 'rgb', rgb2rgb, false));
-	setLazyProperty(styles.bgColor, 'ansi', () => makeDynamicStyles(wrapAnsi16, 'ansi16', ansi2ansi, true));
-	setLazyProperty(styles.bgColor, 'ansi256', () => makeDynamicStyles(wrapAnsi256, 'ansi256', ansi2ansi, true));
-	setLazyProperty(styles.bgColor, 'ansi16m', () => makeDynamicStyles(wrapAnsi16m, 'rgb', rgb2rgb, true));
-
-	return styles;
-}
-
-// Make the export immutable
-Object.defineProperty(module, 'exports', {
-	enumerable: true,
-	get: assembleStyles
-});
-
-
-/***/ }),
-
 /***/ 9417:
 /***/ ((module) => {
 
@@ -5821,6 +5630,9 @@ function range(a, b, str) {
   var i = ai;
 
   if (ai >= 0 && bi > 0) {
+    if(a===b) {
+      return [ai, bi];
+    }
     begs = [];
     left = str.length;
 
@@ -5855,10 +5667,10 @@ function range(a, b, str) {
 /***/ }),
 
 /***/ 3717:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var concatMap = __webpack_require__(6891);
-var balanced = __webpack_require__(9417);
+var concatMap = __nccwpck_require__(6891);
+var balanced = __nccwpck_require__(9417);
 
 module.exports = expandTop;
 
@@ -6062,1327 +5874,6 @@ function expand(str, isTop) {
 
 /***/ }),
 
-/***/ 8613:
-/***/ ((module) => {
-
-"use strict";
-
-
-module.exports = function () {
-  // https://mths.be/emoji
-  return /\uD83C\uDFF4\uDB40\uDC67\uDB40\uDC62(?:\uDB40\uDC65\uDB40\uDC6E\uDB40\uDC67|\uDB40\uDC73\uDB40\uDC63\uDB40\uDC74|\uDB40\uDC77\uDB40\uDC6C\uDB40\uDC73)\uDB40\uDC7F|\uD83D\uDC68(?:\uD83C\uDFFC\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFB|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFF\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFE])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFE\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFD])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFD\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFC])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\u200D(?:\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D)?\uD83D\uDC68|(?:\uD83D[\uDC68\uDC69])\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67]))|\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|(?:\uD83D[\uDC68\uDC69])\u200D(?:\uD83D[\uDC66\uDC67])|[\u2695\u2696\u2708]\uFE0F|\uD83D[\uDC66\uDC67]|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|(?:\uD83C\uDFFB\u200D[\u2695\u2696\u2708]|\uD83C\uDFFF\u200D[\u2695\u2696\u2708]|\uD83C\uDFFE\u200D[\u2695\u2696\u2708]|\uD83C\uDFFD\u200D[\u2695\u2696\u2708]|\uD83C\uDFFC\u200D[\u2695\u2696\u2708])\uFE0F|\uD83C\uDFFB\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C[\uDFFB-\uDFFF])|(?:\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)\uD83C\uDFFB|\uD83E\uDDD1(?:\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1(?:\uD83C[\uDFFB-\uDFFF])|\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1)|(?:\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D(?:\uD83D[\uDC68\uDC69]))(?:\uD83C[\uDFFB-\uDFFE])|(?:\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)(?:\uD83C[\uDFFB\uDFFC])|\uD83D\uDC69(?:\uD83C\uDFFE\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFD\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFC\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFD-\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFB\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFC-\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFD\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFC\uDFFE\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\u200D(?:\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D(?:\uD83D[\uDC68\uDC69])|\uD83D[\uDC68\uDC69])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFF\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD]))|\uD83D\uDC69\u200D\uD83D\uDC69\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67]))|(?:\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)(?:\uD83C[\uDFFB-\uDFFD])|\uD83D\uDC69\u200D\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC69\u200D\uD83D\uDC69\u200D(?:\uD83D[\uDC66\uDC67])|(?:\uD83D\uDC41\uFE0F\u200D\uD83D\uDDE8|\uD83D\uDC69(?:\uD83C\uDFFF\u200D[\u2695\u2696\u2708]|\uD83C\uDFFE\u200D[\u2695\u2696\u2708]|\uD83C\uDFFC\u200D[\u2695\u2696\u2708]|\uD83C\uDFFB\u200D[\u2695\u2696\u2708]|\uD83C\uDFFD\u200D[\u2695\u2696\u2708]|\u200D[\u2695\u2696\u2708])|(?:(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)\uFE0F|\uD83D\uDC6F|\uD83E[\uDD3C\uDDDE\uDDDF])\u200D[\u2640\u2642]|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642]|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDB8\uDDB9\uDDCD-\uDDCF\uDDD6-\uDDDD])(?:(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642]|\u200D[\u2640\u2642])|\uD83C\uDFF4\u200D\u2620)\uFE0F|\uD83D\uDC69\u200D\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|\uD83C\uDFF3\uFE0F\u200D\uD83C\uDF08|\uD83D\uDC15\u200D\uD83E\uDDBA|\uD83D\uDC69\u200D\uD83D\uDC66|\uD83D\uDC69\u200D\uD83D\uDC67|\uD83C\uDDFD\uD83C\uDDF0|\uD83C\uDDF4\uD83C\uDDF2|\uD83C\uDDF6\uD83C\uDDE6|[#\*0-9]\uFE0F\u20E3|\uD83C\uDDE7(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEF\uDDF1-\uDDF4\uDDF6-\uDDF9\uDDFB\uDDFC\uDDFE\uDDFF])|\uD83C\uDDF9(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDED\uDDEF-\uDDF4\uDDF7\uDDF9\uDDFB\uDDFC\uDDFF])|\uD83C\uDDEA(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDED\uDDF7-\uDDFA])|\uD83E\uDDD1(?:\uD83C[\uDFFB-\uDFFF])|\uD83C\uDDF7(?:\uD83C[\uDDEA\uDDF4\uDDF8\uDDFA\uDDFC])|\uD83D\uDC69(?:\uD83C[\uDFFB-\uDFFF])|\uD83C\uDDF2(?:\uD83C[\uDDE6\uDDE8-\uDDED\uDDF0-\uDDFF])|\uD83C\uDDE6(?:\uD83C[\uDDE8-\uDDEC\uDDEE\uDDF1\uDDF2\uDDF4\uDDF6-\uDDFA\uDDFC\uDDFD\uDDFF])|\uD83C\uDDF0(?:\uD83C[\uDDEA\uDDEC-\uDDEE\uDDF2\uDDF3\uDDF5\uDDF7\uDDFC\uDDFE\uDDFF])|\uD83C\uDDED(?:\uD83C[\uDDF0\uDDF2\uDDF3\uDDF7\uDDF9\uDDFA])|\uD83C\uDDE9(?:\uD83C[\uDDEA\uDDEC\uDDEF\uDDF0\uDDF2\uDDF4\uDDFF])|\uD83C\uDDFE(?:\uD83C[\uDDEA\uDDF9])|\uD83C\uDDEC(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEE\uDDF1-\uDDF3\uDDF5-\uDDFA\uDDFC\uDDFE])|\uD83C\uDDF8(?:\uD83C[\uDDE6-\uDDEA\uDDEC-\uDDF4\uDDF7-\uDDF9\uDDFB\uDDFD-\uDDFF])|\uD83C\uDDEB(?:\uD83C[\uDDEE-\uDDF0\uDDF2\uDDF4\uDDF7])|\uD83C\uDDF5(?:\uD83C[\uDDE6\uDDEA-\uDDED\uDDF0-\uDDF3\uDDF7-\uDDF9\uDDFC\uDDFE])|\uD83C\uDDFB(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDEE\uDDF3\uDDFA])|\uD83C\uDDF3(?:\uD83C[\uDDE6\uDDE8\uDDEA-\uDDEC\uDDEE\uDDF1\uDDF4\uDDF5\uDDF7\uDDFA\uDDFF])|\uD83C\uDDE8(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDEE\uDDF0-\uDDF5\uDDF7\uDDFA-\uDDFF])|\uD83C\uDDF1(?:\uD83C[\uDDE6-\uDDE8\uDDEE\uDDF0\uDDF7-\uDDFB\uDDFE])|\uD83C\uDDFF(?:\uD83C[\uDDE6\uDDF2\uDDFC])|\uD83C\uDDFC(?:\uD83C[\uDDEB\uDDF8])|\uD83C\uDDFA(?:\uD83C[\uDDE6\uDDEC\uDDF2\uDDF3\uDDF8\uDDFE\uDDFF])|\uD83C\uDDEE(?:\uD83C[\uDDE8-\uDDEA\uDDF1-\uDDF4\uDDF6-\uDDF9])|\uD83C\uDDEF(?:\uD83C[\uDDEA\uDDF2\uDDF4\uDDF5])|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDB8\uDDB9\uDDCD-\uDDCF\uDDD6-\uDDDD])(?:\uD83C[\uDFFB-\uDFFF])|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u261D\u270A-\u270D]|\uD83C[\uDF85\uDFC2\uDFC7]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66\uDC67\uDC6B-\uDC6D\uDC70\uDC72\uDC74-\uDC76\uDC78\uDC7C\uDC83\uDC85\uDCAA\uDD74\uDD7A\uDD90\uDD95\uDD96\uDE4C\uDE4F\uDEC0\uDECC]|\uD83E[\uDD0F\uDD18-\uDD1C\uDD1E\uDD1F\uDD30-\uDD36\uDDB5\uDDB6\uDDBB\uDDD2-\uDDD5])(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u231A\u231B\u23E9-\u23EC\u23F0\u23F3\u25FD\u25FE\u2614\u2615\u2648-\u2653\u267F\u2693\u26A1\u26AA\u26AB\u26BD\u26BE\u26C4\u26C5\u26CE\u26D4\u26EA\u26F2\u26F3\u26F5\u26FA\u26FD\u2705\u270A\u270B\u2728\u274C\u274E\u2753-\u2755\u2757\u2795-\u2797\u27B0\u27BF\u2B1B\u2B1C\u2B50\u2B55]|\uD83C[\uDC04\uDCCF\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE1A\uDE2F\uDE32-\uDE36\uDE38-\uDE3A\uDE50\uDE51\uDF00-\uDF20\uDF2D-\uDF35\uDF37-\uDF7C\uDF7E-\uDF93\uDFA0-\uDFCA\uDFCF-\uDFD3\uDFE0-\uDFF0\uDFF4\uDFF8-\uDFFF]|\uD83D[\uDC00-\uDC3E\uDC40\uDC42-\uDCFC\uDCFF-\uDD3D\uDD4B-\uDD4E\uDD50-\uDD67\uDD7A\uDD95\uDD96\uDDA4\uDDFB-\uDE4F\uDE80-\uDEC5\uDECC\uDED0-\uDED2\uDED5\uDEEB\uDEEC\uDEF4-\uDEFA\uDFE0-\uDFEB]|\uD83E[\uDD0D-\uDD3A\uDD3C-\uDD45\uDD47-\uDD71\uDD73-\uDD76\uDD7A-\uDDA2\uDDA5-\uDDAA\uDDAE-\uDDCA\uDDCD-\uDDFF\uDE70-\uDE73\uDE78-\uDE7A\uDE80-\uDE82\uDE90-\uDE95])|(?:[#\*0-9\xA9\xAE\u203C\u2049\u2122\u2139\u2194-\u2199\u21A9\u21AA\u231A\u231B\u2328\u23CF\u23E9-\u23F3\u23F8-\u23FA\u24C2\u25AA\u25AB\u25B6\u25C0\u25FB-\u25FE\u2600-\u2604\u260E\u2611\u2614\u2615\u2618\u261D\u2620\u2622\u2623\u2626\u262A\u262E\u262F\u2638-\u263A\u2640\u2642\u2648-\u2653\u265F\u2660\u2663\u2665\u2666\u2668\u267B\u267E\u267F\u2692-\u2697\u2699\u269B\u269C\u26A0\u26A1\u26AA\u26AB\u26B0\u26B1\u26BD\u26BE\u26C4\u26C5\u26C8\u26CE\u26CF\u26D1\u26D3\u26D4\u26E9\u26EA\u26F0-\u26F5\u26F7-\u26FA\u26FD\u2702\u2705\u2708-\u270D\u270F\u2712\u2714\u2716\u271D\u2721\u2728\u2733\u2734\u2744\u2747\u274C\u274E\u2753-\u2755\u2757\u2763\u2764\u2795-\u2797\u27A1\u27B0\u27BF\u2934\u2935\u2B05-\u2B07\u2B1B\u2B1C\u2B50\u2B55\u3030\u303D\u3297\u3299]|\uD83C[\uDC04\uDCCF\uDD70\uDD71\uDD7E\uDD7F\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE02\uDE1A\uDE2F\uDE32-\uDE3A\uDE50\uDE51\uDF00-\uDF21\uDF24-\uDF93\uDF96\uDF97\uDF99-\uDF9B\uDF9E-\uDFF0\uDFF3-\uDFF5\uDFF7-\uDFFF]|\uD83D[\uDC00-\uDCFD\uDCFF-\uDD3D\uDD49-\uDD4E\uDD50-\uDD67\uDD6F\uDD70\uDD73-\uDD7A\uDD87\uDD8A-\uDD8D\uDD90\uDD95\uDD96\uDDA4\uDDA5\uDDA8\uDDB1\uDDB2\uDDBC\uDDC2-\uDDC4\uDDD1-\uDDD3\uDDDC-\uDDDE\uDDE1\uDDE3\uDDE8\uDDEF\uDDF3\uDDFA-\uDE4F\uDE80-\uDEC5\uDECB-\uDED2\uDED5\uDEE0-\uDEE5\uDEE9\uDEEB\uDEEC\uDEF0\uDEF3-\uDEFA\uDFE0-\uDFEB]|\uD83E[\uDD0D-\uDD3A\uDD3C-\uDD45\uDD47-\uDD71\uDD73-\uDD76\uDD7A-\uDDA2\uDDA5-\uDDAA\uDDAE-\uDDCA\uDDCD-\uDDFF\uDE70-\uDE73\uDE78-\uDE7A\uDE80-\uDE82\uDE90-\uDE95])\uFE0F|(?:[\u261D\u26F9\u270A-\u270D]|\uD83C[\uDF85\uDFC2-\uDFC4\uDFC7\uDFCA-\uDFCC]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66-\uDC78\uDC7C\uDC81-\uDC83\uDC85-\uDC87\uDC8F\uDC91\uDCAA\uDD74\uDD75\uDD7A\uDD90\uDD95\uDD96\uDE45-\uDE47\uDE4B-\uDE4F\uDEA3\uDEB4-\uDEB6\uDEC0\uDECC]|\uD83E[\uDD0F\uDD18-\uDD1F\uDD26\uDD30-\uDD39\uDD3C-\uDD3E\uDDB5\uDDB6\uDDB8\uDDB9\uDDBB\uDDCD-\uDDCF\uDDD1-\uDDDD])/g;
-};
-
-
-/***/ }),
-
-/***/ 5756:
-/***/ ((module) => {
-
-"use strict";
-/* eslint-disable yoda */
-
-
-const isFullwidthCodePoint = codePoint => {
-	if (Number.isNaN(codePoint)) {
-		return false;
-	}
-
-	// Code points are derived from:
-	// http://www.unix.org/Public/UNIDATA/EastAsianWidth.txt
-	if (
-		codePoint >= 0x1100 && (
-			codePoint <= 0x115F || // Hangul Jamo
-			codePoint === 0x2329 || // LEFT-POINTING ANGLE BRACKET
-			codePoint === 0x232A || // RIGHT-POINTING ANGLE BRACKET
-			// CJK Radicals Supplement .. Enclosed CJK Letters and Months
-			(0x2E80 <= codePoint && codePoint <= 0x3247 && codePoint !== 0x303F) ||
-			// Enclosed CJK Letters and Months .. CJK Unified Ideographs Extension A
-			(0x3250 <= codePoint && codePoint <= 0x4DBF) ||
-			// CJK Unified Ideographs .. Yi Radicals
-			(0x4E00 <= codePoint && codePoint <= 0xA4C6) ||
-			// Hangul Jamo Extended-A
-			(0xA960 <= codePoint && codePoint <= 0xA97C) ||
-			// Hangul Syllables
-			(0xAC00 <= codePoint && codePoint <= 0xD7A3) ||
-			// CJK Compatibility Ideographs
-			(0xF900 <= codePoint && codePoint <= 0xFAFF) ||
-			// Vertical Forms
-			(0xFE10 <= codePoint && codePoint <= 0xFE19) ||
-			// CJK Compatibility Forms .. Small Form Variants
-			(0xFE30 <= codePoint && codePoint <= 0xFE6B) ||
-			// Halfwidth and Fullwidth Forms
-			(0xFF01 <= codePoint && codePoint <= 0xFF60) ||
-			(0xFFE0 <= codePoint && codePoint <= 0xFFE6) ||
-			// Kana Supplement
-			(0x1B000 <= codePoint && codePoint <= 0x1B001) ||
-			// Enclosed Ideographic Supplement
-			(0x1F200 <= codePoint && codePoint <= 0x1F251) ||
-			// CJK Unified Ideographs Extension B .. Tertiary Ideographic Plane
-			(0x20000 <= codePoint && codePoint <= 0x3FFFD)
-		)
-	) {
-		return true;
-	}
-
-	return false;
-};
-
-module.exports = isFullwidthCodePoint;
-module.exports.default = isFullwidthCodePoint;
-
-
-/***/ }),
-
-/***/ 9153:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-const stripAnsi = __webpack_require__(5591);
-const isFullwidthCodePoint = __webpack_require__(5756);
-const emojiRegex = __webpack_require__(8613);
-
-const stringWidth = string => {
-	string = string.replace(emojiRegex(), '  ');
-
-	if (typeof string !== 'string' || string.length === 0) {
-		return 0;
-	}
-
-	string = stripAnsi(string);
-
-	let width = 0;
-
-	for (let i = 0; i < string.length; i++) {
-		const code = string.codePointAt(i);
-
-		// Ignore control characters
-		if (code <= 0x1F || (code >= 0x7F && code <= 0x9F)) {
-			continue;
-		}
-
-		// Ignore combining characters
-		if (code >= 0x300 && code <= 0x36F) {
-			continue;
-		}
-
-		// Surrogates
-		if (code > 0xFFFF) {
-			i++;
-		}
-
-		width += isFullwidthCodePoint(code) ? 2 : 1;
-	}
-
-	return width;
-};
-
-module.exports = stringWidth;
-// TODO: remove this in the next major version
-module.exports.default = stringWidth;
-
-
-/***/ }),
-
-/***/ 7391:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-/* MIT license */
-/* eslint-disable no-mixed-operators */
-const cssKeywords = __webpack_require__(8510);
-
-// NOTE: conversions should only return primitive values (i.e. arrays, or
-//       values that give correct `typeof` results).
-//       do not use box values types (i.e. Number(), String(), etc.)
-
-const reverseKeywords = {};
-for (const key of Object.keys(cssKeywords)) {
-	reverseKeywords[cssKeywords[key]] = key;
-}
-
-const convert = {
-	rgb: {channels: 3, labels: 'rgb'},
-	hsl: {channels: 3, labels: 'hsl'},
-	hsv: {channels: 3, labels: 'hsv'},
-	hwb: {channels: 3, labels: 'hwb'},
-	cmyk: {channels: 4, labels: 'cmyk'},
-	xyz: {channels: 3, labels: 'xyz'},
-	lab: {channels: 3, labels: 'lab'},
-	lch: {channels: 3, labels: 'lch'},
-	hex: {channels: 1, labels: ['hex']},
-	keyword: {channels: 1, labels: ['keyword']},
-	ansi16: {channels: 1, labels: ['ansi16']},
-	ansi256: {channels: 1, labels: ['ansi256']},
-	hcg: {channels: 3, labels: ['h', 'c', 'g']},
-	apple: {channels: 3, labels: ['r16', 'g16', 'b16']},
-	gray: {channels: 1, labels: ['gray']}
-};
-
-module.exports = convert;
-
-// Hide .channels and .labels properties
-for (const model of Object.keys(convert)) {
-	if (!('channels' in convert[model])) {
-		throw new Error('missing channels property: ' + model);
-	}
-
-	if (!('labels' in convert[model])) {
-		throw new Error('missing channel labels property: ' + model);
-	}
-
-	if (convert[model].labels.length !== convert[model].channels) {
-		throw new Error('channel and label counts mismatch: ' + model);
-	}
-
-	const {channels, labels} = convert[model];
-	delete convert[model].channels;
-	delete convert[model].labels;
-	Object.defineProperty(convert[model], 'channels', {value: channels});
-	Object.defineProperty(convert[model], 'labels', {value: labels});
-}
-
-convert.rgb.hsl = function (rgb) {
-	const r = rgb[0] / 255;
-	const g = rgb[1] / 255;
-	const b = rgb[2] / 255;
-	const min = Math.min(r, g, b);
-	const max = Math.max(r, g, b);
-	const delta = max - min;
-	let h;
-	let s;
-
-	if (max === min) {
-		h = 0;
-	} else if (r === max) {
-		h = (g - b) / delta;
-	} else if (g === max) {
-		h = 2 + (b - r) / delta;
-	} else if (b === max) {
-		h = 4 + (r - g) / delta;
-	}
-
-	h = Math.min(h * 60, 360);
-
-	if (h < 0) {
-		h += 360;
-	}
-
-	const l = (min + max) / 2;
-
-	if (max === min) {
-		s = 0;
-	} else if (l <= 0.5) {
-		s = delta / (max + min);
-	} else {
-		s = delta / (2 - max - min);
-	}
-
-	return [h, s * 100, l * 100];
-};
-
-convert.rgb.hsv = function (rgb) {
-	let rdif;
-	let gdif;
-	let bdif;
-	let h;
-	let s;
-
-	const r = rgb[0] / 255;
-	const g = rgb[1] / 255;
-	const b = rgb[2] / 255;
-	const v = Math.max(r, g, b);
-	const diff = v - Math.min(r, g, b);
-	const diffc = function (c) {
-		return (v - c) / 6 / diff + 1 / 2;
-	};
-
-	if (diff === 0) {
-		h = 0;
-		s = 0;
-	} else {
-		s = diff / v;
-		rdif = diffc(r);
-		gdif = diffc(g);
-		bdif = diffc(b);
-
-		if (r === v) {
-			h = bdif - gdif;
-		} else if (g === v) {
-			h = (1 / 3) + rdif - bdif;
-		} else if (b === v) {
-			h = (2 / 3) + gdif - rdif;
-		}
-
-		if (h < 0) {
-			h += 1;
-		} else if (h > 1) {
-			h -= 1;
-		}
-	}
-
-	return [
-		h * 360,
-		s * 100,
-		v * 100
-	];
-};
-
-convert.rgb.hwb = function (rgb) {
-	const r = rgb[0];
-	const g = rgb[1];
-	let b = rgb[2];
-	const h = convert.rgb.hsl(rgb)[0];
-	const w = 1 / 255 * Math.min(r, Math.min(g, b));
-
-	b = 1 - 1 / 255 * Math.max(r, Math.max(g, b));
-
-	return [h, w * 100, b * 100];
-};
-
-convert.rgb.cmyk = function (rgb) {
-	const r = rgb[0] / 255;
-	const g = rgb[1] / 255;
-	const b = rgb[2] / 255;
-
-	const k = Math.min(1 - r, 1 - g, 1 - b);
-	const c = (1 - r - k) / (1 - k) || 0;
-	const m = (1 - g - k) / (1 - k) || 0;
-	const y = (1 - b - k) / (1 - k) || 0;
-
-	return [c * 100, m * 100, y * 100, k * 100];
-};
-
-function comparativeDistance(x, y) {
-	/*
-		See https://en.m.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance
-	*/
-	return (
-		((x[0] - y[0]) ** 2) +
-		((x[1] - y[1]) ** 2) +
-		((x[2] - y[2]) ** 2)
-	);
-}
-
-convert.rgb.keyword = function (rgb) {
-	const reversed = reverseKeywords[rgb];
-	if (reversed) {
-		return reversed;
-	}
-
-	let currentClosestDistance = Infinity;
-	let currentClosestKeyword;
-
-	for (const keyword of Object.keys(cssKeywords)) {
-		const value = cssKeywords[keyword];
-
-		// Compute comparative distance
-		const distance = comparativeDistance(rgb, value);
-
-		// Check if its less, if so set as closest
-		if (distance < currentClosestDistance) {
-			currentClosestDistance = distance;
-			currentClosestKeyword = keyword;
-		}
-	}
-
-	return currentClosestKeyword;
-};
-
-convert.keyword.rgb = function (keyword) {
-	return cssKeywords[keyword];
-};
-
-convert.rgb.xyz = function (rgb) {
-	let r = rgb[0] / 255;
-	let g = rgb[1] / 255;
-	let b = rgb[2] / 255;
-
-	// Assume sRGB
-	r = r > 0.04045 ? (((r + 0.055) / 1.055) ** 2.4) : (r / 12.92);
-	g = g > 0.04045 ? (((g + 0.055) / 1.055) ** 2.4) : (g / 12.92);
-	b = b > 0.04045 ? (((b + 0.055) / 1.055) ** 2.4) : (b / 12.92);
-
-	const x = (r * 0.4124) + (g * 0.3576) + (b * 0.1805);
-	const y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
-	const z = (r * 0.0193) + (g * 0.1192) + (b * 0.9505);
-
-	return [x * 100, y * 100, z * 100];
-};
-
-convert.rgb.lab = function (rgb) {
-	const xyz = convert.rgb.xyz(rgb);
-	let x = xyz[0];
-	let y = xyz[1];
-	let z = xyz[2];
-
-	x /= 95.047;
-	y /= 100;
-	z /= 108.883;
-
-	x = x > 0.008856 ? (x ** (1 / 3)) : (7.787 * x) + (16 / 116);
-	y = y > 0.008856 ? (y ** (1 / 3)) : (7.787 * y) + (16 / 116);
-	z = z > 0.008856 ? (z ** (1 / 3)) : (7.787 * z) + (16 / 116);
-
-	const l = (116 * y) - 16;
-	const a = 500 * (x - y);
-	const b = 200 * (y - z);
-
-	return [l, a, b];
-};
-
-convert.hsl.rgb = function (hsl) {
-	const h = hsl[0] / 360;
-	const s = hsl[1] / 100;
-	const l = hsl[2] / 100;
-	let t2;
-	let t3;
-	let val;
-
-	if (s === 0) {
-		val = l * 255;
-		return [val, val, val];
-	}
-
-	if (l < 0.5) {
-		t2 = l * (1 + s);
-	} else {
-		t2 = l + s - l * s;
-	}
-
-	const t1 = 2 * l - t2;
-
-	const rgb = [0, 0, 0];
-	for (let i = 0; i < 3; i++) {
-		t3 = h + 1 / 3 * -(i - 1);
-		if (t3 < 0) {
-			t3++;
-		}
-
-		if (t3 > 1) {
-			t3--;
-		}
-
-		if (6 * t3 < 1) {
-			val = t1 + (t2 - t1) * 6 * t3;
-		} else if (2 * t3 < 1) {
-			val = t2;
-		} else if (3 * t3 < 2) {
-			val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;
-		} else {
-			val = t1;
-		}
-
-		rgb[i] = val * 255;
-	}
-
-	return rgb;
-};
-
-convert.hsl.hsv = function (hsl) {
-	const h = hsl[0];
-	let s = hsl[1] / 100;
-	let l = hsl[2] / 100;
-	let smin = s;
-	const lmin = Math.max(l, 0.01);
-
-	l *= 2;
-	s *= (l <= 1) ? l : 2 - l;
-	smin *= lmin <= 1 ? lmin : 2 - lmin;
-	const v = (l + s) / 2;
-	const sv = l === 0 ? (2 * smin) / (lmin + smin) : (2 * s) / (l + s);
-
-	return [h, sv * 100, v * 100];
-};
-
-convert.hsv.rgb = function (hsv) {
-	const h = hsv[0] / 60;
-	const s = hsv[1] / 100;
-	let v = hsv[2] / 100;
-	const hi = Math.floor(h) % 6;
-
-	const f = h - Math.floor(h);
-	const p = 255 * v * (1 - s);
-	const q = 255 * v * (1 - (s * f));
-	const t = 255 * v * (1 - (s * (1 - f)));
-	v *= 255;
-
-	switch (hi) {
-		case 0:
-			return [v, t, p];
-		case 1:
-			return [q, v, p];
-		case 2:
-			return [p, v, t];
-		case 3:
-			return [p, q, v];
-		case 4:
-			return [t, p, v];
-		case 5:
-			return [v, p, q];
-	}
-};
-
-convert.hsv.hsl = function (hsv) {
-	const h = hsv[0];
-	const s = hsv[1] / 100;
-	const v = hsv[2] / 100;
-	const vmin = Math.max(v, 0.01);
-	let sl;
-	let l;
-
-	l = (2 - s) * v;
-	const lmin = (2 - s) * vmin;
-	sl = s * vmin;
-	sl /= (lmin <= 1) ? lmin : 2 - lmin;
-	sl = sl || 0;
-	l /= 2;
-
-	return [h, sl * 100, l * 100];
-};
-
-// http://dev.w3.org/csswg/css-color/#hwb-to-rgb
-convert.hwb.rgb = function (hwb) {
-	const h = hwb[0] / 360;
-	let wh = hwb[1] / 100;
-	let bl = hwb[2] / 100;
-	const ratio = wh + bl;
-	let f;
-
-	// Wh + bl cant be > 1
-	if (ratio > 1) {
-		wh /= ratio;
-		bl /= ratio;
-	}
-
-	const i = Math.floor(6 * h);
-	const v = 1 - bl;
-	f = 6 * h - i;
-
-	if ((i & 0x01) !== 0) {
-		f = 1 - f;
-	}
-
-	const n = wh + f * (v - wh); // Linear interpolation
-
-	let r;
-	let g;
-	let b;
-	/* eslint-disable max-statements-per-line,no-multi-spaces */
-	switch (i) {
-		default:
-		case 6:
-		case 0: r = v;  g = n;  b = wh; break;
-		case 1: r = n;  g = v;  b = wh; break;
-		case 2: r = wh; g = v;  b = n; break;
-		case 3: r = wh; g = n;  b = v; break;
-		case 4: r = n;  g = wh; b = v; break;
-		case 5: r = v;  g = wh; b = n; break;
-	}
-	/* eslint-enable max-statements-per-line,no-multi-spaces */
-
-	return [r * 255, g * 255, b * 255];
-};
-
-convert.cmyk.rgb = function (cmyk) {
-	const c = cmyk[0] / 100;
-	const m = cmyk[1] / 100;
-	const y = cmyk[2] / 100;
-	const k = cmyk[3] / 100;
-
-	const r = 1 - Math.min(1, c * (1 - k) + k);
-	const g = 1 - Math.min(1, m * (1 - k) + k);
-	const b = 1 - Math.min(1, y * (1 - k) + k);
-
-	return [r * 255, g * 255, b * 255];
-};
-
-convert.xyz.rgb = function (xyz) {
-	const x = xyz[0] / 100;
-	const y = xyz[1] / 100;
-	const z = xyz[2] / 100;
-	let r;
-	let g;
-	let b;
-
-	r = (x * 3.2406) + (y * -1.5372) + (z * -0.4986);
-	g = (x * -0.9689) + (y * 1.8758) + (z * 0.0415);
-	b = (x * 0.0557) + (y * -0.2040) + (z * 1.0570);
-
-	// Assume sRGB
-	r = r > 0.0031308
-		? ((1.055 * (r ** (1.0 / 2.4))) - 0.055)
-		: r * 12.92;
-
-	g = g > 0.0031308
-		? ((1.055 * (g ** (1.0 / 2.4))) - 0.055)
-		: g * 12.92;
-
-	b = b > 0.0031308
-		? ((1.055 * (b ** (1.0 / 2.4))) - 0.055)
-		: b * 12.92;
-
-	r = Math.min(Math.max(0, r), 1);
-	g = Math.min(Math.max(0, g), 1);
-	b = Math.min(Math.max(0, b), 1);
-
-	return [r * 255, g * 255, b * 255];
-};
-
-convert.xyz.lab = function (xyz) {
-	let x = xyz[0];
-	let y = xyz[1];
-	let z = xyz[2];
-
-	x /= 95.047;
-	y /= 100;
-	z /= 108.883;
-
-	x = x > 0.008856 ? (x ** (1 / 3)) : (7.787 * x) + (16 / 116);
-	y = y > 0.008856 ? (y ** (1 / 3)) : (7.787 * y) + (16 / 116);
-	z = z > 0.008856 ? (z ** (1 / 3)) : (7.787 * z) + (16 / 116);
-
-	const l = (116 * y) - 16;
-	const a = 500 * (x - y);
-	const b = 200 * (y - z);
-
-	return [l, a, b];
-};
-
-convert.lab.xyz = function (lab) {
-	const l = lab[0];
-	const a = lab[1];
-	const b = lab[2];
-	let x;
-	let y;
-	let z;
-
-	y = (l + 16) / 116;
-	x = a / 500 + y;
-	z = y - b / 200;
-
-	const y2 = y ** 3;
-	const x2 = x ** 3;
-	const z2 = z ** 3;
-	y = y2 > 0.008856 ? y2 : (y - 16 / 116) / 7.787;
-	x = x2 > 0.008856 ? x2 : (x - 16 / 116) / 7.787;
-	z = z2 > 0.008856 ? z2 : (z - 16 / 116) / 7.787;
-
-	x *= 95.047;
-	y *= 100;
-	z *= 108.883;
-
-	return [x, y, z];
-};
-
-convert.lab.lch = function (lab) {
-	const l = lab[0];
-	const a = lab[1];
-	const b = lab[2];
-	let h;
-
-	const hr = Math.atan2(b, a);
-	h = hr * 360 / 2 / Math.PI;
-
-	if (h < 0) {
-		h += 360;
-	}
-
-	const c = Math.sqrt(a * a + b * b);
-
-	return [l, c, h];
-};
-
-convert.lch.lab = function (lch) {
-	const l = lch[0];
-	const c = lch[1];
-	const h = lch[2];
-
-	const hr = h / 360 * 2 * Math.PI;
-	const a = c * Math.cos(hr);
-	const b = c * Math.sin(hr);
-
-	return [l, a, b];
-};
-
-convert.rgb.ansi16 = function (args, saturation = null) {
-	const [r, g, b] = args;
-	let value = saturation === null ? convert.rgb.hsv(args)[2] : saturation; // Hsv -> ansi16 optimization
-
-	value = Math.round(value / 50);
-
-	if (value === 0) {
-		return 30;
-	}
-
-	let ansi = 30
-		+ ((Math.round(b / 255) << 2)
-		| (Math.round(g / 255) << 1)
-		| Math.round(r / 255));
-
-	if (value === 2) {
-		ansi += 60;
-	}
-
-	return ansi;
-};
-
-convert.hsv.ansi16 = function (args) {
-	// Optimization here; we already know the value and don't need to get
-	// it converted for us.
-	return convert.rgb.ansi16(convert.hsv.rgb(args), args[2]);
-};
-
-convert.rgb.ansi256 = function (args) {
-	const r = args[0];
-	const g = args[1];
-	const b = args[2];
-
-	// We use the extended greyscale palette here, with the exception of
-	// black and white. normal palette only has 4 greyscale shades.
-	if (r === g && g === b) {
-		if (r < 8) {
-			return 16;
-		}
-
-		if (r > 248) {
-			return 231;
-		}
-
-		return Math.round(((r - 8) / 247) * 24) + 232;
-	}
-
-	const ansi = 16
-		+ (36 * Math.round(r / 255 * 5))
-		+ (6 * Math.round(g / 255 * 5))
-		+ Math.round(b / 255 * 5);
-
-	return ansi;
-};
-
-convert.ansi16.rgb = function (args) {
-	let color = args % 10;
-
-	// Handle greyscale
-	if (color === 0 || color === 7) {
-		if (args > 50) {
-			color += 3.5;
-		}
-
-		color = color / 10.5 * 255;
-
-		return [color, color, color];
-	}
-
-	const mult = (~~(args > 50) + 1) * 0.5;
-	const r = ((color & 1) * mult) * 255;
-	const g = (((color >> 1) & 1) * mult) * 255;
-	const b = (((color >> 2) & 1) * mult) * 255;
-
-	return [r, g, b];
-};
-
-convert.ansi256.rgb = function (args) {
-	// Handle greyscale
-	if (args >= 232) {
-		const c = (args - 232) * 10 + 8;
-		return [c, c, c];
-	}
-
-	args -= 16;
-
-	let rem;
-	const r = Math.floor(args / 36) / 5 * 255;
-	const g = Math.floor((rem = args % 36) / 6) / 5 * 255;
-	const b = (rem % 6) / 5 * 255;
-
-	return [r, g, b];
-};
-
-convert.rgb.hex = function (args) {
-	const integer = ((Math.round(args[0]) & 0xFF) << 16)
-		+ ((Math.round(args[1]) & 0xFF) << 8)
-		+ (Math.round(args[2]) & 0xFF);
-
-	const string = integer.toString(16).toUpperCase();
-	return '000000'.substring(string.length) + string;
-};
-
-convert.hex.rgb = function (args) {
-	const match = args.toString(16).match(/[a-f0-9]{6}|[a-f0-9]{3}/i);
-	if (!match) {
-		return [0, 0, 0];
-	}
-
-	let colorString = match[0];
-
-	if (match[0].length === 3) {
-		colorString = colorString.split('').map(char => {
-			return char + char;
-		}).join('');
-	}
-
-	const integer = parseInt(colorString, 16);
-	const r = (integer >> 16) & 0xFF;
-	const g = (integer >> 8) & 0xFF;
-	const b = integer & 0xFF;
-
-	return [r, g, b];
-};
-
-convert.rgb.hcg = function (rgb) {
-	const r = rgb[0] / 255;
-	const g = rgb[1] / 255;
-	const b = rgb[2] / 255;
-	const max = Math.max(Math.max(r, g), b);
-	const min = Math.min(Math.min(r, g), b);
-	const chroma = (max - min);
-	let grayscale;
-	let hue;
-
-	if (chroma < 1) {
-		grayscale = min / (1 - chroma);
-	} else {
-		grayscale = 0;
-	}
-
-	if (chroma <= 0) {
-		hue = 0;
-	} else
-	if (max === r) {
-		hue = ((g - b) / chroma) % 6;
-	} else
-	if (max === g) {
-		hue = 2 + (b - r) / chroma;
-	} else {
-		hue = 4 + (r - g) / chroma;
-	}
-
-	hue /= 6;
-	hue %= 1;
-
-	return [hue * 360, chroma * 100, grayscale * 100];
-};
-
-convert.hsl.hcg = function (hsl) {
-	const s = hsl[1] / 100;
-	const l = hsl[2] / 100;
-
-	const c = l < 0.5 ? (2.0 * s * l) : (2.0 * s * (1.0 - l));
-
-	let f = 0;
-	if (c < 1.0) {
-		f = (l - 0.5 * c) / (1.0 - c);
-	}
-
-	return [hsl[0], c * 100, f * 100];
-};
-
-convert.hsv.hcg = function (hsv) {
-	const s = hsv[1] / 100;
-	const v = hsv[2] / 100;
-
-	const c = s * v;
-	let f = 0;
-
-	if (c < 1.0) {
-		f = (v - c) / (1 - c);
-	}
-
-	return [hsv[0], c * 100, f * 100];
-};
-
-convert.hcg.rgb = function (hcg) {
-	const h = hcg[0] / 360;
-	const c = hcg[1] / 100;
-	const g = hcg[2] / 100;
-
-	if (c === 0.0) {
-		return [g * 255, g * 255, g * 255];
-	}
-
-	const pure = [0, 0, 0];
-	const hi = (h % 1) * 6;
-	const v = hi % 1;
-	const w = 1 - v;
-	let mg = 0;
-
-	/* eslint-disable max-statements-per-line */
-	switch (Math.floor(hi)) {
-		case 0:
-			pure[0] = 1; pure[1] = v; pure[2] = 0; break;
-		case 1:
-			pure[0] = w; pure[1] = 1; pure[2] = 0; break;
-		case 2:
-			pure[0] = 0; pure[1] = 1; pure[2] = v; break;
-		case 3:
-			pure[0] = 0; pure[1] = w; pure[2] = 1; break;
-		case 4:
-			pure[0] = v; pure[1] = 0; pure[2] = 1; break;
-		default:
-			pure[0] = 1; pure[1] = 0; pure[2] = w;
-	}
-	/* eslint-enable max-statements-per-line */
-
-	mg = (1.0 - c) * g;
-
-	return [
-		(c * pure[0] + mg) * 255,
-		(c * pure[1] + mg) * 255,
-		(c * pure[2] + mg) * 255
-	];
-};
-
-convert.hcg.hsv = function (hcg) {
-	const c = hcg[1] / 100;
-	const g = hcg[2] / 100;
-
-	const v = c + g * (1.0 - c);
-	let f = 0;
-
-	if (v > 0.0) {
-		f = c / v;
-	}
-
-	return [hcg[0], f * 100, v * 100];
-};
-
-convert.hcg.hsl = function (hcg) {
-	const c = hcg[1] / 100;
-	const g = hcg[2] / 100;
-
-	const l = g * (1.0 - c) + 0.5 * c;
-	let s = 0;
-
-	if (l > 0.0 && l < 0.5) {
-		s = c / (2 * l);
-	} else
-	if (l >= 0.5 && l < 1.0) {
-		s = c / (2 * (1 - l));
-	}
-
-	return [hcg[0], s * 100, l * 100];
-};
-
-convert.hcg.hwb = function (hcg) {
-	const c = hcg[1] / 100;
-	const g = hcg[2] / 100;
-	const v = c + g * (1.0 - c);
-	return [hcg[0], (v - c) * 100, (1 - v) * 100];
-};
-
-convert.hwb.hcg = function (hwb) {
-	const w = hwb[1] / 100;
-	const b = hwb[2] / 100;
-	const v = 1 - b;
-	const c = v - w;
-	let g = 0;
-
-	if (c < 1) {
-		g = (v - c) / (1 - c);
-	}
-
-	return [hwb[0], c * 100, g * 100];
-};
-
-convert.apple.rgb = function (apple) {
-	return [(apple[0] / 65535) * 255, (apple[1] / 65535) * 255, (apple[2] / 65535) * 255];
-};
-
-convert.rgb.apple = function (rgb) {
-	return [(rgb[0] / 255) * 65535, (rgb[1] / 255) * 65535, (rgb[2] / 255) * 65535];
-};
-
-convert.gray.rgb = function (args) {
-	return [args[0] / 100 * 255, args[0] / 100 * 255, args[0] / 100 * 255];
-};
-
-convert.gray.hsl = function (args) {
-	return [0, 0, args[0]];
-};
-
-convert.gray.hsv = convert.gray.hsl;
-
-convert.gray.hwb = function (gray) {
-	return [0, 100, gray[0]];
-};
-
-convert.gray.cmyk = function (gray) {
-	return [0, 0, 0, gray[0]];
-};
-
-convert.gray.lab = function (gray) {
-	return [gray[0], 0, 0];
-};
-
-convert.gray.hex = function (gray) {
-	const val = Math.round(gray[0] / 100 * 255) & 0xFF;
-	const integer = (val << 16) + (val << 8) + val;
-
-	const string = integer.toString(16).toUpperCase();
-	return '000000'.substring(string.length) + string;
-};
-
-convert.rgb.gray = function (rgb) {
-	const val = (rgb[0] + rgb[1] + rgb[2]) / 3;
-	return [val / 255 * 100];
-};
-
-
-/***/ }),
-
-/***/ 6931:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-const conversions = __webpack_require__(7391);
-const route = __webpack_require__(880);
-
-const convert = {};
-
-const models = Object.keys(conversions);
-
-function wrapRaw(fn) {
-	const wrappedFn = function (...args) {
-		const arg0 = args[0];
-		if (arg0 === undefined || arg0 === null) {
-			return arg0;
-		}
-
-		if (arg0.length > 1) {
-			args = arg0;
-		}
-
-		return fn(args);
-	};
-
-	// Preserve .conversion property if there is one
-	if ('conversion' in fn) {
-		wrappedFn.conversion = fn.conversion;
-	}
-
-	return wrappedFn;
-}
-
-function wrapRounded(fn) {
-	const wrappedFn = function (...args) {
-		const arg0 = args[0];
-
-		if (arg0 === undefined || arg0 === null) {
-			return arg0;
-		}
-
-		if (arg0.length > 1) {
-			args = arg0;
-		}
-
-		const result = fn(args);
-
-		// We're assuming the result is an array here.
-		// see notice in conversions.js; don't use box types
-		// in conversion functions.
-		if (typeof result === 'object') {
-			for (let len = result.length, i = 0; i < len; i++) {
-				result[i] = Math.round(result[i]);
-			}
-		}
-
-		return result;
-	};
-
-	// Preserve .conversion property if there is one
-	if ('conversion' in fn) {
-		wrappedFn.conversion = fn.conversion;
-	}
-
-	return wrappedFn;
-}
-
-models.forEach(fromModel => {
-	convert[fromModel] = {};
-
-	Object.defineProperty(convert[fromModel], 'channels', {value: conversions[fromModel].channels});
-	Object.defineProperty(convert[fromModel], 'labels', {value: conversions[fromModel].labels});
-
-	const routes = route(fromModel);
-	const routeModels = Object.keys(routes);
-
-	routeModels.forEach(toModel => {
-		const fn = routes[toModel];
-
-		convert[fromModel][toModel] = wrapRounded(fn);
-		convert[fromModel][toModel].raw = wrapRaw(fn);
-	});
-});
-
-module.exports = convert;
-
-
-/***/ }),
-
-/***/ 880:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-const conversions = __webpack_require__(7391);
-
-/*
-	This function routes a model to all other models.
-
-	all functions that are routed have a property `.conversion` attached
-	to the returned synthetic function. This property is an array
-	of strings, each with the steps in between the 'from' and 'to'
-	color models (inclusive).
-
-	conversions that are not possible simply are not included.
-*/
-
-function buildGraph() {
-	const graph = {};
-	// https://jsperf.com/object-keys-vs-for-in-with-closure/3
-	const models = Object.keys(conversions);
-
-	for (let len = models.length, i = 0; i < len; i++) {
-		graph[models[i]] = {
-			// http://jsperf.com/1-vs-infinity
-			// micro-opt, but this is simple.
-			distance: -1,
-			parent: null
-		};
-	}
-
-	return graph;
-}
-
-// https://en.wikipedia.org/wiki/Breadth-first_search
-function deriveBFS(fromModel) {
-	const graph = buildGraph();
-	const queue = [fromModel]; // Unshift -> queue -> pop
-
-	graph[fromModel].distance = 0;
-
-	while (queue.length) {
-		const current = queue.pop();
-		const adjacents = Object.keys(conversions[current]);
-
-		for (let len = adjacents.length, i = 0; i < len; i++) {
-			const adjacent = adjacents[i];
-			const node = graph[adjacent];
-
-			if (node.distance === -1) {
-				node.distance = graph[current].distance + 1;
-				node.parent = current;
-				queue.unshift(adjacent);
-			}
-		}
-	}
-
-	return graph;
-}
-
-function link(from, to) {
-	return function (args) {
-		return to(from(args));
-	};
-}
-
-function wrapConversion(toModel, graph) {
-	const path = [graph[toModel].parent, toModel];
-	let fn = conversions[graph[toModel].parent][toModel];
-
-	let cur = graph[toModel].parent;
-	while (graph[cur].parent) {
-		path.unshift(graph[cur].parent);
-		fn = link(conversions[graph[cur].parent][cur], fn);
-		cur = graph[cur].parent;
-	}
-
-	fn.conversion = path;
-	return fn;
-}
-
-module.exports = function (fromModel) {
-	const graph = deriveBFS(fromModel);
-	const conversion = {};
-
-	const models = Object.keys(graph);
-	for (let len = models.length, i = 0; i < len; i++) {
-		const toModel = models[i];
-		const node = graph[toModel];
-
-		if (node.parent === null) {
-			// No possible conversion, or this node is the source model.
-			continue;
-		}
-
-		conversion[toModel] = wrapConversion(toModel, graph);
-	}
-
-	return conversion;
-};
-
-
-
-/***/ }),
-
-/***/ 8510:
-/***/ ((module) => {
-
-"use strict";
-
-
-module.exports = {
-	"aliceblue": [240, 248, 255],
-	"antiquewhite": [250, 235, 215],
-	"aqua": [0, 255, 255],
-	"aquamarine": [127, 255, 212],
-	"azure": [240, 255, 255],
-	"beige": [245, 245, 220],
-	"bisque": [255, 228, 196],
-	"black": [0, 0, 0],
-	"blanchedalmond": [255, 235, 205],
-	"blue": [0, 0, 255],
-	"blueviolet": [138, 43, 226],
-	"brown": [165, 42, 42],
-	"burlywood": [222, 184, 135],
-	"cadetblue": [95, 158, 160],
-	"chartreuse": [127, 255, 0],
-	"chocolate": [210, 105, 30],
-	"coral": [255, 127, 80],
-	"cornflowerblue": [100, 149, 237],
-	"cornsilk": [255, 248, 220],
-	"crimson": [220, 20, 60],
-	"cyan": [0, 255, 255],
-	"darkblue": [0, 0, 139],
-	"darkcyan": [0, 139, 139],
-	"darkgoldenrod": [184, 134, 11],
-	"darkgray": [169, 169, 169],
-	"darkgreen": [0, 100, 0],
-	"darkgrey": [169, 169, 169],
-	"darkkhaki": [189, 183, 107],
-	"darkmagenta": [139, 0, 139],
-	"darkolivegreen": [85, 107, 47],
-	"darkorange": [255, 140, 0],
-	"darkorchid": [153, 50, 204],
-	"darkred": [139, 0, 0],
-	"darksalmon": [233, 150, 122],
-	"darkseagreen": [143, 188, 143],
-	"darkslateblue": [72, 61, 139],
-	"darkslategray": [47, 79, 79],
-	"darkslategrey": [47, 79, 79],
-	"darkturquoise": [0, 206, 209],
-	"darkviolet": [148, 0, 211],
-	"deeppink": [255, 20, 147],
-	"deepskyblue": [0, 191, 255],
-	"dimgray": [105, 105, 105],
-	"dimgrey": [105, 105, 105],
-	"dodgerblue": [30, 144, 255],
-	"firebrick": [178, 34, 34],
-	"floralwhite": [255, 250, 240],
-	"forestgreen": [34, 139, 34],
-	"fuchsia": [255, 0, 255],
-	"gainsboro": [220, 220, 220],
-	"ghostwhite": [248, 248, 255],
-	"gold": [255, 215, 0],
-	"goldenrod": [218, 165, 32],
-	"gray": [128, 128, 128],
-	"green": [0, 128, 0],
-	"greenyellow": [173, 255, 47],
-	"grey": [128, 128, 128],
-	"honeydew": [240, 255, 240],
-	"hotpink": [255, 105, 180],
-	"indianred": [205, 92, 92],
-	"indigo": [75, 0, 130],
-	"ivory": [255, 255, 240],
-	"khaki": [240, 230, 140],
-	"lavender": [230, 230, 250],
-	"lavenderblush": [255, 240, 245],
-	"lawngreen": [124, 252, 0],
-	"lemonchiffon": [255, 250, 205],
-	"lightblue": [173, 216, 230],
-	"lightcoral": [240, 128, 128],
-	"lightcyan": [224, 255, 255],
-	"lightgoldenrodyellow": [250, 250, 210],
-	"lightgray": [211, 211, 211],
-	"lightgreen": [144, 238, 144],
-	"lightgrey": [211, 211, 211],
-	"lightpink": [255, 182, 193],
-	"lightsalmon": [255, 160, 122],
-	"lightseagreen": [32, 178, 170],
-	"lightskyblue": [135, 206, 250],
-	"lightslategray": [119, 136, 153],
-	"lightslategrey": [119, 136, 153],
-	"lightsteelblue": [176, 196, 222],
-	"lightyellow": [255, 255, 224],
-	"lime": [0, 255, 0],
-	"limegreen": [50, 205, 50],
-	"linen": [250, 240, 230],
-	"magenta": [255, 0, 255],
-	"maroon": [128, 0, 0],
-	"mediumaquamarine": [102, 205, 170],
-	"mediumblue": [0, 0, 205],
-	"mediumorchid": [186, 85, 211],
-	"mediumpurple": [147, 112, 219],
-	"mediumseagreen": [60, 179, 113],
-	"mediumslateblue": [123, 104, 238],
-	"mediumspringgreen": [0, 250, 154],
-	"mediumturquoise": [72, 209, 204],
-	"mediumvioletred": [199, 21, 133],
-	"midnightblue": [25, 25, 112],
-	"mintcream": [245, 255, 250],
-	"mistyrose": [255, 228, 225],
-	"moccasin": [255, 228, 181],
-	"navajowhite": [255, 222, 173],
-	"navy": [0, 0, 128],
-	"oldlace": [253, 245, 230],
-	"olive": [128, 128, 0],
-	"olivedrab": [107, 142, 35],
-	"orange": [255, 165, 0],
-	"orangered": [255, 69, 0],
-	"orchid": [218, 112, 214],
-	"palegoldenrod": [238, 232, 170],
-	"palegreen": [152, 251, 152],
-	"paleturquoise": [175, 238, 238],
-	"palevioletred": [219, 112, 147],
-	"papayawhip": [255, 239, 213],
-	"peachpuff": [255, 218, 185],
-	"peru": [205, 133, 63],
-	"pink": [255, 192, 203],
-	"plum": [221, 160, 221],
-	"powderblue": [176, 224, 230],
-	"purple": [128, 0, 128],
-	"rebeccapurple": [102, 51, 153],
-	"red": [255, 0, 0],
-	"rosybrown": [188, 143, 143],
-	"royalblue": [65, 105, 225],
-	"saddlebrown": [139, 69, 19],
-	"salmon": [250, 128, 114],
-	"sandybrown": [244, 164, 96],
-	"seagreen": [46, 139, 87],
-	"seashell": [255, 245, 238],
-	"sienna": [160, 82, 45],
-	"silver": [192, 192, 192],
-	"skyblue": [135, 206, 235],
-	"slateblue": [106, 90, 205],
-	"slategray": [112, 128, 144],
-	"slategrey": [112, 128, 144],
-	"snow": [255, 250, 250],
-	"springgreen": [0, 255, 127],
-	"steelblue": [70, 130, 180],
-	"tan": [210, 180, 140],
-	"teal": [0, 128, 128],
-	"thistle": [216, 191, 216],
-	"tomato": [255, 99, 71],
-	"turquoise": [64, 224, 208],
-	"violet": [238, 130, 238],
-	"wheat": [245, 222, 179],
-	"white": [255, 255, 255],
-	"whitesmoke": [245, 245, 245],
-	"yellow": [255, 255, 0],
-	"yellowgreen": [154, 205, 50]
-};
-
-
-/***/ }),
-
 /***/ 6891:
 /***/ ((module) => {
 
@@ -7399,31 +5890,6 @@ module.exports = function (xs, fn) {
 var isArray = Array.isArray || function (xs) {
     return Object.prototype.toString.call(xs) === '[object Array]';
 };
-
-
-/***/ }),
-
-/***/ 2644:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-const { dirname, resolve } = __webpack_require__(5622);
-const { readdirSync, statSync } = __webpack_require__(5747);
-
-module.exports = function (start, callback) {
-	let dir = resolve('.', start);
-	let tmp, stats = statSync(dir);
-
-	if (!stats.isDirectory()) {
-		dir = dirname(dir);
-	}
-
-	while (true) {
-		tmp = callback(dir, readdirSync(dir));
-		if (tmp) return resolve(dir, tmp);
-		dir = dirname(tmp = dir);
-		if (tmp === dir) break;
-	}
-}
 
 
 /***/ }),
@@ -7550,7 +6016,7 @@ module.exports = function (data, opts) {
 /***/ }),
 
 /***/ 6863:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 module.exports = realpath
 realpath.realpath = realpath
@@ -7559,13 +6025,13 @@ realpath.realpathSync = realpathSync
 realpath.monkeypatch = monkeypatch
 realpath.unmonkeypatch = unmonkeypatch
 
-var fs = __webpack_require__(5747)
+var fs = __nccwpck_require__(5747)
 var origRealpath = fs.realpath
 var origRealpathSync = fs.realpathSync
 
 var version = process.version
 var ok = /^v[0-5]\./.test(version)
-var old = __webpack_require__(1734)
+var old = __nccwpck_require__(1734)
 
 function newError (er) {
   return er && er.syscall === 'realpath' && (
@@ -7623,7 +6089,7 @@ function unmonkeypatch () {
 /***/ }),
 
 /***/ 1734:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -7646,9 +6112,9 @@ function unmonkeypatch () {
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-var pathModule = __webpack_require__(5622);
+var pathModule = __nccwpck_require__(5622);
 var isWindows = process.platform === 'win32';
-var fs = __webpack_require__(5747);
+var fs = __nccwpck_require__(5747);
 
 // JavaScript implementation of realpath, ported from node pre-v6
 
@@ -7932,40 +6398,9 @@ exports.realpath = function realpath(p, cache, cb) {
 
 /***/ }),
 
-/***/ 351:
-/***/ ((module) => {
-
-"use strict";
-
-// Call this function in a another function to find out the file from
-// which that function was called from. (Inspects the v8 stack trace)
-//
-// Inspired by http://stackoverflow.com/questions/13227489
-module.exports = function getCallerFile(position) {
-    if (position === void 0) { position = 2; }
-    if (position >= Error.stackTraceLimit) {
-        throw new TypeError('getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: `' + position + '` and Error.stackTraceLimit was: `' + Error.stackTraceLimit + '`');
-    }
-    var oldPrepareStackTrace = Error.prepareStackTrace;
-    Error.prepareStackTrace = function (_, stack) { return stack; };
-    var stack = new Error().stack;
-    Error.prepareStackTrace = oldPrepareStackTrace;
-    if (stack !== null && typeof stack === 'object') {
-        // stack[0] holds this file
-        // stack[1] holds where this function was called
-        // stack[2] holds the file we're interested in
-        return stack[position] ? stack[position].getFileName() : undefined;
-    }
-};
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-
 /***/ 7625:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-exports.alphasort = alphasort
-exports.alphasorti = alphasorti
 exports.setopts = setopts
 exports.ownProp = ownProp
 exports.makeAbs = makeAbs
@@ -7978,17 +6413,13 @@ function ownProp (obj, field) {
   return Object.prototype.hasOwnProperty.call(obj, field)
 }
 
-var path = __webpack_require__(5622)
-var minimatch = __webpack_require__(3973)
-var isAbsolute = __webpack_require__(8714)
+var path = __nccwpck_require__(5622)
+var minimatch = __nccwpck_require__(3973)
+var isAbsolute = __nccwpck_require__(8714)
 var Minimatch = minimatch.Minimatch
 
-function alphasorti (a, b) {
-  return a.toLowerCase().localeCompare(b.toLowerCase())
-}
-
 function alphasort (a, b) {
-  return a.localeCompare(b)
+  return a.localeCompare(b, 'en')
 }
 
 function setupIgnores (self, options) {
@@ -8116,7 +6547,7 @@ function finish (self) {
     all = Object.keys(all)
 
   if (!self.nosort)
-    all = all.sort(self.nocase ? alphasorti : alphasort)
+    all = all.sort(alphasort)
 
   // at *some* point we statted all of these
   if (self.mark) {
@@ -8209,7 +6640,7 @@ function childrenIgnored (self, path) {
 /***/ }),
 
 /***/ 1957:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 // Approach:
 //
@@ -8253,27 +6684,25 @@ function childrenIgnored (self, path) {
 
 module.exports = glob
 
-var fs = __webpack_require__(5747)
-var rp = __webpack_require__(6863)
-var minimatch = __webpack_require__(3973)
+var fs = __nccwpck_require__(5747)
+var rp = __nccwpck_require__(6863)
+var minimatch = __nccwpck_require__(3973)
 var Minimatch = minimatch.Minimatch
-var inherits = __webpack_require__(4124)
-var EE = __webpack_require__(8614).EventEmitter
-var path = __webpack_require__(5622)
-var assert = __webpack_require__(2357)
-var isAbsolute = __webpack_require__(8714)
-var globSync = __webpack_require__(9010)
-var common = __webpack_require__(7625)
-var alphasort = common.alphasort
-var alphasorti = common.alphasorti
+var inherits = __nccwpck_require__(4124)
+var EE = __nccwpck_require__(8614).EventEmitter
+var path = __nccwpck_require__(5622)
+var assert = __nccwpck_require__(2357)
+var isAbsolute = __nccwpck_require__(8714)
+var globSync = __nccwpck_require__(9010)
+var common = __nccwpck_require__(7625)
 var setopts = common.setopts
 var ownProp = common.ownProp
-var inflight = __webpack_require__(2492)
-var util = __webpack_require__(1669)
+var inflight = __nccwpck_require__(2492)
+var util = __nccwpck_require__(1669)
 var childrenIgnored = common.childrenIgnored
 var isIgnored = common.isIgnored
 
-var once = __webpack_require__(1223)
+var once = __nccwpck_require__(1223)
 
 function glob (pattern, options, cb) {
   if (typeof options === 'function') cb = options, options = {}
@@ -9006,23 +7435,21 @@ Glob.prototype._stat2 = function (f, abs, er, stat, cb) {
 /***/ }),
 
 /***/ 9010:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 module.exports = globSync
 globSync.GlobSync = GlobSync
 
-var fs = __webpack_require__(5747)
-var rp = __webpack_require__(6863)
-var minimatch = __webpack_require__(3973)
+var fs = __nccwpck_require__(5747)
+var rp = __nccwpck_require__(6863)
+var minimatch = __nccwpck_require__(3973)
 var Minimatch = minimatch.Minimatch
-var Glob = __webpack_require__(1957).Glob
-var util = __webpack_require__(1669)
-var path = __webpack_require__(5622)
-var assert = __webpack_require__(2357)
-var isAbsolute = __webpack_require__(8714)
-var common = __webpack_require__(7625)
-var alphasort = common.alphasort
-var alphasorti = common.alphasorti
+var Glob = __nccwpck_require__(1957).Glob
+var util = __nccwpck_require__(1669)
+var path = __nccwpck_require__(5622)
+var assert = __nccwpck_require__(2357)
+var isAbsolute = __nccwpck_require__(8714)
+var common = __nccwpck_require__(7625)
 var setopts = common.setopts
 var ownProp = common.ownProp
 var childrenIgnored = common.childrenIgnored
@@ -9499,11 +7926,11 @@ GlobSync.prototype._makeAbs = function (f) {
 /***/ }),
 
 /***/ 2492:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var wrappy = __webpack_require__(2940)
+var wrappy = __nccwpck_require__(2940)
 var reqs = Object.create(null)
-var once = __webpack_require__(1223)
+var once = __nccwpck_require__(1223)
 
 module.exports = wrappy(inflight)
 
@@ -9560,16 +7987,16 @@ function slice (args) {
 /***/ }),
 
 /***/ 4124:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 try {
-  var util = __webpack_require__(1669);
+  var util = __nccwpck_require__(1669);
   /* istanbul ignore next */
   if (typeof util.inherits !== 'function') throw '';
   module.exports = util.inherits;
 } catch (e) {
   /* istanbul ignore next */
-  module.exports = __webpack_require__(8544);
+  module.exports = __nccwpck_require__(8544);
 }
 
 
@@ -9707,18 +8134,18 @@ function escapeJsonPtr(str) {
 /***/ }),
 
 /***/ 3973:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 module.exports = minimatch
 minimatch.Minimatch = Minimatch
 
 var path = { sep: '/' }
 try {
-  path = __webpack_require__(5622)
+  path = __nccwpck_require__(5622)
 } catch (er) {}
 
 var GLOBSTAR = minimatch.GLOBSTAR = Minimatch.GLOBSTAR = {}
-var expand = __webpack_require__(3717)
+var expand = __nccwpck_require__(3717)
 
 var plTypes = {
   '!': { open: '(?:(?!(?:', close: '))[^/]*?)'},
@@ -10637,9 +9064,9 @@ function regExpEscape (s) {
 /***/ }),
 
 /***/ 1223:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var wrappy = __webpack_require__(2940)
+var wrappy = __nccwpck_require__(2940)
 module.exports = wrappy(once)
 module.exports.strict = wrappy(onceStrict)
 
@@ -10713,116 +9140,10 @@ module.exports.win32 = win32;
 
 /***/ }),
 
-/***/ 9200:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var fs = __webpack_require__(5747),
-  join = __webpack_require__(5622).join,
-  resolve = __webpack_require__(5622).resolve,
-  dirname = __webpack_require__(5622).dirname,
-  defaultOptions = {
-    extensions: ['js', 'json', 'coffee'],
-    recurse: true,
-    rename: function (name) {
-      return name;
-    },
-    visit: function (obj) {
-      return obj;
-    }
-  };
-
-function checkFileInclusion(path, filename, options) {
-  return (
-    // verify file has valid extension
-    (new RegExp('\\.(' + options.extensions.join('|') + ')$', 'i').test(filename)) &&
-
-    // if options.include is a RegExp, evaluate it and make sure the path passes
-    !(options.include && options.include instanceof RegExp && !options.include.test(path)) &&
-
-    // if options.include is a function, evaluate it and make sure the path passes
-    !(options.include && typeof options.include === 'function' && !options.include(path, filename)) &&
-
-    // if options.exclude is a RegExp, evaluate it and make sure the path doesn't pass
-    !(options.exclude && options.exclude instanceof RegExp && options.exclude.test(path)) &&
-
-    // if options.exclude is a function, evaluate it and make sure the path doesn't pass
-    !(options.exclude && typeof options.exclude === 'function' && options.exclude(path, filename))
-  );
-}
-
-function requireDirectory(m, path, options) {
-  var retval = {};
-
-  // path is optional
-  if (path && !options && typeof path !== 'string') {
-    options = path;
-    path = null;
-  }
-
-  // default options
-  options = options || {};
-  for (var prop in defaultOptions) {
-    if (typeof options[prop] === 'undefined') {
-      options[prop] = defaultOptions[prop];
-    }
-  }
-
-  // if no path was passed in, assume the equivelant of __dirname from caller
-  // otherwise, resolve path relative to the equivalent of __dirname
-  path = !path ? dirname(m.filename) : resolve(dirname(m.filename), path);
-
-  // get the path of each file in specified directory, append to current tree node, recurse
-  fs.readdirSync(path).forEach(function (filename) {
-    var joined = join(path, filename),
-      files,
-      key,
-      obj;
-
-    if (fs.statSync(joined).isDirectory() && options.recurse) {
-      // this node is a directory; recurse
-      files = requireDirectory(m, joined, options);
-      // exclude empty directories
-      if (Object.keys(files).length) {
-        retval[options.rename(filename, joined, filename)] = files;
-      }
-    } else {
-      if (joined !== m.filename && checkFileInclusion(joined, filename, options)) {
-        // hash node key shouldn't include file extension
-        key = filename.substring(0, filename.lastIndexOf('.'));
-        obj = m.require(joined);
-        retval[options.rename(key, joined, filename)] = options.visit(obj, joined, filename) || obj;
-      }
-    }
-  });
-
-  return retval;
-}
-
-module.exports = requireDirectory;
-module.exports.defaults = defaultOptions;
-
-
-/***/ }),
-
-/***/ 5591:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-const ansiRegex = __webpack_require__(5063);
-
-module.exports = string => typeof string === 'string' ? string.replace(ansiRegex(), '') : string;
-
-
-/***/ }),
-
 /***/ 20:
 /***/ (function(__unused_webpack_module, exports) {
 
-/** @license URI.js v4.4.0 (c) 2011 Gary Court. License: http://github.com/garycourt/uri-js */
+/** @license URI.js v4.4.1 (c) 2011 Gary Court. License: http://github.com/garycourt/uri-js */
 (function (global, factory) {
 	 true ? factory(exports) :
 	0;
@@ -12268,353 +10589,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 /***/ }),
 
-/***/ 9824:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-const stringWidth = __webpack_require__(2568);
-const stripAnsi = __webpack_require__(5591);
-const ansiStyles = __webpack_require__(2068);
-
-const ESCAPES = new Set([
-	'\u001B',
-	'\u009B'
-]);
-
-const END_CODE = 39;
-
-const ANSI_ESCAPE_BELL = '\u0007';
-const ANSI_CSI = '[';
-const ANSI_OSC = ']';
-const ANSI_SGR_TERMINATOR = 'm';
-const ANSI_ESCAPE_LINK = `${ANSI_OSC}8;;`;
-
-const wrapAnsi = code => `${ESCAPES.values().next().value}${ANSI_CSI}${code}${ANSI_SGR_TERMINATOR}`;
-const wrapAnsiHyperlink = uri => `${ESCAPES.values().next().value}${ANSI_ESCAPE_LINK}${uri}${ANSI_ESCAPE_BELL}`;
-
-// Calculate the length of words split on ' ', ignoring
-// the extra characters added by ansi escape codes
-const wordLengths = string => string.split(' ').map(character => stringWidth(character));
-
-// Wrap a long word across multiple rows
-// Ansi escape codes do not count towards length
-const wrapWord = (rows, word, columns) => {
-	const characters = [...word];
-
-	let isInsideEscape = false;
-	let isInsideLinkEscape = false;
-	let visible = stringWidth(stripAnsi(rows[rows.length - 1]));
-
-	for (const [index, character] of characters.entries()) {
-		const characterLength = stringWidth(character);
-
-		if (visible + characterLength <= columns) {
-			rows[rows.length - 1] += character;
-		} else {
-			rows.push(character);
-			visible = 0;
-		}
-
-		if (ESCAPES.has(character)) {
-			isInsideEscape = true;
-			isInsideLinkEscape = characters.slice(index + 1).join('').startsWith(ANSI_ESCAPE_LINK);
-		}
-
-		if (isInsideEscape) {
-			if (isInsideLinkEscape) {
-				if (character === ANSI_ESCAPE_BELL) {
-					isInsideEscape = false;
-					isInsideLinkEscape = false;
-				}
-			} else if (character === ANSI_SGR_TERMINATOR) {
-				isInsideEscape = false;
-			}
-
-			continue;
-		}
-
-		visible += characterLength;
-
-		if (visible === columns && index < characters.length - 1) {
-			rows.push('');
-			visible = 0;
-		}
-	}
-
-	// It's possible that the last row we copy over is only
-	// ansi escape characters, handle this edge-case
-	if (!visible && rows[rows.length - 1].length > 0 && rows.length > 1) {
-		rows[rows.length - 2] += rows.pop();
-	}
-};
-
-// Trims spaces from a string ignoring invisible sequences
-const stringVisibleTrimSpacesRight = string => {
-	const words = string.split(' ');
-	let last = words.length;
-
-	while (last > 0) {
-		if (stringWidth(words[last - 1]) > 0) {
-			break;
-		}
-
-		last--;
-	}
-
-	if (last === words.length) {
-		return string;
-	}
-
-	return words.slice(0, last).join(' ') + words.slice(last).join('');
-};
-
-// The wrap-ansi module can be invoked in either 'hard' or 'soft' wrap mode
-//
-// 'hard' will never allow a string to take up more than columns characters
-//
-// 'soft' allows long words to expand past the column length
-const exec = (string, columns, options = {}) => {
-	if (options.trim !== false && string.trim() === '') {
-		return '';
-	}
-
-	let returnValue = '';
-	let escapeCode;
-	let escapeUrl;
-
-	const lengths = wordLengths(string);
-	let rows = [''];
-
-	for (const [index, word] of string.split(' ').entries()) {
-		if (options.trim !== false) {
-			rows[rows.length - 1] = rows[rows.length - 1].trimStart();
-		}
-
-		let rowLength = stringWidth(rows[rows.length - 1]);
-
-		if (index !== 0) {
-			if (rowLength >= columns && (options.wordWrap === false || options.trim === false)) {
-				// If we start with a new word but the current row length equals the length of the columns, add a new row
-				rows.push('');
-				rowLength = 0;
-			}
-
-			if (rowLength > 0 || options.trim === false) {
-				rows[rows.length - 1] += ' ';
-				rowLength++;
-			}
-		}
-
-		// In 'hard' wrap mode, the length of a line is never allowed to extend past 'columns'
-		if (options.hard && lengths[index] > columns) {
-			const remainingColumns = (columns - rowLength);
-			const breaksStartingThisLine = 1 + Math.floor((lengths[index] - remainingColumns - 1) / columns);
-			const breaksStartingNextLine = Math.floor((lengths[index] - 1) / columns);
-			if (breaksStartingNextLine < breaksStartingThisLine) {
-				rows.push('');
-			}
-
-			wrapWord(rows, word, columns);
-			continue;
-		}
-
-		if (rowLength + lengths[index] > columns && rowLength > 0 && lengths[index] > 0) {
-			if (options.wordWrap === false && rowLength < columns) {
-				wrapWord(rows, word, columns);
-				continue;
-			}
-
-			rows.push('');
-		}
-
-		if (rowLength + lengths[index] > columns && options.wordWrap === false) {
-			wrapWord(rows, word, columns);
-			continue;
-		}
-
-		rows[rows.length - 1] += word;
-	}
-
-	if (options.trim !== false) {
-		rows = rows.map(stringVisibleTrimSpacesRight);
-	}
-
-	const pre = [...rows.join('\n')];
-
-	for (const [index, character] of pre.entries()) {
-		returnValue += character;
-
-		if (ESCAPES.has(character)) {
-			const {groups} = new RegExp(`(?:\\${ANSI_CSI}(?<code>\\d+)m|\\${ANSI_ESCAPE_LINK}(?<uri>.*)${ANSI_ESCAPE_BELL})`).exec(pre.slice(index).join('')) || {groups: {}};
-			if (groups.code !== undefined) {
-				const code = Number.parseFloat(groups.code);
-				escapeCode = code === END_CODE ? undefined : code;
-			} else if (groups.uri !== undefined) {
-				escapeUrl = groups.uri.length === 0 ? undefined : groups.uri;
-			}
-		}
-
-		const code = ansiStyles.codes.get(Number(escapeCode));
-
-		if (pre[index + 1] === '\n') {
-			if (escapeUrl) {
-				returnValue += wrapAnsiHyperlink('');
-			}
-
-			if (escapeCode && code) {
-				returnValue += wrapAnsi(code);
-			}
-		} else if (character === '\n') {
-			if (escapeCode && code) {
-				returnValue += wrapAnsi(escapeCode);
-			}
-
-			if (escapeUrl) {
-				returnValue += wrapAnsiHyperlink(escapeUrl);
-			}
-		}
-	}
-
-	return returnValue;
-};
-
-// For each newline, invoke the method separately
-module.exports = (string, columns, options) => {
-	return String(string)
-		.normalize()
-		.replace(/\r\n/g, '\n')
-		.split('\n')
-		.map(line => exec(line, columns, options))
-		.join('\n');
-};
-
-
-/***/ }),
-
-/***/ 7465:
-/***/ ((module) => {
-
-"use strict";
-
-
-module.exports = function () {
-  // https://mths.be/emoji
-  return /\uD83C\uDFF4\uDB40\uDC67\uDB40\uDC62(?:\uDB40\uDC65\uDB40\uDC6E\uDB40\uDC67|\uDB40\uDC73\uDB40\uDC63\uDB40\uDC74|\uDB40\uDC77\uDB40\uDC6C\uDB40\uDC73)\uDB40\uDC7F|\uD83D\uDC68(?:\uD83C\uDFFC\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFB|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFF\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFE])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFE\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFD])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFD\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFC])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\u200D(?:\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D)?\uD83D\uDC68|(?:\uD83D[\uDC68\uDC69])\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67]))|\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|(?:\uD83D[\uDC68\uDC69])\u200D(?:\uD83D[\uDC66\uDC67])|[\u2695\u2696\u2708]\uFE0F|\uD83D[\uDC66\uDC67]|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|(?:\uD83C\uDFFB\u200D[\u2695\u2696\u2708]|\uD83C\uDFFF\u200D[\u2695\u2696\u2708]|\uD83C\uDFFE\u200D[\u2695\u2696\u2708]|\uD83C\uDFFD\u200D[\u2695\u2696\u2708]|\uD83C\uDFFC\u200D[\u2695\u2696\u2708])\uFE0F|\uD83C\uDFFB\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C[\uDFFB-\uDFFF])|(?:\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)\uD83C\uDFFB|\uD83E\uDDD1(?:\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1(?:\uD83C[\uDFFB-\uDFFF])|\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1)|(?:\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D(?:\uD83D[\uDC68\uDC69]))(?:\uD83C[\uDFFB-\uDFFE])|(?:\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)(?:\uD83C[\uDFFB\uDFFC])|\uD83D\uDC69(?:\uD83C\uDFFE\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFD\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFC\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFD-\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFB\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFC-\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFD\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFC\uDFFE\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\u200D(?:\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D(?:\uD83D[\uDC68\uDC69])|\uD83D[\uDC68\uDC69])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFF\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD]))|\uD83D\uDC69\u200D\uD83D\uDC69\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67]))|(?:\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)(?:\uD83C[\uDFFB-\uDFFD])|\uD83D\uDC69\u200D\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC69\u200D\uD83D\uDC69\u200D(?:\uD83D[\uDC66\uDC67])|(?:\uD83D\uDC41\uFE0F\u200D\uD83D\uDDE8|\uD83D\uDC69(?:\uD83C\uDFFF\u200D[\u2695\u2696\u2708]|\uD83C\uDFFE\u200D[\u2695\u2696\u2708]|\uD83C\uDFFC\u200D[\u2695\u2696\u2708]|\uD83C\uDFFB\u200D[\u2695\u2696\u2708]|\uD83C\uDFFD\u200D[\u2695\u2696\u2708]|\u200D[\u2695\u2696\u2708])|(?:(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)\uFE0F|\uD83D\uDC6F|\uD83E[\uDD3C\uDDDE\uDDDF])\u200D[\u2640\u2642]|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642]|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDB8\uDDB9\uDDCD-\uDDCF\uDDD6-\uDDDD])(?:(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642]|\u200D[\u2640\u2642])|\uD83C\uDFF4\u200D\u2620)\uFE0F|\uD83D\uDC69\u200D\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|\uD83C\uDFF3\uFE0F\u200D\uD83C\uDF08|\uD83D\uDC15\u200D\uD83E\uDDBA|\uD83D\uDC69\u200D\uD83D\uDC66|\uD83D\uDC69\u200D\uD83D\uDC67|\uD83C\uDDFD\uD83C\uDDF0|\uD83C\uDDF4\uD83C\uDDF2|\uD83C\uDDF6\uD83C\uDDE6|[#\*0-9]\uFE0F\u20E3|\uD83C\uDDE7(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEF\uDDF1-\uDDF4\uDDF6-\uDDF9\uDDFB\uDDFC\uDDFE\uDDFF])|\uD83C\uDDF9(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDED\uDDEF-\uDDF4\uDDF7\uDDF9\uDDFB\uDDFC\uDDFF])|\uD83C\uDDEA(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDED\uDDF7-\uDDFA])|\uD83E\uDDD1(?:\uD83C[\uDFFB-\uDFFF])|\uD83C\uDDF7(?:\uD83C[\uDDEA\uDDF4\uDDF8\uDDFA\uDDFC])|\uD83D\uDC69(?:\uD83C[\uDFFB-\uDFFF])|\uD83C\uDDF2(?:\uD83C[\uDDE6\uDDE8-\uDDED\uDDF0-\uDDFF])|\uD83C\uDDE6(?:\uD83C[\uDDE8-\uDDEC\uDDEE\uDDF1\uDDF2\uDDF4\uDDF6-\uDDFA\uDDFC\uDDFD\uDDFF])|\uD83C\uDDF0(?:\uD83C[\uDDEA\uDDEC-\uDDEE\uDDF2\uDDF3\uDDF5\uDDF7\uDDFC\uDDFE\uDDFF])|\uD83C\uDDED(?:\uD83C[\uDDF0\uDDF2\uDDF3\uDDF7\uDDF9\uDDFA])|\uD83C\uDDE9(?:\uD83C[\uDDEA\uDDEC\uDDEF\uDDF0\uDDF2\uDDF4\uDDFF])|\uD83C\uDDFE(?:\uD83C[\uDDEA\uDDF9])|\uD83C\uDDEC(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEE\uDDF1-\uDDF3\uDDF5-\uDDFA\uDDFC\uDDFE])|\uD83C\uDDF8(?:\uD83C[\uDDE6-\uDDEA\uDDEC-\uDDF4\uDDF7-\uDDF9\uDDFB\uDDFD-\uDDFF])|\uD83C\uDDEB(?:\uD83C[\uDDEE-\uDDF0\uDDF2\uDDF4\uDDF7])|\uD83C\uDDF5(?:\uD83C[\uDDE6\uDDEA-\uDDED\uDDF0-\uDDF3\uDDF7-\uDDF9\uDDFC\uDDFE])|\uD83C\uDDFB(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDEE\uDDF3\uDDFA])|\uD83C\uDDF3(?:\uD83C[\uDDE6\uDDE8\uDDEA-\uDDEC\uDDEE\uDDF1\uDDF4\uDDF5\uDDF7\uDDFA\uDDFF])|\uD83C\uDDE8(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDEE\uDDF0-\uDDF5\uDDF7\uDDFA-\uDDFF])|\uD83C\uDDF1(?:\uD83C[\uDDE6-\uDDE8\uDDEE\uDDF0\uDDF7-\uDDFB\uDDFE])|\uD83C\uDDFF(?:\uD83C[\uDDE6\uDDF2\uDDFC])|\uD83C\uDDFC(?:\uD83C[\uDDEB\uDDF8])|\uD83C\uDDFA(?:\uD83C[\uDDE6\uDDEC\uDDF2\uDDF3\uDDF8\uDDFE\uDDFF])|\uD83C\uDDEE(?:\uD83C[\uDDE8-\uDDEA\uDDF1-\uDDF4\uDDF6-\uDDF9])|\uD83C\uDDEF(?:\uD83C[\uDDEA\uDDF2\uDDF4\uDDF5])|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDB8\uDDB9\uDDCD-\uDDCF\uDDD6-\uDDDD])(?:\uD83C[\uDFFB-\uDFFF])|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u261D\u270A-\u270D]|\uD83C[\uDF85\uDFC2\uDFC7]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66\uDC67\uDC6B-\uDC6D\uDC70\uDC72\uDC74-\uDC76\uDC78\uDC7C\uDC83\uDC85\uDCAA\uDD74\uDD7A\uDD90\uDD95\uDD96\uDE4C\uDE4F\uDEC0\uDECC]|\uD83E[\uDD0F\uDD18-\uDD1C\uDD1E\uDD1F\uDD30-\uDD36\uDDB5\uDDB6\uDDBB\uDDD2-\uDDD5])(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u231A\u231B\u23E9-\u23EC\u23F0\u23F3\u25FD\u25FE\u2614\u2615\u2648-\u2653\u267F\u2693\u26A1\u26AA\u26AB\u26BD\u26BE\u26C4\u26C5\u26CE\u26D4\u26EA\u26F2\u26F3\u26F5\u26FA\u26FD\u2705\u270A\u270B\u2728\u274C\u274E\u2753-\u2755\u2757\u2795-\u2797\u27B0\u27BF\u2B1B\u2B1C\u2B50\u2B55]|\uD83C[\uDC04\uDCCF\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE1A\uDE2F\uDE32-\uDE36\uDE38-\uDE3A\uDE50\uDE51\uDF00-\uDF20\uDF2D-\uDF35\uDF37-\uDF7C\uDF7E-\uDF93\uDFA0-\uDFCA\uDFCF-\uDFD3\uDFE0-\uDFF0\uDFF4\uDFF8-\uDFFF]|\uD83D[\uDC00-\uDC3E\uDC40\uDC42-\uDCFC\uDCFF-\uDD3D\uDD4B-\uDD4E\uDD50-\uDD67\uDD7A\uDD95\uDD96\uDDA4\uDDFB-\uDE4F\uDE80-\uDEC5\uDECC\uDED0-\uDED2\uDED5\uDEEB\uDEEC\uDEF4-\uDEFA\uDFE0-\uDFEB]|\uD83E[\uDD0D-\uDD3A\uDD3C-\uDD45\uDD47-\uDD71\uDD73-\uDD76\uDD7A-\uDDA2\uDDA5-\uDDAA\uDDAE-\uDDCA\uDDCD-\uDDFF\uDE70-\uDE73\uDE78-\uDE7A\uDE80-\uDE82\uDE90-\uDE95])|(?:[#\*0-9\xA9\xAE\u203C\u2049\u2122\u2139\u2194-\u2199\u21A9\u21AA\u231A\u231B\u2328\u23CF\u23E9-\u23F3\u23F8-\u23FA\u24C2\u25AA\u25AB\u25B6\u25C0\u25FB-\u25FE\u2600-\u2604\u260E\u2611\u2614\u2615\u2618\u261D\u2620\u2622\u2623\u2626\u262A\u262E\u262F\u2638-\u263A\u2640\u2642\u2648-\u2653\u265F\u2660\u2663\u2665\u2666\u2668\u267B\u267E\u267F\u2692-\u2697\u2699\u269B\u269C\u26A0\u26A1\u26AA\u26AB\u26B0\u26B1\u26BD\u26BE\u26C4\u26C5\u26C8\u26CE\u26CF\u26D1\u26D3\u26D4\u26E9\u26EA\u26F0-\u26F5\u26F7-\u26FA\u26FD\u2702\u2705\u2708-\u270D\u270F\u2712\u2714\u2716\u271D\u2721\u2728\u2733\u2734\u2744\u2747\u274C\u274E\u2753-\u2755\u2757\u2763\u2764\u2795-\u2797\u27A1\u27B0\u27BF\u2934\u2935\u2B05-\u2B07\u2B1B\u2B1C\u2B50\u2B55\u3030\u303D\u3297\u3299]|\uD83C[\uDC04\uDCCF\uDD70\uDD71\uDD7E\uDD7F\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE02\uDE1A\uDE2F\uDE32-\uDE3A\uDE50\uDE51\uDF00-\uDF21\uDF24-\uDF93\uDF96\uDF97\uDF99-\uDF9B\uDF9E-\uDFF0\uDFF3-\uDFF5\uDFF7-\uDFFF]|\uD83D[\uDC00-\uDCFD\uDCFF-\uDD3D\uDD49-\uDD4E\uDD50-\uDD67\uDD6F\uDD70\uDD73-\uDD7A\uDD87\uDD8A-\uDD8D\uDD90\uDD95\uDD96\uDDA4\uDDA5\uDDA8\uDDB1\uDDB2\uDDBC\uDDC2-\uDDC4\uDDD1-\uDDD3\uDDDC-\uDDDE\uDDE1\uDDE3\uDDE8\uDDEF\uDDF3\uDDFA-\uDE4F\uDE80-\uDEC5\uDECB-\uDED2\uDED5\uDEE0-\uDEE5\uDEE9\uDEEB\uDEEC\uDEF0\uDEF3-\uDEFA\uDFE0-\uDFEB]|\uD83E[\uDD0D-\uDD3A\uDD3C-\uDD45\uDD47-\uDD71\uDD73-\uDD76\uDD7A-\uDDA2\uDDA5-\uDDAA\uDDAE-\uDDCA\uDDCD-\uDDFF\uDE70-\uDE73\uDE78-\uDE7A\uDE80-\uDE82\uDE90-\uDE95])\uFE0F|(?:[\u261D\u26F9\u270A-\u270D]|\uD83C[\uDF85\uDFC2-\uDFC4\uDFC7\uDFCA-\uDFCC]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66-\uDC78\uDC7C\uDC81-\uDC83\uDC85-\uDC87\uDC8F\uDC91\uDCAA\uDD74\uDD75\uDD7A\uDD90\uDD95\uDD96\uDE45-\uDE47\uDE4B-\uDE4F\uDEA3\uDEB4-\uDEB6\uDEC0\uDECC]|\uD83E[\uDD0F\uDD18-\uDD1F\uDD26\uDD30-\uDD39\uDD3C-\uDD3E\uDDB5\uDDB6\uDDB8\uDDB9\uDDBB\uDDCD-\uDDCF\uDDD1-\uDDDD])/g;
-};
-
-
-/***/ }),
-
-/***/ 8988:
-/***/ ((module) => {
-
-"use strict";
-/* eslint-disable yoda */
-
-
-const isFullwidthCodePoint = codePoint => {
-	if (Number.isNaN(codePoint)) {
-		return false;
-	}
-
-	// Code points are derived from:
-	// http://www.unix.org/Public/UNIDATA/EastAsianWidth.txt
-	if (
-		codePoint >= 0x1100 && (
-			codePoint <= 0x115F || // Hangul Jamo
-			codePoint === 0x2329 || // LEFT-POINTING ANGLE BRACKET
-			codePoint === 0x232A || // RIGHT-POINTING ANGLE BRACKET
-			// CJK Radicals Supplement .. Enclosed CJK Letters and Months
-			(0x2E80 <= codePoint && codePoint <= 0x3247 && codePoint !== 0x303F) ||
-			// Enclosed CJK Letters and Months .. CJK Unified Ideographs Extension A
-			(0x3250 <= codePoint && codePoint <= 0x4DBF) ||
-			// CJK Unified Ideographs .. Yi Radicals
-			(0x4E00 <= codePoint && codePoint <= 0xA4C6) ||
-			// Hangul Jamo Extended-A
-			(0xA960 <= codePoint && codePoint <= 0xA97C) ||
-			// Hangul Syllables
-			(0xAC00 <= codePoint && codePoint <= 0xD7A3) ||
-			// CJK Compatibility Ideographs
-			(0xF900 <= codePoint && codePoint <= 0xFAFF) ||
-			// Vertical Forms
-			(0xFE10 <= codePoint && codePoint <= 0xFE19) ||
-			// CJK Compatibility Forms .. Small Form Variants
-			(0xFE30 <= codePoint && codePoint <= 0xFE6B) ||
-			// Halfwidth and Fullwidth Forms
-			(0xFF01 <= codePoint && codePoint <= 0xFF60) ||
-			(0xFFE0 <= codePoint && codePoint <= 0xFFE6) ||
-			// Kana Supplement
-			(0x1B000 <= codePoint && codePoint <= 0x1B001) ||
-			// Enclosed Ideographic Supplement
-			(0x1F200 <= codePoint && codePoint <= 0x1F251) ||
-			// CJK Unified Ideographs Extension B .. Tertiary Ideographic Plane
-			(0x20000 <= codePoint && codePoint <= 0x3FFFD)
-		)
-	) {
-		return true;
-	}
-
-	return false;
-};
-
-module.exports = isFullwidthCodePoint;
-module.exports.default = isFullwidthCodePoint;
-
-
-/***/ }),
-
-/***/ 2568:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-const stripAnsi = __webpack_require__(5591);
-const isFullwidthCodePoint = __webpack_require__(8988);
-const emojiRegex = __webpack_require__(7465);
-
-const stringWidth = string => {
-	string = string.replace(emojiRegex(), '  ');
-
-	if (typeof string !== 'string' || string.length === 0) {
-		return 0;
-	}
-
-	string = stripAnsi(string);
-
-	let width = 0;
-
-	for (let i = 0; i < string.length; i++) {
-		const code = string.codePointAt(i);
-
-		// Ignore control characters
-		if (code <= 0x1F || (code >= 0x7F && code <= 0x9F)) {
-			continue;
-		}
-
-		// Ignore combining characters
-		if (code >= 0x300 && code <= 0x36F) {
-			continue;
-		}
-
-		// Surrogates
-		if (code > 0xFFFF) {
-			i++;
-		}
-
-		width += isFullwidthCodePoint(code) ? 2 : 1;
-	}
-
-	return width;
-};
-
-module.exports = stringWidth;
-// TODO: remove this in the next major version
-module.exports.default = stringWidth;
-
-
-/***/ }),
-
 /***/ 2940:
 /***/ ((module) => {
 
@@ -12655,646 +10629,166 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 6324:
+/***/ 6835:
 /***/ ((module) => {
 
 "use strict";
-
-
-module.exports = function () {
-  // https://mths.be/emoji
-  return /\uD83C\uDFF4\uDB40\uDC67\uDB40\uDC62(?:\uDB40\uDC65\uDB40\uDC6E\uDB40\uDC67|\uDB40\uDC73\uDB40\uDC63\uDB40\uDC74|\uDB40\uDC77\uDB40\uDC6C\uDB40\uDC73)\uDB40\uDC7F|\uD83D\uDC68(?:\uD83C\uDFFC\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFB|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFF\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFE])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFE\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFD])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFD\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFC])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\u200D(?:\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D)?\uD83D\uDC68|(?:\uD83D[\uDC68\uDC69])\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67]))|\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|(?:\uD83D[\uDC68\uDC69])\u200D(?:\uD83D[\uDC66\uDC67])|[\u2695\u2696\u2708]\uFE0F|\uD83D[\uDC66\uDC67]|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|(?:\uD83C\uDFFB\u200D[\u2695\u2696\u2708]|\uD83C\uDFFF\u200D[\u2695\u2696\u2708]|\uD83C\uDFFE\u200D[\u2695\u2696\u2708]|\uD83C\uDFFD\u200D[\u2695\u2696\u2708]|\uD83C\uDFFC\u200D[\u2695\u2696\u2708])\uFE0F|\uD83C\uDFFB\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C[\uDFFB-\uDFFF])|(?:\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)\uD83C\uDFFB|\uD83E\uDDD1(?:\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1(?:\uD83C[\uDFFB-\uDFFF])|\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1)|(?:\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D(?:\uD83D[\uDC68\uDC69]))(?:\uD83C[\uDFFB-\uDFFE])|(?:\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)(?:\uD83C[\uDFFB\uDFFC])|\uD83D\uDC69(?:\uD83C\uDFFE\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFD\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFC\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFD-\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFB\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFC-\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFD\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFC\uDFFE\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\u200D(?:\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D(?:\uD83D[\uDC68\uDC69])|\uD83D[\uDC68\uDC69])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFF\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD]))|\uD83D\uDC69\u200D\uD83D\uDC69\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67]))|(?:\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)(?:\uD83C[\uDFFB-\uDFFD])|\uD83D\uDC69\u200D\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC69\u200D\uD83D\uDC69\u200D(?:\uD83D[\uDC66\uDC67])|(?:\uD83D\uDC41\uFE0F\u200D\uD83D\uDDE8|\uD83D\uDC69(?:\uD83C\uDFFF\u200D[\u2695\u2696\u2708]|\uD83C\uDFFE\u200D[\u2695\u2696\u2708]|\uD83C\uDFFC\u200D[\u2695\u2696\u2708]|\uD83C\uDFFB\u200D[\u2695\u2696\u2708]|\uD83C\uDFFD\u200D[\u2695\u2696\u2708]|\u200D[\u2695\u2696\u2708])|(?:(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)\uFE0F|\uD83D\uDC6F|\uD83E[\uDD3C\uDDDE\uDDDF])\u200D[\u2640\u2642]|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642]|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDB8\uDDB9\uDDCD-\uDDCF\uDDD6-\uDDDD])(?:(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642]|\u200D[\u2640\u2642])|\uD83C\uDFF4\u200D\u2620)\uFE0F|\uD83D\uDC69\u200D\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|\uD83C\uDFF3\uFE0F\u200D\uD83C\uDF08|\uD83D\uDC15\u200D\uD83E\uDDBA|\uD83D\uDC69\u200D\uD83D\uDC66|\uD83D\uDC69\u200D\uD83D\uDC67|\uD83C\uDDFD\uD83C\uDDF0|\uD83C\uDDF4\uD83C\uDDF2|\uD83C\uDDF6\uD83C\uDDE6|[#\*0-9]\uFE0F\u20E3|\uD83C\uDDE7(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEF\uDDF1-\uDDF4\uDDF6-\uDDF9\uDDFB\uDDFC\uDDFE\uDDFF])|\uD83C\uDDF9(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDED\uDDEF-\uDDF4\uDDF7\uDDF9\uDDFB\uDDFC\uDDFF])|\uD83C\uDDEA(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDED\uDDF7-\uDDFA])|\uD83E\uDDD1(?:\uD83C[\uDFFB-\uDFFF])|\uD83C\uDDF7(?:\uD83C[\uDDEA\uDDF4\uDDF8\uDDFA\uDDFC])|\uD83D\uDC69(?:\uD83C[\uDFFB-\uDFFF])|\uD83C\uDDF2(?:\uD83C[\uDDE6\uDDE8-\uDDED\uDDF0-\uDDFF])|\uD83C\uDDE6(?:\uD83C[\uDDE8-\uDDEC\uDDEE\uDDF1\uDDF2\uDDF4\uDDF6-\uDDFA\uDDFC\uDDFD\uDDFF])|\uD83C\uDDF0(?:\uD83C[\uDDEA\uDDEC-\uDDEE\uDDF2\uDDF3\uDDF5\uDDF7\uDDFC\uDDFE\uDDFF])|\uD83C\uDDED(?:\uD83C[\uDDF0\uDDF2\uDDF3\uDDF7\uDDF9\uDDFA])|\uD83C\uDDE9(?:\uD83C[\uDDEA\uDDEC\uDDEF\uDDF0\uDDF2\uDDF4\uDDFF])|\uD83C\uDDFE(?:\uD83C[\uDDEA\uDDF9])|\uD83C\uDDEC(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEE\uDDF1-\uDDF3\uDDF5-\uDDFA\uDDFC\uDDFE])|\uD83C\uDDF8(?:\uD83C[\uDDE6-\uDDEA\uDDEC-\uDDF4\uDDF7-\uDDF9\uDDFB\uDDFD-\uDDFF])|\uD83C\uDDEB(?:\uD83C[\uDDEE-\uDDF0\uDDF2\uDDF4\uDDF7])|\uD83C\uDDF5(?:\uD83C[\uDDE6\uDDEA-\uDDED\uDDF0-\uDDF3\uDDF7-\uDDF9\uDDFC\uDDFE])|\uD83C\uDDFB(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDEE\uDDF3\uDDFA])|\uD83C\uDDF3(?:\uD83C[\uDDE6\uDDE8\uDDEA-\uDDEC\uDDEE\uDDF1\uDDF4\uDDF5\uDDF7\uDDFA\uDDFF])|\uD83C\uDDE8(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDEE\uDDF0-\uDDF5\uDDF7\uDDFA-\uDDFF])|\uD83C\uDDF1(?:\uD83C[\uDDE6-\uDDE8\uDDEE\uDDF0\uDDF7-\uDDFB\uDDFE])|\uD83C\uDDFF(?:\uD83C[\uDDE6\uDDF2\uDDFC])|\uD83C\uDDFC(?:\uD83C[\uDDEB\uDDF8])|\uD83C\uDDFA(?:\uD83C[\uDDE6\uDDEC\uDDF2\uDDF3\uDDF8\uDDFE\uDDFF])|\uD83C\uDDEE(?:\uD83C[\uDDE8-\uDDEA\uDDF1-\uDDF4\uDDF6-\uDDF9])|\uD83C\uDDEF(?:\uD83C[\uDDEA\uDDF2\uDDF4\uDDF5])|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDB8\uDDB9\uDDCD-\uDDCF\uDDD6-\uDDDD])(?:\uD83C[\uDFFB-\uDFFF])|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u261D\u270A-\u270D]|\uD83C[\uDF85\uDFC2\uDFC7]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66\uDC67\uDC6B-\uDC6D\uDC70\uDC72\uDC74-\uDC76\uDC78\uDC7C\uDC83\uDC85\uDCAA\uDD74\uDD7A\uDD90\uDD95\uDD96\uDE4C\uDE4F\uDEC0\uDECC]|\uD83E[\uDD0F\uDD18-\uDD1C\uDD1E\uDD1F\uDD30-\uDD36\uDDB5\uDDB6\uDDBB\uDDD2-\uDDD5])(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u231A\u231B\u23E9-\u23EC\u23F0\u23F3\u25FD\u25FE\u2614\u2615\u2648-\u2653\u267F\u2693\u26A1\u26AA\u26AB\u26BD\u26BE\u26C4\u26C5\u26CE\u26D4\u26EA\u26F2\u26F3\u26F5\u26FA\u26FD\u2705\u270A\u270B\u2728\u274C\u274E\u2753-\u2755\u2757\u2795-\u2797\u27B0\u27BF\u2B1B\u2B1C\u2B50\u2B55]|\uD83C[\uDC04\uDCCF\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE1A\uDE2F\uDE32-\uDE36\uDE38-\uDE3A\uDE50\uDE51\uDF00-\uDF20\uDF2D-\uDF35\uDF37-\uDF7C\uDF7E-\uDF93\uDFA0-\uDFCA\uDFCF-\uDFD3\uDFE0-\uDFF0\uDFF4\uDFF8-\uDFFF]|\uD83D[\uDC00-\uDC3E\uDC40\uDC42-\uDCFC\uDCFF-\uDD3D\uDD4B-\uDD4E\uDD50-\uDD67\uDD7A\uDD95\uDD96\uDDA4\uDDFB-\uDE4F\uDE80-\uDEC5\uDECC\uDED0-\uDED2\uDED5\uDEEB\uDEEC\uDEF4-\uDEFA\uDFE0-\uDFEB]|\uD83E[\uDD0D-\uDD3A\uDD3C-\uDD45\uDD47-\uDD71\uDD73-\uDD76\uDD7A-\uDDA2\uDDA5-\uDDAA\uDDAE-\uDDCA\uDDCD-\uDDFF\uDE70-\uDE73\uDE78-\uDE7A\uDE80-\uDE82\uDE90-\uDE95])|(?:[#\*0-9\xA9\xAE\u203C\u2049\u2122\u2139\u2194-\u2199\u21A9\u21AA\u231A\u231B\u2328\u23CF\u23E9-\u23F3\u23F8-\u23FA\u24C2\u25AA\u25AB\u25B6\u25C0\u25FB-\u25FE\u2600-\u2604\u260E\u2611\u2614\u2615\u2618\u261D\u2620\u2622\u2623\u2626\u262A\u262E\u262F\u2638-\u263A\u2640\u2642\u2648-\u2653\u265F\u2660\u2663\u2665\u2666\u2668\u267B\u267E\u267F\u2692-\u2697\u2699\u269B\u269C\u26A0\u26A1\u26AA\u26AB\u26B0\u26B1\u26BD\u26BE\u26C4\u26C5\u26C8\u26CE\u26CF\u26D1\u26D3\u26D4\u26E9\u26EA\u26F0-\u26F5\u26F7-\u26FA\u26FD\u2702\u2705\u2708-\u270D\u270F\u2712\u2714\u2716\u271D\u2721\u2728\u2733\u2734\u2744\u2747\u274C\u274E\u2753-\u2755\u2757\u2763\u2764\u2795-\u2797\u27A1\u27B0\u27BF\u2934\u2935\u2B05-\u2B07\u2B1B\u2B1C\u2B50\u2B55\u3030\u303D\u3297\u3299]|\uD83C[\uDC04\uDCCF\uDD70\uDD71\uDD7E\uDD7F\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE02\uDE1A\uDE2F\uDE32-\uDE3A\uDE50\uDE51\uDF00-\uDF21\uDF24-\uDF93\uDF96\uDF97\uDF99-\uDF9B\uDF9E-\uDFF0\uDFF3-\uDFF5\uDFF7-\uDFFF]|\uD83D[\uDC00-\uDCFD\uDCFF-\uDD3D\uDD49-\uDD4E\uDD50-\uDD67\uDD6F\uDD70\uDD73-\uDD7A\uDD87\uDD8A-\uDD8D\uDD90\uDD95\uDD96\uDDA4\uDDA5\uDDA8\uDDB1\uDDB2\uDDBC\uDDC2-\uDDC4\uDDD1-\uDDD3\uDDDC-\uDDDE\uDDE1\uDDE3\uDDE8\uDDEF\uDDF3\uDDFA-\uDE4F\uDE80-\uDEC5\uDECB-\uDED2\uDED5\uDEE0-\uDEE5\uDEE9\uDEEB\uDEEC\uDEF0\uDEF3-\uDEFA\uDFE0-\uDFEB]|\uD83E[\uDD0D-\uDD3A\uDD3C-\uDD45\uDD47-\uDD71\uDD73-\uDD76\uDD7A-\uDDA2\uDDA5-\uDDAA\uDDAE-\uDDCA\uDDCD-\uDDFF\uDE70-\uDE73\uDE78-\uDE7A\uDE80-\uDE82\uDE90-\uDE95])\uFE0F|(?:[\u261D\u26F9\u270A-\u270D]|\uD83C[\uDF85\uDFC2-\uDFC4\uDFC7\uDFCA-\uDFCC]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66-\uDC78\uDC7C\uDC81-\uDC83\uDC85-\uDC87\uDC8F\uDC91\uDCAA\uDD74\uDD75\uDD7A\uDD90\uDD95\uDD96\uDE45-\uDE47\uDE4B-\uDE4F\uDEA3\uDEB4-\uDEB6\uDEC0\uDECC]|\uD83E[\uDD0F\uDD18-\uDD1F\uDD26\uDD30-\uDD39\uDD3C-\uDD3E\uDDB5\uDDB6\uDDB8\uDDB9\uDDBB\uDDCD-\uDDCF\uDDD1-\uDDDD])/g;
-};
-
+module.exports = JSON.parse('{"$schema":"http://json-schema.org/draft-07/schema#","$id":"https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#","description":"Meta-schema for $data reference (JSON Schema extension proposal)","type":"object","required":["$data"],"properties":{"$data":{"type":"string","anyOf":[{"format":"relative-json-pointer"},{"format":"json-pointer"}]}},"additionalProperties":false}');
 
 /***/ }),
 
-/***/ 2843:
+/***/ 38:
 /***/ ((module) => {
 
 "use strict";
-/* eslint-disable yoda */
-
-
-const isFullwidthCodePoint = codePoint => {
-	if (Number.isNaN(codePoint)) {
-		return false;
-	}
-
-	// Code points are derived from:
-	// http://www.unix.org/Public/UNIDATA/EastAsianWidth.txt
-	if (
-		codePoint >= 0x1100 && (
-			codePoint <= 0x115F || // Hangul Jamo
-			codePoint === 0x2329 || // LEFT-POINTING ANGLE BRACKET
-			codePoint === 0x232A || // RIGHT-POINTING ANGLE BRACKET
-			// CJK Radicals Supplement .. Enclosed CJK Letters and Months
-			(0x2E80 <= codePoint && codePoint <= 0x3247 && codePoint !== 0x303F) ||
-			// Enclosed CJK Letters and Months .. CJK Unified Ideographs Extension A
-			(0x3250 <= codePoint && codePoint <= 0x4DBF) ||
-			// CJK Unified Ideographs .. Yi Radicals
-			(0x4E00 <= codePoint && codePoint <= 0xA4C6) ||
-			// Hangul Jamo Extended-A
-			(0xA960 <= codePoint && codePoint <= 0xA97C) ||
-			// Hangul Syllables
-			(0xAC00 <= codePoint && codePoint <= 0xD7A3) ||
-			// CJK Compatibility Ideographs
-			(0xF900 <= codePoint && codePoint <= 0xFAFF) ||
-			// Vertical Forms
-			(0xFE10 <= codePoint && codePoint <= 0xFE19) ||
-			// CJK Compatibility Forms .. Small Form Variants
-			(0xFE30 <= codePoint && codePoint <= 0xFE6B) ||
-			// Halfwidth and Fullwidth Forms
-			(0xFF01 <= codePoint && codePoint <= 0xFF60) ||
-			(0xFFE0 <= codePoint && codePoint <= 0xFFE6) ||
-			// Kana Supplement
-			(0x1B000 <= codePoint && codePoint <= 0x1B001) ||
-			// Enclosed Ideographic Supplement
-			(0x1F200 <= codePoint && codePoint <= 0x1F251) ||
-			// CJK Unified Ideographs Extension B .. Tertiary Ideographic Plane
-			(0x20000 <= codePoint && codePoint <= 0x3FFFD)
-		)
-	) {
-		return true;
-	}
-
-	return false;
-};
-
-module.exports = isFullwidthCodePoint;
-module.exports.default = isFullwidthCodePoint;
-
+module.exports = JSON.parse('{"$schema":"http://json-schema.org/draft-07/schema#","$id":"http://json-schema.org/draft-07/schema#","title":"Core schema meta-schema","definitions":{"schemaArray":{"type":"array","minItems":1,"items":{"$ref":"#"}},"nonNegativeInteger":{"type":"integer","minimum":0},"nonNegativeIntegerDefault0":{"allOf":[{"$ref":"#/definitions/nonNegativeInteger"},{"default":0}]},"simpleTypes":{"enum":["array","boolean","integer","null","number","object","string"]},"stringArray":{"type":"array","items":{"type":"string"},"uniqueItems":true,"default":[]}},"type":["object","boolean"],"properties":{"$id":{"type":"string","format":"uri-reference"},"$schema":{"type":"string","format":"uri"},"$ref":{"type":"string","format":"uri-reference"},"$comment":{"type":"string"},"title":{"type":"string"},"description":{"type":"string"},"default":true,"readOnly":{"type":"boolean","default":false},"examples":{"type":"array","items":true},"multipleOf":{"type":"number","exclusiveMinimum":0},"maximum":{"type":"number"},"exclusiveMaximum":{"type":"number"},"minimum":{"type":"number"},"exclusiveMinimum":{"type":"number"},"maxLength":{"$ref":"#/definitions/nonNegativeInteger"},"minLength":{"$ref":"#/definitions/nonNegativeIntegerDefault0"},"pattern":{"type":"string","format":"regex"},"additionalItems":{"$ref":"#"},"items":{"anyOf":[{"$ref":"#"},{"$ref":"#/definitions/schemaArray"}],"default":true},"maxItems":{"$ref":"#/definitions/nonNegativeInteger"},"minItems":{"$ref":"#/definitions/nonNegativeIntegerDefault0"},"uniqueItems":{"type":"boolean","default":false},"contains":{"$ref":"#"},"maxProperties":{"$ref":"#/definitions/nonNegativeInteger"},"minProperties":{"$ref":"#/definitions/nonNegativeIntegerDefault0"},"required":{"$ref":"#/definitions/stringArray"},"additionalProperties":{"$ref":"#"},"definitions":{"type":"object","additionalProperties":{"$ref":"#"},"default":{}},"properties":{"type":"object","additionalProperties":{"$ref":"#"},"default":{}},"patternProperties":{"type":"object","additionalProperties":{"$ref":"#"},"propertyNames":{"format":"regex"},"default":{}},"dependencies":{"type":"object","additionalProperties":{"anyOf":[{"$ref":"#"},{"$ref":"#/definitions/stringArray"}]}},"propertyNames":{"$ref":"#"},"const":true,"enum":{"type":"array","items":true,"minItems":1,"uniqueItems":true},"type":{"anyOf":[{"$ref":"#/definitions/simpleTypes"},{"type":"array","items":{"$ref":"#/definitions/simpleTypes"},"minItems":1,"uniqueItems":true}]},"format":{"type":"string"},"contentMediaType":{"type":"string"},"contentEncoding":{"type":"string"},"if":{"$ref":"#"},"then":{"$ref":"#"},"else":{"$ref":"#"},"allOf":{"$ref":"#/definitions/schemaArray"},"anyOf":{"$ref":"#/definitions/schemaArray"},"oneOf":{"$ref":"#/definitions/schemaArray"},"not":{"$ref":"#"}},"default":true}');
 
 /***/ }),
 
-/***/ 3808:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ 2357:
+/***/ ((module) => {
 
 "use strict";
-
-const stripAnsi = __webpack_require__(5591);
-const isFullwidthCodePoint = __webpack_require__(2843);
-const emojiRegex = __webpack_require__(6324);
-
-const stringWidth = string => {
-	string = string.replace(emojiRegex(), '  ');
-
-	if (typeof string !== 'string' || string.length === 0) {
-		return 0;
-	}
-
-	string = stripAnsi(string);
-
-	let width = 0;
-
-	for (let i = 0; i < string.length; i++) {
-		const code = string.codePointAt(i);
-
-		// Ignore control characters
-		if (code <= 0x1F || (code >= 0x7F && code <= 0x9F)) {
-			continue;
-		}
-
-		// Ignore combining characters
-		if (code >= 0x300 && code <= 0x36F) {
-			continue;
-		}
-
-		// Surrogates
-		if (code > 0xFFFF) {
-			i++;
-		}
-
-		width += isFullwidthCodePoint(code) ? 2 : 1;
-	}
-
-	return width;
-};
-
-module.exports = stringWidth;
-// TODO: remove this in the next major version
-module.exports.default = stringWidth;
-
+module.exports = require("assert");;
 
 /***/ }),
 
-/***/ 3370:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ 8614:
+/***/ ((module) => {
 
 "use strict";
-
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-//
-// Copyright (c) 2011-2020 ETH Zurich.
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const yargs = __importStar(__webpack_require__(4139));
-const check_1 = __webpack_require__(6409);
-// entry point for the binary version, e.g. when locally running it using `npx`
-// turn no-console es-lint errors off for this file:
-/* eslint no-console: 0 */
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const argv = yargs
-                .usage('Usage: $0 <command> [options]')
-                .command('check', 'Check license headers', function (y) {
-                return y.option('strict', {
-                    description: 'Specifies whether files not covered by the configuration should be treated as errors',
-                    type: 'boolean',
-                    default: false
-                });
-            })
-                .example('$0 check --config config.js', 'Check license headers using configuration stored in config.js')
-                .command('update', 'Update license headers. Currently, only updating "%year%" to the current year is supported')
-                // at least one command is required
-                .demand(1, 'Please specify one of the commands!')
-                .strict()
-                // both command use the following two options:
-                .option('c', {
-                alias: 'config',
-                type: 'string',
-                demand: 'Please specify path to config file',
-                nargs: 1,
-                describe: 'Path to JSON config file',
-                global: true
-            })
-                .option('path', {
-                description: 'Path to working directory',
-                type: 'string',
-                default: process.cwd(),
-                global: true
-            })
-                .help('h')
-                .alias('h', 'help').argv;
-            const path = argv.path;
-            const configPath = argv.c;
-            if (argv._.length === 1 && argv._[0] === 'check') {
-                const strictMode = argv.strict;
-                return check(path, configPath, strictMode);
-            }
-            else {
-                console.error(`unknown command specified, has to be 'check'`);
-                process.exit(1);
-            }
-        }
-        catch (error) {
-            console.error(error.message);
-            process.exit(1);
-        }
-    });
-}
-function check(path, configPath, strictMode) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const results = yield check_1.checkLicenses(path, configPath);
-        const errors = check_1.filterFailures(results);
-        const missedFiles = yield check_1.getUncoveredFiles(path, configPath);
-        // emit a warning for all missed files:
-        for (const missedFile of missedFiles) {
-            console.warn(`Config does not cover the file '${missedFile}'`);
-        }
-        // emit an error for all erroneous files:
-        for (const error of errors) {
-            console.error(error.message);
-        }
-        if (strictMode) {
-            console.error(`${errors.length} error(s) and ${missedFiles.length} warning(s) found. Warnings are treated as errors.`);
-            process.exit(1);
-        }
-        else if (errors.length !== 0) {
-            console.error(`${errors.length} error(s) found`);
-            process.exit(1);
-        }
-        else {
-            console.info(`${errors.length} error(s) and ${missedFiles.length} warning(s) found.`);
-            process.exit(0);
-        }
-    });
-}
-run();
-
+module.exports = require("events");;
 
 /***/ }),
 
-/***/ 6409:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ 5747:
+/***/ ((module) => {
 
 "use strict";
-
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-//
-// Copyright (c) 2011-2020 ETH Zurich.
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CheckFailure = exports.CheckSuccess = exports.filterFailures = exports.getUncoveredFilesWithConfig = exports.getUncoveredFiles = exports.checkLicensesWithConfig = exports.checkLicenses = void 0;
-const fs = __importStar(__webpack_require__(5747));
-const path = __importStar(__webpack_require__(5622));
-const parse_1 = __webpack_require__(6089);
-const find_1 = __webpack_require__(3288);
-const CURRENT_YEAR_IDENTIFIER = '%year%';
-function checkLicenses(cwd, configPath) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const config = yield getConfig(configPath);
-        return checkLicensesWithConfig(cwd, config);
-    });
-}
-exports.checkLicenses = checkLicenses;
-function getConfig(configPath) {
-    const configString = fs.readFileSync(configPath, 'utf8');
-    return parse_1.parseConfig(configString);
-}
-function checkLicensesWithConfig(cwd, config) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const results = yield Promise.all(config.map(c => checkLicense(cwd, c)));
-        return flatten(results);
-    });
-}
-exports.checkLicensesWithConfig = checkLicensesWithConfig;
-function getUncoveredFiles(cwd, configPath) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const config = yield getConfig(configPath);
-        return getUncoveredFilesWithConfig(cwd, config);
-    });
-}
-exports.getUncoveredFiles = getUncoveredFiles;
-function getUncoveredFilesWithConfig(cwd, config) {
-    return __awaiter(this, void 0, void 0, function* () {
-        // get all files:
-        const allFiles = new Set(yield find_1.findFiles(cwd, ['**'], []));
-        // get files covered by config:
-        const converedFilesResults = yield Promise.all(config.map(c => getFiles(cwd, c)));
-        const coveredFiles = new Set(flatten(converedFilesResults));
-        const remainingFiles = setminus(allFiles, coveredFiles);
-        return [...remainingFiles];
-    });
-}
-exports.getUncoveredFilesWithConfig = getUncoveredFilesWithConfig;
-function filterFailures(results) {
-    return results.filter(r => !r.success).map(f => f);
-}
-exports.filterFailures = filterFailures;
-function setminus(set1, set2) {
-    const copy = new Set(set1);
-    for (const elem of set2) {
-        copy.delete(elem);
-    }
-    return copy;
-}
-function checkLicense(cwd, licenseConfig) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (!licenseConfig.license) {
-            // no license provided
-            return [];
-        }
-        let licensePath;
-        if (path.isAbsolute(licenseConfig.license)) {
-            licensePath = licenseConfig.license;
-        }
-        else {
-            licensePath = path.join(cwd, licenseConfig.license);
-        }
-        const errorMessageGenerator = (file) => `'${file}' does not contain license from '${licensePath}'`;
-        const licenseString = fs.readFileSync(licensePath, 'utf8');
-        const licenseRegex = convertHeaderToRegex(licenseString);
-        const files = yield getFiles(cwd, licenseConfig);
-        return yield Promise.all(files.map(f => contains(f, licenseRegex, errorMessageGenerator)));
-    });
-}
-function getFiles(cwd, licenseConfig) {
-    const excludePatterns = licenseConfig.exclude || [];
-    return find_1.findFiles(cwd, licenseConfig.include, excludePatterns);
-}
-function convertHeaderToRegex(header) {
-    let modifiedHeader = header;
-    // escape characters that have a special meaning in a regex
-    // taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
-    modifiedHeader = modifiedHeader.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-    // replace sequences of the following form to the corresponding regex
-    // "%regexp:\d{x}%" is escaped "%regexp:\\d\{x\}%" where x is a number digits
-    // the corresponding regex to find this escaped sequence is "%regexp:\\\\d\\{(\d+)\\}%"
-    // this character sequence should be replaced by "\d{x}"
-    modifiedHeader = modifiedHeader.replace(/%regexp:\\\\d\\{(\d+)\\}%/g, '\\d{$1}');
-    // replace "%year%" by a regex that matches 4 digits:
-    modifiedHeader = modifiedHeader.replace(CURRENT_YEAR_IDENTIFIER, '\\d{4}');
-    return new RegExp(modifiedHeader);
-}
-function contains(file, regex, errorMessageGenerator) {
-    return new Promise((resolve, reject) => {
-        fs.readFile(file, 'utf8', (err, data) => {
-            if (err == null) {
-                // check whether data contains a match:
-                if (regex.test(data)) {
-                    resolve(new CheckSuccess(file));
-                }
-                else {
-                    resolve(new CheckFailure(file, errorMessageGenerator(file)));
-                }
-            }
-            else {
-                reject(new Error(`Error while reading file '${file}': '${err.message}'`));
-            }
-        });
-    });
-}
-function flatten(matrix) {
-    const res = [];
-    for (const elem of matrix) {
-        res.push(...elem);
-    }
-    return res;
-}
-class CheckSuccess {
-    constructor(filePath) {
-        this.path = filePath;
-    }
-    get success() {
-        return true;
-    }
-    get filePath() {
-        return this.path;
-    }
-}
-exports.CheckSuccess = CheckSuccess;
-class CheckFailure {
-    constructor(filePath, msg) {
-        this.path = filePath;
-        this.msg = msg;
-    }
-    get success() {
-        return false;
-    }
-    get filePath() {
-        return this.path;
-    }
-    get message() {
-        return this.msg;
-    }
-}
-exports.CheckFailure = CheckFailure;
-
+module.exports = require("fs");;
 
 /***/ }),
 
-/***/ 3288:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ 5622:
+/***/ ((module) => {
 
 "use strict";
-
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-//
-// Copyright (c) 2011-2020 ETH Zurich.
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.findFiles = void 0;
-const path = __importStar(__webpack_require__(5622));
-const glob_1 = __webpack_require__(1957);
-function findFiles(cwd, includePatterns, excludePatterns) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let includePattern;
-        if (includePatterns.length === 0) {
-            return Promise.resolve([]);
-        }
-        else if (includePatterns.length === 1) {
-            includePattern = includePatterns[0];
-        }
-        else {
-            includePattern = `{${includePatterns.join(',')}}`;
-        }
-        const options = {
-            ignore: excludePatterns,
-            cwd,
-            nodir: true // only return files (no directories)
-        };
-        const files = yield new Promise((resolve, reject) => {
-            glob_1.glob(includePattern, options, (err, matches) => {
-                if (err == null) {
-                    resolve(matches);
-                }
-                else {
-                    reject(new Error(`scanning files has failed with error '${err.message}'`));
-                }
-            });
-        });
-        // files are relative to cwd, hence join them:
-        return files.map(f => path.join(cwd, f));
-    });
-}
-exports.findFiles = findFiles;
-/*
-async function getFilesRecursively(path: string): Promise<string[]> {
-    const dirContent = await readdir(path);
-    const stats = await Promise.all(dirContent.map(stat));
-    const dirs = stats.filter(stat => stat.isDir);
-    const files = stats.filter(stat => stat.isFile)
-        .map(stat => stat.path);
-
-    const recursiveFiles = await Promise.all(dirs.map(dir => getFilesRecursively(dir.path)))
-        .then(flatten);
-    return files.concat(recursiveFiles);
-}
-
-function readdir(path: string): Promise<string[]> {
-    return new Promise((resolve, reject) => {
-        fs.readdir(path, (err, files) => {
-            if (err == null) {
-                resolve(files);
-            } else {
-                reject(new Error(`reading directory ${path} failed with error ${err.message}`));
-            }
-        });
-    })
-}
-
-function stat(path: string): Promise<Status> {
-    return new Promise((resolve, reject) => {
-        fs.stat(path, (err, stats) => {
-            if (err == null) {
-                resolve({path: path, isDir: stats.isDirectory(), isFile: stats.isFile()});
-            } else {
-                reject(new Error(`getting file status for ${path} failed with error ${err.message}`));
-            }
-        })
-    })
-}
-
-interface Status {
-    path: string;
-    isDir: boolean;
-    isFile: boolean;
-}
-
-function flatten<T>(matrix: T[][]): T[] {
-
-}
-*/
-
+module.exports = require("path");;
 
 /***/ }),
 
-/***/ 6089:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ 1669:
+/***/ ((module) => {
 
 "use strict";
+module.exports = require("util");;
 
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-//
-// Copyright (c) 2011-2020 ETH Zurich.
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseConfig = void 0;
-const ajv_1 = __importDefault(__webpack_require__(4941));
-function parseConfig(text) {
-    const ajv = new ajv_1.default();
-    const validate = ajv.compile({
-        type: 'array',
-        items: {
-            type: 'object',
-            required: ['include'],
-            properties: {
-                include: {
-                    type: 'array',
-                    items: {
-                        type: 'string'
-                    }
-                },
-                exclude: {
-                    type: 'array',
-                    items: {
-                        type: 'string'
-                    }
-                },
-                license: {
-                    type: 'string'
-                }
-            }
-        }
-    });
-    let data;
-    try {
-        data = JSON.parse(text);
-    }
-    catch (_a) {
-        return Promise.reject(new Error(`Parsing configuration has failed`));
-    }
-    if (!validate(data)) {
-        return Promise.reject(new Error(`Configuration validation has failed: '${ajv.errorsText(validate.errors)}'`));
-    }
-    return Promise.resolve(data);
-}
-exports.parseConfig = parseConfig;
+/***/ })
 
-
-/***/ }),
-
-/***/ 6702:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __nccwpck_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		var threw = true;
+/******/ 		try {
+/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
+/******/ 			threw = false;
+/******/ 		} finally {
+/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
+/******/ 		}
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__nccwpck_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__nccwpck_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__nccwpck_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__nccwpck_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/compat */
+/******/ 	
+/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
 "use strict";
+// ESM COMPAT FLAG
+__nccwpck_require__.r(__webpack_exports__);
 
+// NAMESPACE OBJECT: ./node_modules/yargs/index.mjs
+var yargs_namespaceObject = {};
+__nccwpck_require__.r(yargs_namespaceObject);
+
+// EXTERNAL MODULE: external "assert"
+var external_assert_ = __nccwpck_require__(2357);
+;// CONCATENATED MODULE: ./node_modules/cliui/build/lib/index.js
 
 const align = {
     right: alignRight,
     center: alignCenter
 };
-const top = 0;
+const lib_top = 0;
 const right = 1;
 const bottom = 2;
 const left = 3;
 class UI {
     constructor(opts) {
+        var _a;
         this.width = opts.width;
-        this.wrap = opts.wrap;
+        this.wrap = (_a = opts.wrap) !== null && _a !== void 0 ? _a : true;
         this.rows = [];
     }
     span(...args) {
@@ -13459,7 +10953,7 @@ class UI {
             }
             // add top and bottom padding.
             if (col.padding) {
-                wrapped.unshift(...new Array(col.padding[top] || 0).fill(''));
+                wrapped.unshift(...new Array(col.padding[lib_top] || 0).fill(''));
                 wrapped.push(...new Array(col.padding[bottom] || 0).fill(''));
             }
             wrapped.forEach((str, r) => {
@@ -13561,41 +11055,1321 @@ function alignCenter(str, width) {
     return ' '.repeat((width - strWidth) >> 1) + str;
 }
 let mixin;
-function cliui(opts = {}, _mixin) {
+function cliui(opts, _mixin) {
     mixin = _mixin;
     return new UI({
-        width: opts.width || getWindowWidth(),
-        wrap: opts.wrap !== false
+        width: (opts === null || opts === void 0 ? void 0 : opts.width) || getWindowWidth(),
+        wrap: opts === null || opts === void 0 ? void 0 : opts.wrap
     });
 }
 
+;// CONCATENATED MODULE: ./node_modules/cliui/build/lib/string-utils.js
+// Minimal replacement for ansi string helpers "wrap-ansi" and "strip-ansi".
+// to facilitate ESM and Deno modules.
+// TODO: look at porting https://www.npmjs.com/package/wrap-ansi to ESM.
+// The npm application
+// Copyright (c) npm, Inc. and Contributors
+// Licensed on the terms of The Artistic License 2.0
+// See: https://github.com/npm/cli/blob/4c65cd952bc8627811735bea76b9b110cc4fc80e/lib/utils/ansi-trim.js
+const ansi = new RegExp('\x1b(?:\\[(?:\\d+[ABCDEFGJKSTm]|\\d+;\\d+[Hfm]|' +
+    '\\d+;\\d+;\\d+m|6n|s|u|\\?25[lh])|\\w)', 'g');
+function stripAnsi(str) {
+    return str.replace(ansi, '');
+}
+function wrap(str, width) {
+    const [start, end] = str.match(ansi) || ['', ''];
+    str = stripAnsi(str);
+    let wrapped = '';
+    for (let i = 0; i < str.length; i++) {
+        if (i !== 0 && (i % width) === 0) {
+            wrapped += '\n';
+        }
+        wrapped += str.charAt(i);
+    }
+    if (start && end) {
+        wrapped = `${start}${wrapped}${end}`;
+    }
+    return wrapped;
+}
+
+;// CONCATENATED MODULE: ./node_modules/cliui/index.mjs
 // Bootstrap cliui with CommonJS dependencies:
-const stringWidth = __webpack_require__(9153);
-const stripAnsi = __webpack_require__(5591);
-const wrap = __webpack_require__(9824);
-function ui(opts) {
-    return cliui(opts, {
-        stringWidth,
-        stripAnsi,
-        wrap
-    });
+
+
+
+function ui (opts) {
+  return cliui(opts, {
+    stringWidth: (str) => {
+      return [...str].length
+    },
+    stripAnsi: stripAnsi,
+    wrap: wrap
+  })
 }
 
-module.exports = ui;
+// EXTERNAL MODULE: external "path"
+var external_path_ = __nccwpck_require__(5622);
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __nccwpck_require__(5747);
+;// CONCATENATED MODULE: ./node_modules/escalade/sync/index.mjs
 
 
-/***/ }),
 
-/***/ 9087:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/* harmony default export */ function sync(start, callback) {
+	let dir = (0,external_path_.resolve)('.', start);
+	let tmp, stats = (0,external_fs_.statSync)(dir);
 
-"use strict";
+	if (!stats.isDirectory()) {
+		dir = (0,external_path_.dirname)(dir);
+	}
+
+	while (true) {
+		tmp = callback(dir, (0,external_fs_.readdirSync)(dir));
+		if (tmp) return (0,external_path_.resolve)(dir, tmp);
+		dir = (0,external_path_.dirname)(tmp = dir);
+		if (tmp === dir) break;
+	}
+}
+
+// EXTERNAL MODULE: external "util"
+var external_util_ = __nccwpck_require__(1669);
+;// CONCATENATED MODULE: external "url"
+const external_url_namespaceObject = require("url");;
+;// CONCATENATED MODULE: ./node_modules/yargs-parser/build/lib/string-utils.js
+function camelCase(str) {
+    // Handle the case where an argument is provided as camel case, e.g., fooBar.
+    // by ensuring that the string isn't already mixed case:
+    const isCamelCase = str !== str.toLowerCase() && str !== str.toUpperCase();
+    if (!isCamelCase) {
+        str = str.toLocaleLowerCase();
+    }
+    if (str.indexOf('-') === -1 && str.indexOf('_') === -1) {
+        return str;
+    }
+    else {
+        let camelcase = '';
+        let nextChrUpper = false;
+        const leadingHyphens = str.match(/^-+/);
+        for (let i = leadingHyphens ? leadingHyphens[0].length : 0; i < str.length; i++) {
+            let chr = str.charAt(i);
+            if (nextChrUpper) {
+                nextChrUpper = false;
+                chr = chr.toLocaleUpperCase();
+            }
+            if (i !== 0 && (chr === '-' || chr === '_')) {
+                nextChrUpper = true;
+            }
+            else if (chr !== '-' && chr !== '_') {
+                camelcase += chr;
+            }
+        }
+        return camelcase;
+    }
+}
+function decamelize(str, joinString) {
+    const lowercase = str.toLocaleLowerCase();
+    joinString = joinString || '-';
+    let notCamelcase = '';
+    for (let i = 0; i < str.length; i++) {
+        const chrLower = lowercase.charAt(i);
+        const chrString = str.charAt(i);
+        if (chrLower !== chrString && i > 0) {
+            notCamelcase += `${joinString}${lowercase.charAt(i)}`;
+        }
+        else {
+            notCamelcase += chrString;
+        }
+    }
+    return notCamelcase;
+}
+function looksLikeNumber(x) {
+    if (x === null || x === undefined)
+        return false;
+    // if loaded from config, may already be a number.
+    if (typeof x === 'number')
+        return true;
+    // hexadecimal.
+    if (/^0x[0-9a-f]+$/i.test(x))
+        return true;
+    // don't treat 0123 as a number; as it drops the leading '0'.
+    if (x.length > 1 && x[0] === '0')
+        return false;
+    return /^[-]?(?:\d+(?:\.\d*)?|\.\d+)(e[-+]?\d+)?$/.test(x);
+}
+
+;// CONCATENATED MODULE: ./node_modules/yargs-parser/build/lib/tokenize-arg-string.js
+// take an un-split argv string and tokenize it.
+function tokenizeArgString(argString) {
+    if (Array.isArray(argString)) {
+        return argString.map(e => typeof e !== 'string' ? e + '' : e);
+    }
+    argString = argString.trim();
+    let i = 0;
+    let prevC = null;
+    let c = null;
+    let opening = null;
+    const args = [];
+    for (let ii = 0; ii < argString.length; ii++) {
+        prevC = c;
+        c = argString.charAt(ii);
+        // split on spaces unless we're in quotes.
+        if (c === ' ' && !opening) {
+            if (!(prevC === ' ')) {
+                i++;
+            }
+            continue;
+        }
+        // don't split the string if we're in matching
+        // opening or closing single and double quotes.
+        if (c === opening) {
+            opening = null;
+        }
+        else if ((c === "'" || c === '"') && !opening) {
+            opening = c;
+        }
+        if (!args[i])
+            args[i] = '';
+        args[i] += c;
+    }
+    return args;
+}
+
+;// CONCATENATED MODULE: ./node_modules/yargs-parser/build/lib/yargs-parser.js
 
 
-var fs = __webpack_require__(5747);
-var util = __webpack_require__(1669);
-var path = __webpack_require__(5622);
+let yargs_parser_mixin;
+class YargsParser {
+    constructor(_mixin) {
+        yargs_parser_mixin = _mixin;
+    }
+    parse(argsInput, options) {
+        const opts = Object.assign({
+            alias: undefined,
+            array: undefined,
+            boolean: undefined,
+            config: undefined,
+            configObjects: undefined,
+            configuration: undefined,
+            coerce: undefined,
+            count: undefined,
+            default: undefined,
+            envPrefix: undefined,
+            narg: undefined,
+            normalize: undefined,
+            string: undefined,
+            number: undefined,
+            __: undefined,
+            key: undefined
+        }, options);
+        // allow a string argument to be passed in rather
+        // than an argv array.
+        const args = tokenizeArgString(argsInput);
+        // aliases might have transitive relationships, normalize this.
+        const aliases = combineAliases(Object.assign(Object.create(null), opts.alias));
+        const configuration = Object.assign({
+            'boolean-negation': true,
+            'camel-case-expansion': true,
+            'combine-arrays': false,
+            'dot-notation': true,
+            'duplicate-arguments-array': true,
+            'flatten-duplicate-arrays': true,
+            'greedy-arrays': true,
+            'halt-at-non-option': false,
+            'nargs-eats-options': false,
+            'negation-prefix': 'no-',
+            'parse-numbers': true,
+            'parse-positional-numbers': true,
+            'populate--': false,
+            'set-placeholder-key': false,
+            'short-option-groups': true,
+            'strip-aliased': false,
+            'strip-dashed': false,
+            'unknown-options-as-args': false
+        }, opts.configuration);
+        const defaults = Object.assign(Object.create(null), opts.default);
+        const configObjects = opts.configObjects || [];
+        const envPrefix = opts.envPrefix;
+        const notFlagsOption = configuration['populate--'];
+        const notFlagsArgv = notFlagsOption ? '--' : '_';
+        const newAliases = Object.create(null);
+        const defaulted = Object.create(null);
+        // allow a i18n handler to be passed in, default to a fake one (util.format).
+        const __ = opts.__ || yargs_parser_mixin.format;
+        const flags = {
+            aliases: Object.create(null),
+            arrays: Object.create(null),
+            bools: Object.create(null),
+            strings: Object.create(null),
+            numbers: Object.create(null),
+            counts: Object.create(null),
+            normalize: Object.create(null),
+            configs: Object.create(null),
+            nargs: Object.create(null),
+            coercions: Object.create(null),
+            keys: []
+        };
+        const negative = /^-([0-9]+(\.[0-9]+)?|\.[0-9]+)$/;
+        const negatedBoolean = new RegExp('^--' + configuration['negation-prefix'] + '(.+)');
+        [].concat(opts.array || []).filter(Boolean).forEach(function (opt) {
+            const key = typeof opt === 'object' ? opt.key : opt;
+            // assign to flags[bools|strings|numbers]
+            const assignment = Object.keys(opt).map(function (key) {
+                const arrayFlagKeys = {
+                    boolean: 'bools',
+                    string: 'strings',
+                    number: 'numbers'
+                };
+                return arrayFlagKeys[key];
+            }).filter(Boolean).pop();
+            // assign key to be coerced
+            if (assignment) {
+                flags[assignment][key] = true;
+            }
+            flags.arrays[key] = true;
+            flags.keys.push(key);
+        });
+        [].concat(opts.boolean || []).filter(Boolean).forEach(function (key) {
+            flags.bools[key] = true;
+            flags.keys.push(key);
+        });
+        [].concat(opts.string || []).filter(Boolean).forEach(function (key) {
+            flags.strings[key] = true;
+            flags.keys.push(key);
+        });
+        [].concat(opts.number || []).filter(Boolean).forEach(function (key) {
+            flags.numbers[key] = true;
+            flags.keys.push(key);
+        });
+        [].concat(opts.count || []).filter(Boolean).forEach(function (key) {
+            flags.counts[key] = true;
+            flags.keys.push(key);
+        });
+        [].concat(opts.normalize || []).filter(Boolean).forEach(function (key) {
+            flags.normalize[key] = true;
+            flags.keys.push(key);
+        });
+        if (typeof opts.narg === 'object') {
+            Object.entries(opts.narg).forEach(([key, value]) => {
+                if (typeof value === 'number') {
+                    flags.nargs[key] = value;
+                    flags.keys.push(key);
+                }
+            });
+        }
+        if (typeof opts.coerce === 'object') {
+            Object.entries(opts.coerce).forEach(([key, value]) => {
+                if (typeof value === 'function') {
+                    flags.coercions[key] = value;
+                    flags.keys.push(key);
+                }
+            });
+        }
+        if (typeof opts.config !== 'undefined') {
+            if (Array.isArray(opts.config) || typeof opts.config === 'string') {
+                ;
+                [].concat(opts.config).filter(Boolean).forEach(function (key) {
+                    flags.configs[key] = true;
+                });
+            }
+            else if (typeof opts.config === 'object') {
+                Object.entries(opts.config).forEach(([key, value]) => {
+                    if (typeof value === 'boolean' || typeof value === 'function') {
+                        flags.configs[key] = value;
+                    }
+                });
+            }
+        }
+        // create a lookup table that takes into account all
+        // combinations of aliases: {f: ['foo'], foo: ['f']}
+        extendAliases(opts.key, aliases, opts.default, flags.arrays);
+        // apply default values to all aliases.
+        Object.keys(defaults).forEach(function (key) {
+            (flags.aliases[key] || []).forEach(function (alias) {
+                defaults[alias] = defaults[key];
+            });
+        });
+        let error = null;
+        checkConfiguration();
+        let notFlags = [];
+        const argv = Object.assign(Object.create(null), { _: [] });
+        // TODO(bcoe): for the first pass at removing object prototype  we didn't
+        // remove all prototypes from objects returned by this API, we might want
+        // to gradually move towards doing so.
+        const argvReturn = {};
+        for (let i = 0; i < args.length; i++) {
+            const arg = args[i];
+            let broken;
+            let key;
+            let letters;
+            let m;
+            let next;
+            let value;
+            // any unknown option (except for end-of-options, "--")
+            if (arg !== '--' && isUnknownOptionAsArg(arg)) {
+                pushPositional(arg);
+                // ---, ---=, ----, etc,
+            }
+            else if (arg.match(/---+(=|$)/)) {
+                // options without key name are invalid.
+                pushPositional(arg);
+                continue;
+                // -- separated by =
+            }
+            else if (arg.match(/^--.+=/) || (!configuration['short-option-groups'] && arg.match(/^-.+=/))) {
+                // Using [\s\S] instead of . because js doesn't support the
+                // 'dotall' regex modifier. See:
+                // http://stackoverflow.com/a/1068308/13216
+                m = arg.match(/^--?([^=]+)=([\s\S]*)$/);
+                // arrays format = '--f=a b c'
+                if (m !== null && Array.isArray(m) && m.length >= 3) {
+                    if (checkAllAliases(m[1], flags.arrays)) {
+                        i = eatArray(i, m[1], args, m[2]);
+                    }
+                    else if (checkAllAliases(m[1], flags.nargs) !== false) {
+                        // nargs format = '--f=monkey washing cat'
+                        i = eatNargs(i, m[1], args, m[2]);
+                    }
+                    else {
+                        setArg(m[1], m[2]);
+                    }
+                }
+            }
+            else if (arg.match(negatedBoolean) && configuration['boolean-negation']) {
+                m = arg.match(negatedBoolean);
+                if (m !== null && Array.isArray(m) && m.length >= 2) {
+                    key = m[1];
+                    setArg(key, checkAllAliases(key, flags.arrays) ? [false] : false);
+                }
+                // -- separated by space.
+            }
+            else if (arg.match(/^--.+/) || (!configuration['short-option-groups'] && arg.match(/^-[^-]+/))) {
+                m = arg.match(/^--?(.+)/);
+                if (m !== null && Array.isArray(m) && m.length >= 2) {
+                    key = m[1];
+                    if (checkAllAliases(key, flags.arrays)) {
+                        // array format = '--foo a b c'
+                        i = eatArray(i, key, args);
+                    }
+                    else if (checkAllAliases(key, flags.nargs) !== false) {
+                        // nargs format = '--foo a b c'
+                        // should be truthy even if: flags.nargs[key] === 0
+                        i = eatNargs(i, key, args);
+                    }
+                    else {
+                        next = args[i + 1];
+                        if (next !== undefined && (!next.match(/^-/) ||
+                            next.match(negative)) &&
+                            !checkAllAliases(key, flags.bools) &&
+                            !checkAllAliases(key, flags.counts)) {
+                            setArg(key, next);
+                            i++;
+                        }
+                        else if (/^(true|false)$/.test(next)) {
+                            setArg(key, next);
+                            i++;
+                        }
+                        else {
+                            setArg(key, defaultValue(key));
+                        }
+                    }
+                }
+                // dot-notation flag separated by '='.
+            }
+            else if (arg.match(/^-.\..+=/)) {
+                m = arg.match(/^-([^=]+)=([\s\S]*)$/);
+                if (m !== null && Array.isArray(m) && m.length >= 3) {
+                    setArg(m[1], m[2]);
+                }
+                // dot-notation flag separated by space.
+            }
+            else if (arg.match(/^-.\..+/) && !arg.match(negative)) {
+                next = args[i + 1];
+                m = arg.match(/^-(.\..+)/);
+                if (m !== null && Array.isArray(m) && m.length >= 2) {
+                    key = m[1];
+                    if (next !== undefined && !next.match(/^-/) &&
+                        !checkAllAliases(key, flags.bools) &&
+                        !checkAllAliases(key, flags.counts)) {
+                        setArg(key, next);
+                        i++;
+                    }
+                    else {
+                        setArg(key, defaultValue(key));
+                    }
+                }
+            }
+            else if (arg.match(/^-[^-]+/) && !arg.match(negative)) {
+                letters = arg.slice(1, -1).split('');
+                broken = false;
+                for (let j = 0; j < letters.length; j++) {
+                    next = arg.slice(j + 2);
+                    if (letters[j + 1] && letters[j + 1] === '=') {
+                        value = arg.slice(j + 3);
+                        key = letters[j];
+                        if (checkAllAliases(key, flags.arrays)) {
+                            // array format = '-f=a b c'
+                            i = eatArray(i, key, args, value);
+                        }
+                        else if (checkAllAliases(key, flags.nargs) !== false) {
+                            // nargs format = '-f=monkey washing cat'
+                            i = eatNargs(i, key, args, value);
+                        }
+                        else {
+                            setArg(key, value);
+                        }
+                        broken = true;
+                        break;
+                    }
+                    if (next === '-') {
+                        setArg(letters[j], next);
+                        continue;
+                    }
+                    // current letter is an alphabetic character and next value is a number
+                    if (/[A-Za-z]/.test(letters[j]) &&
+                        /^-?\d+(\.\d*)?(e-?\d+)?$/.test(next) &&
+                        checkAllAliases(next, flags.bools) === false) {
+                        setArg(letters[j], next);
+                        broken = true;
+                        break;
+                    }
+                    if (letters[j + 1] && letters[j + 1].match(/\W/)) {
+                        setArg(letters[j], next);
+                        broken = true;
+                        break;
+                    }
+                    else {
+                        setArg(letters[j], defaultValue(letters[j]));
+                    }
+                }
+                key = arg.slice(-1)[0];
+                if (!broken && key !== '-') {
+                    if (checkAllAliases(key, flags.arrays)) {
+                        // array format = '-f a b c'
+                        i = eatArray(i, key, args);
+                    }
+                    else if (checkAllAliases(key, flags.nargs) !== false) {
+                        // nargs format = '-f a b c'
+                        // should be truthy even if: flags.nargs[key] === 0
+                        i = eatNargs(i, key, args);
+                    }
+                    else {
+                        next = args[i + 1];
+                        if (next !== undefined && (!/^(-|--)[^-]/.test(next) ||
+                            next.match(negative)) &&
+                            !checkAllAliases(key, flags.bools) &&
+                            !checkAllAliases(key, flags.counts)) {
+                            setArg(key, next);
+                            i++;
+                        }
+                        else if (/^(true|false)$/.test(next)) {
+                            setArg(key, next);
+                            i++;
+                        }
+                        else {
+                            setArg(key, defaultValue(key));
+                        }
+                    }
+                }
+            }
+            else if (arg.match(/^-[0-9]$/) &&
+                arg.match(negative) &&
+                checkAllAliases(arg.slice(1), flags.bools)) {
+                // single-digit boolean alias, e.g: xargs -0
+                key = arg.slice(1);
+                setArg(key, defaultValue(key));
+            }
+            else if (arg === '--') {
+                notFlags = args.slice(i + 1);
+                break;
+            }
+            else if (configuration['halt-at-non-option']) {
+                notFlags = args.slice(i);
+                break;
+            }
+            else {
+                pushPositional(arg);
+            }
+        }
+        // order of precedence:
+        // 1. command line arg
+        // 2. value from env var
+        // 3. value from config file
+        // 4. value from config objects
+        // 5. configured default value
+        applyEnvVars(argv, true); // special case: check env vars that point to config file
+        applyEnvVars(argv, false);
+        setConfig(argv);
+        setConfigObjects();
+        applyDefaultsAndAliases(argv, flags.aliases, defaults, true);
+        applyCoercions(argv);
+        if (configuration['set-placeholder-key'])
+            setPlaceholderKeys(argv);
+        // for any counts either not in args or without an explicit default, set to 0
+        Object.keys(flags.counts).forEach(function (key) {
+            if (!hasKey(argv, key.split('.')))
+                setArg(key, 0);
+        });
+        // '--' defaults to undefined.
+        if (notFlagsOption && notFlags.length)
+            argv[notFlagsArgv] = [];
+        notFlags.forEach(function (key) {
+            argv[notFlagsArgv].push(key);
+        });
+        if (configuration['camel-case-expansion'] && configuration['strip-dashed']) {
+            Object.keys(argv).filter(key => key !== '--' && key.includes('-')).forEach(key => {
+                delete argv[key];
+            });
+        }
+        if (configuration['strip-aliased']) {
+            ;
+            [].concat(...Object.keys(aliases).map(k => aliases[k])).forEach(alias => {
+                if (configuration['camel-case-expansion'] && alias.includes('-')) {
+                    delete argv[alias.split('.').map(prop => camelCase(prop)).join('.')];
+                }
+                delete argv[alias];
+            });
+        }
+        // Push argument into positional array, applying numeric coercion:
+        function pushPositional(arg) {
+            const maybeCoercedNumber = maybeCoerceNumber('_', arg);
+            if (typeof maybeCoercedNumber === 'string' || typeof maybeCoercedNumber === 'number') {
+                argv._.push(maybeCoercedNumber);
+            }
+        }
+        // how many arguments should we consume, based
+        // on the nargs option?
+        function eatNargs(i, key, args, argAfterEqualSign) {
+            let ii;
+            let toEat = checkAllAliases(key, flags.nargs);
+            // NaN has a special meaning for the array type, indicating that one or
+            // more values are expected.
+            toEat = typeof toEat !== 'number' || isNaN(toEat) ? 1 : toEat;
+            if (toEat === 0) {
+                if (!isUndefined(argAfterEqualSign)) {
+                    error = Error(__('Argument unexpected for: %s', key));
+                }
+                setArg(key, defaultValue(key));
+                return i;
+            }
+            let available = isUndefined(argAfterEqualSign) ? 0 : 1;
+            if (configuration['nargs-eats-options']) {
+                // classic behavior, yargs eats positional and dash arguments.
+                if (args.length - (i + 1) + available < toEat) {
+                    error = Error(__('Not enough arguments following: %s', key));
+                }
+                available = toEat;
+            }
+            else {
+                // nargs will not consume flag arguments, e.g., -abc, --foo,
+                // and terminates when one is observed.
+                for (ii = i + 1; ii < args.length; ii++) {
+                    if (!args[ii].match(/^-[^0-9]/) || args[ii].match(negative) || isUnknownOptionAsArg(args[ii]))
+                        available++;
+                    else
+                        break;
+                }
+                if (available < toEat)
+                    error = Error(__('Not enough arguments following: %s', key));
+            }
+            let consumed = Math.min(available, toEat);
+            if (!isUndefined(argAfterEqualSign) && consumed > 0) {
+                setArg(key, argAfterEqualSign);
+                consumed--;
+            }
+            for (ii = i + 1; ii < (consumed + i + 1); ii++) {
+                setArg(key, args[ii]);
+            }
+            return (i + consumed);
+        }
+        // if an option is an array, eat all non-hyphenated arguments
+        // following it... YUM!
+        // e.g., --foo apple banana cat becomes ["apple", "banana", "cat"]
+        function eatArray(i, key, args, argAfterEqualSign) {
+            let argsToSet = [];
+            let next = argAfterEqualSign || args[i + 1];
+            // If both array and nargs are configured, enforce the nargs count:
+            const nargsCount = checkAllAliases(key, flags.nargs);
+            if (checkAllAliases(key, flags.bools) && !(/^(true|false)$/.test(next))) {
+                argsToSet.push(true);
+            }
+            else if (isUndefined(next) ||
+                (isUndefined(argAfterEqualSign) && /^-/.test(next) && !negative.test(next) && !isUnknownOptionAsArg(next))) {
+                // for keys without value ==> argsToSet remains an empty []
+                // set user default value, if available
+                if (defaults[key] !== undefined) {
+                    const defVal = defaults[key];
+                    argsToSet = Array.isArray(defVal) ? defVal : [defVal];
+                }
+            }
+            else {
+                // value in --option=value is eaten as is
+                if (!isUndefined(argAfterEqualSign)) {
+                    argsToSet.push(processValue(key, argAfterEqualSign));
+                }
+                for (let ii = i + 1; ii < args.length; ii++) {
+                    if ((!configuration['greedy-arrays'] && argsToSet.length > 0) ||
+                        (nargsCount && typeof nargsCount === 'number' && argsToSet.length >= nargsCount))
+                        break;
+                    next = args[ii];
+                    if (/^-/.test(next) && !negative.test(next) && !isUnknownOptionAsArg(next))
+                        break;
+                    i = ii;
+                    argsToSet.push(processValue(key, next));
+                }
+            }
+            // If both array and nargs are configured, create an error if less than
+            // nargs positionals were found. NaN has special meaning, indicating
+            // that at least one value is required (more are okay).
+            if (typeof nargsCount === 'number' && ((nargsCount && argsToSet.length < nargsCount) ||
+                (isNaN(nargsCount) && argsToSet.length === 0))) {
+                error = Error(__('Not enough arguments following: %s', key));
+            }
+            setArg(key, argsToSet);
+            return i;
+        }
+        function setArg(key, val) {
+            if (/-/.test(key) && configuration['camel-case-expansion']) {
+                const alias = key.split('.').map(function (prop) {
+                    return camelCase(prop);
+                }).join('.');
+                addNewAlias(key, alias);
+            }
+            const value = processValue(key, val);
+            const splitKey = key.split('.');
+            setKey(argv, splitKey, value);
+            // handle populating aliases of the full key
+            if (flags.aliases[key]) {
+                flags.aliases[key].forEach(function (x) {
+                    const keyProperties = x.split('.');
+                    setKey(argv, keyProperties, value);
+                });
+            }
+            // handle populating aliases of the first element of the dot-notation key
+            if (splitKey.length > 1 && configuration['dot-notation']) {
+                ;
+                (flags.aliases[splitKey[0]] || []).forEach(function (x) {
+                    let keyProperties = x.split('.');
+                    // expand alias with nested objects in key
+                    const a = [].concat(splitKey);
+                    a.shift(); // nuke the old key.
+                    keyProperties = keyProperties.concat(a);
+                    // populate alias only if is not already an alias of the full key
+                    // (already populated above)
+                    if (!(flags.aliases[key] || []).includes(keyProperties.join('.'))) {
+                        setKey(argv, keyProperties, value);
+                    }
+                });
+            }
+            // Set normalize getter and setter when key is in 'normalize' but isn't an array
+            if (checkAllAliases(key, flags.normalize) && !checkAllAliases(key, flags.arrays)) {
+                const keys = [key].concat(flags.aliases[key] || []);
+                keys.forEach(function (key) {
+                    Object.defineProperty(argvReturn, key, {
+                        enumerable: true,
+                        get() {
+                            return val;
+                        },
+                        set(value) {
+                            val = typeof value === 'string' ? yargs_parser_mixin.normalize(value) : value;
+                        }
+                    });
+                });
+            }
+        }
+        function addNewAlias(key, alias) {
+            if (!(flags.aliases[key] && flags.aliases[key].length)) {
+                flags.aliases[key] = [alias];
+                newAliases[alias] = true;
+            }
+            if (!(flags.aliases[alias] && flags.aliases[alias].length)) {
+                addNewAlias(alias, key);
+            }
+        }
+        function processValue(key, val) {
+            // strings may be quoted, clean this up as we assign values.
+            if (typeof val === 'string' &&
+                (val[0] === "'" || val[0] === '"') &&
+                val[val.length - 1] === val[0]) {
+                val = val.substring(1, val.length - 1);
+            }
+            // handle parsing boolean arguments --foo=true --bar false.
+            if (checkAllAliases(key, flags.bools) || checkAllAliases(key, flags.counts)) {
+                if (typeof val === 'string')
+                    val = val === 'true';
+            }
+            let value = Array.isArray(val)
+                ? val.map(function (v) { return maybeCoerceNumber(key, v); })
+                : maybeCoerceNumber(key, val);
+            // increment a count given as arg (either no value or value parsed as boolean)
+            if (checkAllAliases(key, flags.counts) && (isUndefined(value) || typeof value === 'boolean')) {
+                value = increment();
+            }
+            // Set normalized value when key is in 'normalize' and in 'arrays'
+            if (checkAllAliases(key, flags.normalize) && checkAllAliases(key, flags.arrays)) {
+                if (Array.isArray(val))
+                    value = val.map((val) => { return yargs_parser_mixin.normalize(val); });
+                else
+                    value = yargs_parser_mixin.normalize(val);
+            }
+            return value;
+        }
+        function maybeCoerceNumber(key, value) {
+            if (!configuration['parse-positional-numbers'] && key === '_')
+                return value;
+            if (!checkAllAliases(key, flags.strings) && !checkAllAliases(key, flags.bools) && !Array.isArray(value)) {
+                const shouldCoerceNumber = looksLikeNumber(value) && configuration['parse-numbers'] && (Number.isSafeInteger(Math.floor(parseFloat(`${value}`))));
+                if (shouldCoerceNumber || (!isUndefined(value) && checkAllAliases(key, flags.numbers))) {
+                    value = Number(value);
+                }
+            }
+            return value;
+        }
+        // set args from config.json file, this should be
+        // applied last so that defaults can be applied.
+        function setConfig(argv) {
+            const configLookup = Object.create(null);
+            // expand defaults/aliases, in-case any happen to reference
+            // the config.json file.
+            applyDefaultsAndAliases(configLookup, flags.aliases, defaults);
+            Object.keys(flags.configs).forEach(function (configKey) {
+                const configPath = argv[configKey] || configLookup[configKey];
+                if (configPath) {
+                    try {
+                        let config = null;
+                        const resolvedConfigPath = yargs_parser_mixin.resolve(yargs_parser_mixin.cwd(), configPath);
+                        const resolveConfig = flags.configs[configKey];
+                        if (typeof resolveConfig === 'function') {
+                            try {
+                                config = resolveConfig(resolvedConfigPath);
+                            }
+                            catch (e) {
+                                config = e;
+                            }
+                            if (config instanceof Error) {
+                                error = config;
+                                return;
+                            }
+                        }
+                        else {
+                            config = yargs_parser_mixin.require(resolvedConfigPath);
+                        }
+                        setConfigObject(config);
+                    }
+                    catch (ex) {
+                        // Deno will receive a PermissionDenied error if an attempt is
+                        // made to load config without the --allow-read flag:
+                        if (ex.name === 'PermissionDenied')
+                            error = ex;
+                        else if (argv[configKey])
+                            error = Error(__('Invalid JSON config file: %s', configPath));
+                    }
+                }
+            });
+        }
+        // set args from config object.
+        // it recursively checks nested objects.
+        function setConfigObject(config, prev) {
+            Object.keys(config).forEach(function (key) {
+                const value = config[key];
+                const fullKey = prev ? prev + '.' + key : key;
+                // if the value is an inner object and we have dot-notation
+                // enabled, treat inner objects in config the same as
+                // heavily nested dot notations (foo.bar.apple).
+                if (typeof value === 'object' && value !== null && !Array.isArray(value) && configuration['dot-notation']) {
+                    // if the value is an object but not an array, check nested object
+                    setConfigObject(value, fullKey);
+                }
+                else {
+                    // setting arguments via CLI takes precedence over
+                    // values within the config file.
+                    if (!hasKey(argv, fullKey.split('.')) || (checkAllAliases(fullKey, flags.arrays) && configuration['combine-arrays'])) {
+                        setArg(fullKey, value);
+                    }
+                }
+            });
+        }
+        // set all config objects passed in opts
+        function setConfigObjects() {
+            if (typeof configObjects !== 'undefined') {
+                configObjects.forEach(function (configObject) {
+                    setConfigObject(configObject);
+                });
+            }
+        }
+        function applyEnvVars(argv, configOnly) {
+            if (typeof envPrefix === 'undefined')
+                return;
+            const prefix = typeof envPrefix === 'string' ? envPrefix : '';
+            const env = yargs_parser_mixin.env();
+            Object.keys(env).forEach(function (envVar) {
+                if (prefix === '' || envVar.lastIndexOf(prefix, 0) === 0) {
+                    // get array of nested keys and convert them to camel case
+                    const keys = envVar.split('__').map(function (key, i) {
+                        if (i === 0) {
+                            key = key.substring(prefix.length);
+                        }
+                        return camelCase(key);
+                    });
+                    if (((configOnly && flags.configs[keys.join('.')]) || !configOnly) && !hasKey(argv, keys)) {
+                        setArg(keys.join('.'), env[envVar]);
+                    }
+                }
+            });
+        }
+        function applyCoercions(argv) {
+            let coerce;
+            const applied = new Set();
+            Object.keys(argv).forEach(function (key) {
+                if (!applied.has(key)) { // If we haven't already coerced this option via one of its aliases
+                    coerce = checkAllAliases(key, flags.coercions);
+                    if (typeof coerce === 'function') {
+                        try {
+                            const value = maybeCoerceNumber(key, coerce(argv[key]));
+                            ([].concat(flags.aliases[key] || [], key)).forEach(ali => {
+                                applied.add(ali);
+                                argv[ali] = value;
+                            });
+                        }
+                        catch (err) {
+                            error = err;
+                        }
+                    }
+                }
+            });
+        }
+        function setPlaceholderKeys(argv) {
+            flags.keys.forEach((key) => {
+                // don't set placeholder keys for dot notation options 'foo.bar'.
+                if (~key.indexOf('.'))
+                    return;
+                if (typeof argv[key] === 'undefined')
+                    argv[key] = undefined;
+            });
+            return argv;
+        }
+        function applyDefaultsAndAliases(obj, aliases, defaults, canLog = false) {
+            Object.keys(defaults).forEach(function (key) {
+                if (!hasKey(obj, key.split('.'))) {
+                    setKey(obj, key.split('.'), defaults[key]);
+                    if (canLog)
+                        defaulted[key] = true;
+                    (aliases[key] || []).forEach(function (x) {
+                        if (hasKey(obj, x.split('.')))
+                            return;
+                        setKey(obj, x.split('.'), defaults[key]);
+                    });
+                }
+            });
+        }
+        function hasKey(obj, keys) {
+            let o = obj;
+            if (!configuration['dot-notation'])
+                keys = [keys.join('.')];
+            keys.slice(0, -1).forEach(function (key) {
+                o = (o[key] || {});
+            });
+            const key = keys[keys.length - 1];
+            if (typeof o !== 'object')
+                return false;
+            else
+                return key in o;
+        }
+        function setKey(obj, keys, value) {
+            let o = obj;
+            if (!configuration['dot-notation'])
+                keys = [keys.join('.')];
+            keys.slice(0, -1).forEach(function (key) {
+                // TODO(bcoe): in the next major version of yargs, switch to
+                // Object.create(null) for dot notation:
+                key = sanitizeKey(key);
+                if (typeof o === 'object' && o[key] === undefined) {
+                    o[key] = {};
+                }
+                if (typeof o[key] !== 'object' || Array.isArray(o[key])) {
+                    // ensure that o[key] is an array, and that the last item is an empty object.
+                    if (Array.isArray(o[key])) {
+                        o[key].push({});
+                    }
+                    else {
+                        o[key] = [o[key], {}];
+                    }
+                    // we want to update the empty object at the end of the o[key] array, so set o to that object
+                    o = o[key][o[key].length - 1];
+                }
+                else {
+                    o = o[key];
+                }
+            });
+            // TODO(bcoe): in the next major version of yargs, switch to
+            // Object.create(null) for dot notation:
+            const key = sanitizeKey(keys[keys.length - 1]);
+            const isTypeArray = checkAllAliases(keys.join('.'), flags.arrays);
+            const isValueArray = Array.isArray(value);
+            let duplicate = configuration['duplicate-arguments-array'];
+            // nargs has higher priority than duplicate
+            if (!duplicate && checkAllAliases(key, flags.nargs)) {
+                duplicate = true;
+                if ((!isUndefined(o[key]) && flags.nargs[key] === 1) || (Array.isArray(o[key]) && o[key].length === flags.nargs[key])) {
+                    o[key] = undefined;
+                }
+            }
+            if (value === increment()) {
+                o[key] = increment(o[key]);
+            }
+            else if (Array.isArray(o[key])) {
+                if (duplicate && isTypeArray && isValueArray) {
+                    o[key] = configuration['flatten-duplicate-arrays'] ? o[key].concat(value) : (Array.isArray(o[key][0]) ? o[key] : [o[key]]).concat([value]);
+                }
+                else if (!duplicate && Boolean(isTypeArray) === Boolean(isValueArray)) {
+                    o[key] = value;
+                }
+                else {
+                    o[key] = o[key].concat([value]);
+                }
+            }
+            else if (o[key] === undefined && isTypeArray) {
+                o[key] = isValueArray ? value : [value];
+            }
+            else if (duplicate && !(o[key] === undefined ||
+                checkAllAliases(key, flags.counts) ||
+                checkAllAliases(key, flags.bools))) {
+                o[key] = [o[key], value];
+            }
+            else {
+                o[key] = value;
+            }
+        }
+        // extend the aliases list with inferred aliases.
+        function extendAliases(...args) {
+            args.forEach(function (obj) {
+                Object.keys(obj || {}).forEach(function (key) {
+                    // short-circuit if we've already added a key
+                    // to the aliases array, for example it might
+                    // exist in both 'opts.default' and 'opts.key'.
+                    if (flags.aliases[key])
+                        return;
+                    flags.aliases[key] = [].concat(aliases[key] || []);
+                    // For "--option-name", also set argv.optionName
+                    flags.aliases[key].concat(key).forEach(function (x) {
+                        if (/-/.test(x) && configuration['camel-case-expansion']) {
+                            const c = camelCase(x);
+                            if (c !== key && flags.aliases[key].indexOf(c) === -1) {
+                                flags.aliases[key].push(c);
+                                newAliases[c] = true;
+                            }
+                        }
+                    });
+                    // For "--optionName", also set argv['option-name']
+                    flags.aliases[key].concat(key).forEach(function (x) {
+                        if (x.length > 1 && /[A-Z]/.test(x) && configuration['camel-case-expansion']) {
+                            const c = decamelize(x, '-');
+                            if (c !== key && flags.aliases[key].indexOf(c) === -1) {
+                                flags.aliases[key].push(c);
+                                newAliases[c] = true;
+                            }
+                        }
+                    });
+                    flags.aliases[key].forEach(function (x) {
+                        flags.aliases[x] = [key].concat(flags.aliases[key].filter(function (y) {
+                            return x !== y;
+                        }));
+                    });
+                });
+            });
+        }
+        function checkAllAliases(key, flag) {
+            const toCheck = [].concat(flags.aliases[key] || [], key);
+            const keys = Object.keys(flag);
+            const setAlias = toCheck.find(key => keys.includes(key));
+            return setAlias ? flag[setAlias] : false;
+        }
+        function hasAnyFlag(key) {
+            const flagsKeys = Object.keys(flags);
+            const toCheck = [].concat(flagsKeys.map(k => flags[k]));
+            return toCheck.some(function (flag) {
+                return Array.isArray(flag) ? flag.includes(key) : flag[key];
+            });
+        }
+        function hasFlagsMatching(arg, ...patterns) {
+            const toCheck = [].concat(...patterns);
+            return toCheck.some(function (pattern) {
+                const match = arg.match(pattern);
+                return match && hasAnyFlag(match[1]);
+            });
+        }
+        // based on a simplified version of the short flag group parsing logic
+        function hasAllShortFlags(arg) {
+            // if this is a negative number, or doesn't start with a single hyphen, it's not a short flag group
+            if (arg.match(negative) || !arg.match(/^-[^-]+/)) {
+                return false;
+            }
+            let hasAllFlags = true;
+            let next;
+            const letters = arg.slice(1).split('');
+            for (let j = 0; j < letters.length; j++) {
+                next = arg.slice(j + 2);
+                if (!hasAnyFlag(letters[j])) {
+                    hasAllFlags = false;
+                    break;
+                }
+                if ((letters[j + 1] && letters[j + 1] === '=') ||
+                    next === '-' ||
+                    (/[A-Za-z]/.test(letters[j]) && /^-?\d+(\.\d*)?(e-?\d+)?$/.test(next)) ||
+                    (letters[j + 1] && letters[j + 1].match(/\W/))) {
+                    break;
+                }
+            }
+            return hasAllFlags;
+        }
+        function isUnknownOptionAsArg(arg) {
+            return configuration['unknown-options-as-args'] && isUnknownOption(arg);
+        }
+        function isUnknownOption(arg) {
+            // ignore negative numbers
+            if (arg.match(negative)) {
+                return false;
+            }
+            // if this is a short option group and all of them are configured, it isn't unknown
+            if (hasAllShortFlags(arg)) {
+                return false;
+            }
+            // e.g. '--count=2'
+            const flagWithEquals = /^-+([^=]+?)=[\s\S]*$/;
+            // e.g. '-a' or '--arg'
+            const normalFlag = /^-+([^=]+?)$/;
+            // e.g. '-a-'
+            const flagEndingInHyphen = /^-+([^=]+?)-$/;
+            // e.g. '-abc123'
+            const flagEndingInDigits = /^-+([^=]+?\d+)$/;
+            // e.g. '-a/usr/local'
+            const flagEndingInNonWordCharacters = /^-+([^=]+?)\W+.*$/;
+            // check the different types of flag styles, including negatedBoolean, a pattern defined near the start of the parse method
+            return !hasFlagsMatching(arg, flagWithEquals, negatedBoolean, normalFlag, flagEndingInHyphen, flagEndingInDigits, flagEndingInNonWordCharacters);
+        }
+        // make a best effort to pick a default value
+        // for an option based on name and type.
+        function defaultValue(key) {
+            if (!checkAllAliases(key, flags.bools) &&
+                !checkAllAliases(key, flags.counts) &&
+                `${key}` in defaults) {
+                return defaults[key];
+            }
+            else {
+                return defaultForType(guessType(key));
+            }
+        }
+        // return a default value, given the type of a flag.,
+        function defaultForType(type) {
+            const def = {
+                boolean: true,
+                string: '',
+                number: undefined,
+                array: []
+            };
+            return def[type];
+        }
+        // given a flag, enforce a default type.
+        function guessType(key) {
+            let type = 'boolean';
+            if (checkAllAliases(key, flags.strings))
+                type = 'string';
+            else if (checkAllAliases(key, flags.numbers))
+                type = 'number';
+            else if (checkAllAliases(key, flags.bools))
+                type = 'boolean';
+            else if (checkAllAliases(key, flags.arrays))
+                type = 'array';
+            return type;
+        }
+        function isUndefined(num) {
+            return num === undefined;
+        }
+        // check user configuration settings for inconsistencies
+        function checkConfiguration() {
+            // count keys should not be set as array/narg
+            Object.keys(flags.counts).find(key => {
+                if (checkAllAliases(key, flags.arrays)) {
+                    error = Error(__('Invalid configuration: %s, opts.count excludes opts.array.', key));
+                    return true;
+                }
+                else if (checkAllAliases(key, flags.nargs)) {
+                    error = Error(__('Invalid configuration: %s, opts.count excludes opts.narg.', key));
+                    return true;
+                }
+                return false;
+            });
+        }
+        return {
+            aliases: Object.assign({}, flags.aliases),
+            argv: Object.assign(argvReturn, argv),
+            configuration: configuration,
+            defaulted: Object.assign({}, defaulted),
+            error: error,
+            newAliases: Object.assign({}, newAliases)
+        };
+    }
+}
+// if any aliases reference each other, we should
+// merge them together.
+function combineAliases(aliases) {
+    const aliasArrays = [];
+    const combined = Object.create(null);
+    let change = true;
+    // turn alias lookup hash {key: ['alias1', 'alias2']} into
+    // a simple array ['key', 'alias1', 'alias2']
+    Object.keys(aliases).forEach(function (key) {
+        aliasArrays.push([].concat(aliases[key], key));
+    });
+    // combine arrays until zero changes are
+    // made in an iteration.
+    while (change) {
+        change = false;
+        for (let i = 0; i < aliasArrays.length; i++) {
+            for (let ii = i + 1; ii < aliasArrays.length; ii++) {
+                const intersect = aliasArrays[i].filter(function (v) {
+                    return aliasArrays[ii].indexOf(v) !== -1;
+                });
+                if (intersect.length) {
+                    aliasArrays[i] = aliasArrays[i].concat(aliasArrays[ii]);
+                    aliasArrays.splice(ii, 1);
+                    change = true;
+                    break;
+                }
+            }
+        }
+    }
+    // map arrays back to the hash-lookup (de-dupe while
+    // we're at it).
+    aliasArrays.forEach(function (aliasArray) {
+        aliasArray = aliasArray.filter(function (v, i, self) {
+            return self.indexOf(v) === i;
+        });
+        const lastAlias = aliasArray.pop();
+        if (lastAlias !== undefined && typeof lastAlias === 'string') {
+            combined[lastAlias] = aliasArray;
+        }
+    });
+    return combined;
+}
+// this function should only be called when a count is given as an arg
+// it is NOT called to set a default value
+// thus we can start the count at 1 instead of 0
+function increment(orig) {
+    return orig !== undefined ? orig + 1 : 1;
+}
+// TODO(bcoe): in the next major version of yargs, switch to
+// Object.create(null) for dot notation:
+function sanitizeKey(key) {
+    if (key === '__proto__')
+        return '___proto___';
+    return key;
+}
 
+;// CONCATENATED MODULE: ./node_modules/yargs-parser/build/lib/index.js
+// Main entrypoint for libraries using yargs-parser in Node.js
+// CJS and ESM environments:
+
+
+
+
+
+// See https://github.com/yargs/yargs-parser#supported-nodejs-versions for our
+// version support policy. The YARGS_MIN_NODE_VERSION is used for testing only.
+const minNodeVersion = (process && process.env && process.env.YARGS_MIN_NODE_VERSION)
+    ? Number(process.env.YARGS_MIN_NODE_VERSION)
+    : 10;
+if (process && process.version) {
+    const major = Number(process.version.match(/v([^.]+)/)[1]);
+    if (major < minNodeVersion) {
+        throw Error(`yargs parser supports a minimum Node.js version of ${minNodeVersion}. Read our version support policy: https://github.com/yargs/yargs-parser#supported-nodejs-versions`);
+    }
+}
+// Creates a yargs-parser instance using Node.js standard libraries:
+const env = process ? process.env : {};
+const parser = new YargsParser({
+    cwd: process.cwd,
+    env: () => {
+        return env;
+    },
+    format: external_util_.format,
+    normalize: external_path_.normalize,
+    resolve: external_path_.resolve,
+    // TODO: figure  out a  way to combine ESM and CJS coverage, such  that
+    // we can exercise all the lines below:
+    require: (path) => {
+        if (typeof require !== 'undefined') {
+            return require(path);
+        }
+        else if (path.match(/\.json$/)) {
+            return (0,external_fs_.readFileSync)(path, 'utf8');
+        }
+        else {
+            throw Error('only .json config files are supported in ESM');
+        }
+    }
+});
+const yargsParser = function Parser(args, opts) {
+    const result = parser.parse(args.slice(), opts);
+    return result.argv;
+};
+yargsParser.detailed = function (args, opts) {
+    return parser.parse(args.slice(), opts);
+};
+yargsParser.camelCase = camelCase;
+yargsParser.decamelize = decamelize;
+yargsParser.looksLikeNumber = looksLikeNumber;
+/* harmony default export */ const lib = (yargsParser);
+
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/utils/process-argv.js
+function getProcessArgvBinIndex() {
+    if (isBundledElectronApp())
+        return 0;
+    return 1;
+}
+function isBundledElectronApp() {
+    return isElectronApp() && !process.defaultApp;
+}
+function isElectronApp() {
+    return !!process.versions.electron;
+}
+function hideBin(argv) {
+    return argv.slice(getProcessArgvBinIndex() + 1);
+}
+function getProcessArgvBin() {
+    return process.argv[getProcessArgvBinIndex()];
+}
+
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/yerror.js
+class YError extends Error {
+    constructor(msg) {
+        super(msg || 'yargs error');
+        this.name = 'YError';
+        Error.captureStackTrace(this, YError);
+    }
+}
+
+;// CONCATENATED MODULE: ./node_modules/y18n/build/lib/platform-shims/node.js
+
+
+
+/* harmony default export */ const node = ({
+    fs: {
+        readFileSync: external_fs_.readFileSync,
+        writeFile: external_fs_.writeFile
+    },
+    format: external_util_.format,
+    resolve: external_path_.resolve,
+    exists: (file) => {
+        try {
+            return (0,external_fs_.statSync)(file).isFile();
+        }
+        catch (err) {
+            return false;
+        }
+    }
+});
+
+;// CONCATENATED MODULE: ./node_modules/y18n/build/lib/index.js
 let shim;
 class Y18N {
     constructor(opts) {
@@ -13606,7 +12380,7 @@ class Y18N {
         this.locale = opts.locale || 'en';
         this.fallbackToLanguage = typeof opts.fallbackToLanguage === 'boolean' ? opts.fallbackToLanguage : true;
         // internal stuff.
-        this.cache = {};
+        this.cache = Object.create(null);
         this.writeQueue = [];
     }
     __(...args) {
@@ -13672,7 +12446,7 @@ class Y18N {
         }
         // if a %d placeholder is provided, add quantity
         // to the arguments expanded by util.format.
-        var values = [str];
+        const values = [str];
         if (~str.indexOf('%d'))
             values.push(quantity);
         return shim.format.apply(shim.format, values.concat(args));
@@ -13695,7 +12469,7 @@ class Y18N {
     _taggedLiteral(parts, ...args) {
         let str = '';
         parts.forEach(function (part, i) {
-            var arg = args[i + 1];
+            const arg = args[i + 1];
             str += part;
             if (typeof arg !== 'undefined') {
                 str += '%s';
@@ -13709,14 +12483,14 @@ class Y18N {
             this._processWriteQueue();
     }
     _processWriteQueue() {
-        var _this = this;
-        var work = this.writeQueue[0];
+        const _this = this;
+        const work = this.writeQueue[0];
         // destructure the enqueued work.
-        var directory = work.directory;
-        var locale = work.locale;
-        var cb = work.cb;
-        var languageFile = this._resolveLocaleFile(directory, locale);
-        var serializedLocale = JSON.stringify(this.cache[locale], null, 2);
+        const directory = work.directory;
+        const locale = work.locale;
+        const cb = work.cb;
+        const languageFile = this._resolveLocaleFile(directory, locale);
+        const serializedLocale = JSON.stringify(this.cache[locale], null, 2);
         shim.fs.writeFile(languageFile, serializedLocale, 'utf-8', function (err) {
             _this.writeQueue.shift();
             if (_this.writeQueue.length > 0)
@@ -13725,10 +12499,13 @@ class Y18N {
         });
     }
     _readLocaleFile() {
-        var localeLookup = {};
-        var languageFile = this._resolveLocaleFile(this.directory, this.locale);
+        let localeLookup = {};
+        const languageFile = this._resolveLocaleFile(this.directory, this.locale);
         try {
-            localeLookup = JSON.parse(shim.fs.readFileSync(languageFile, 'utf-8'));
+            // When using a bundler such as webpack, readFileSync may not be defined:
+            if (shim.fs.readFileSync) {
+                localeLookup = JSON.parse(shim.fs.readFileSync(languageFile, 'utf-8'));
+            }
         }
         catch (err) {
             if (err instanceof SyntaxError) {
@@ -13742,10 +12519,10 @@ class Y18N {
         this.cache[this.locale] = localeLookup;
     }
     _resolveLocaleFile(directory, locale) {
-        var file = shim.resolve(directory, './', locale + '.json');
+        let file = shim.resolve(directory, './', locale + '.json');
         if (this.fallbackToLanguage && !this._fileExistsSync(file) && ~locale.lastIndexOf('_')) {
             // attempt fallback to language only
-            var languageFile = shim.resolve(directory, './', locale.split('_')[0] + '.json');
+            const languageFile = shim.resolve(directory, './', locale.split('_')[0] + '.json');
             if (this._fileExistsSync(languageFile))
                 file = languageFile;
         }
@@ -13768,1135 +12545,104 @@ function y18n(opts, _shim) {
     };
 }
 
-var nodePlatformShim = {
-    fs: {
-        readFileSync: fs.readFileSync,
-        writeFile: fs.writeFile
-    },
-    format: util.format,
-    resolve: path.resolve,
-    exists: (file) => {
-        try {
-            return fs.statSync(file).isFile();
-        }
-        catch (err) {
-            return false;
-        }
-    }
-};
-
-const y18n$1 = (opts) => {
-    return y18n(opts, nodePlatformShim);
-};
-
-module.exports = y18n$1;
+;// CONCATENATED MODULE: ./node_modules/y18n/index.mjs
 
 
-/***/ }),
 
-/***/ 8909:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var util = __webpack_require__(1669);
-var fs = __webpack_require__(5747);
-var path = __webpack_require__(5622);
-
-function camelCase(str) {
-    str = str.toLocaleLowerCase();
-    if (str.indexOf('-') === -1 && str.indexOf('_') === -1) {
-        return str;
-    }
-    else {
-        let camelcase = '';
-        let nextChrUpper = false;
-        const leadingHyphens = str.match(/^-+/);
-        for (let i = leadingHyphens ? leadingHyphens[0].length : 0; i < str.length; i++) {
-            let chr = str.charAt(i);
-            if (nextChrUpper) {
-                nextChrUpper = false;
-                chr = chr.toLocaleUpperCase();
-            }
-            if (i !== 0 && (chr === '-' || chr === '_')) {
-                nextChrUpper = true;
-                continue;
-            }
-            else if (chr !== '-' && chr !== '_') {
-                camelcase += chr;
-            }
-        }
-        return camelcase;
-    }
-}
-function decamelize(str, joinString) {
-    const lowercase = str.toLocaleLowerCase();
-    joinString = joinString || '-';
-    let notCamelcase = '';
-    for (let i = 0; i < str.length; i++) {
-        const chrLower = lowercase.charAt(i);
-        const chrString = str.charAt(i);
-        if (chrLower !== chrString && i > 0) {
-            notCamelcase += `${joinString}${lowercase.charAt(i)}`;
-        }
-        else {
-            notCamelcase += chrString;
-        }
-    }
-    return notCamelcase;
-}
-function looksLikeNumber(x) {
-    if (x === null || x === undefined)
-        return false;
-    if (typeof x === 'number')
-        return true;
-    if (/^0x[0-9a-f]+$/i.test(x))
-        return true;
-    if (x.length > 1 && x[0] === '0')
-        return false;
-    return /^[-]?(?:\d+(?:\.\d*)?|\.\d+)(e[-+]?\d+)?$/.test(x);
+const y18n_y18n = (opts) => {
+  return y18n(opts, node)
 }
 
-function tokenizeArgString(argString) {
-    if (Array.isArray(argString)) {
-        return argString.map(e => typeof e !== 'string' ? e + '' : e);
-    }
-    argString = argString.trim();
-    let i = 0;
-    let prevC = null;
-    let c = null;
-    let opening = null;
-    const args = [];
-    for (let ii = 0; ii < argString.length; ii++) {
-        prevC = c;
-        c = argString.charAt(ii);
-        if (c === ' ' && !opening) {
-            if (!(prevC === ' ')) {
-                i++;
-            }
-            continue;
-        }
-        if (c === opening) {
-            opening = null;
-        }
-        else if ((c === "'" || c === '"') && !opening) {
-            opening = c;
-        }
-        if (!args[i])
-            args[i] = '';
-        args[i] += c;
-    }
-    return args;
-}
+/* harmony default export */ const node_modules_y18n = (y18n_y18n);
 
-let mixin;
-class YargsParser {
-    constructor(_mixin) {
-        mixin = _mixin;
-    }
-    parse(argsInput, options) {
-        const opts = Object.assign({
-            alias: undefined,
-            array: undefined,
-            boolean: undefined,
-            config: undefined,
-            configObjects: undefined,
-            configuration: undefined,
-            coerce: undefined,
-            count: undefined,
-            default: undefined,
-            envPrefix: undefined,
-            narg: undefined,
-            normalize: undefined,
-            string: undefined,
-            number: undefined,
-            __: undefined,
-            key: undefined
-        }, options);
-        const args = tokenizeArgString(argsInput);
-        const aliases = combineAliases(Object.assign(Object.create(null), opts.alias));
-        const configuration = Object.assign({
-            'boolean-negation': true,
-            'camel-case-expansion': true,
-            'combine-arrays': false,
-            'dot-notation': true,
-            'duplicate-arguments-array': true,
-            'flatten-duplicate-arrays': true,
-            'greedy-arrays': true,
-            'halt-at-non-option': false,
-            'nargs-eats-options': false,
-            'negation-prefix': 'no-',
-            'parse-numbers': true,
-            'parse-positional-numbers': true,
-            'populate--': false,
-            'set-placeholder-key': false,
-            'short-option-groups': true,
-            'strip-aliased': false,
-            'strip-dashed': false,
-            'unknown-options-as-args': false
-        }, opts.configuration);
-        const defaults = Object.assign(Object.create(null), opts.default);
-        const configObjects = opts.configObjects || [];
-        const envPrefix = opts.envPrefix;
-        const notFlagsOption = configuration['populate--'];
-        const notFlagsArgv = notFlagsOption ? '--' : '_';
-        const newAliases = Object.create(null);
-        const defaulted = Object.create(null);
-        const __ = opts.__ || mixin.format;
-        const flags = {
-            aliases: Object.create(null),
-            arrays: Object.create(null),
-            bools: Object.create(null),
-            strings: Object.create(null),
-            numbers: Object.create(null),
-            counts: Object.create(null),
-            normalize: Object.create(null),
-            configs: Object.create(null),
-            nargs: Object.create(null),
-            coercions: Object.create(null),
-            keys: []
-        };
-        const negative = /^-([0-9]+(\.[0-9]+)?|\.[0-9]+)$/;
-        const negatedBoolean = new RegExp('^--' + configuration['negation-prefix'] + '(.+)');
-        [].concat(opts.array || []).filter(Boolean).forEach(function (opt) {
-            const key = typeof opt === 'object' ? opt.key : opt;
-            const assignment = Object.keys(opt).map(function (key) {
-                const arrayFlagKeys = {
-                    boolean: 'bools',
-                    string: 'strings',
-                    number: 'numbers'
-                };
-                return arrayFlagKeys[key];
-            }).filter(Boolean).pop();
-            if (assignment) {
-                flags[assignment][key] = true;
-            }
-            flags.arrays[key] = true;
-            flags.keys.push(key);
-        });
-        [].concat(opts.boolean || []).filter(Boolean).forEach(function (key) {
-            flags.bools[key] = true;
-            flags.keys.push(key);
-        });
-        [].concat(opts.string || []).filter(Boolean).forEach(function (key) {
-            flags.strings[key] = true;
-            flags.keys.push(key);
-        });
-        [].concat(opts.number || []).filter(Boolean).forEach(function (key) {
-            flags.numbers[key] = true;
-            flags.keys.push(key);
-        });
-        [].concat(opts.count || []).filter(Boolean).forEach(function (key) {
-            flags.counts[key] = true;
-            flags.keys.push(key);
-        });
-        [].concat(opts.normalize || []).filter(Boolean).forEach(function (key) {
-            flags.normalize[key] = true;
-            flags.keys.push(key);
-        });
-        if (typeof opts.narg === 'object') {
-            Object.entries(opts.narg).forEach(([key, value]) => {
-                if (typeof value === 'number') {
-                    flags.nargs[key] = value;
-                    flags.keys.push(key);
-                }
-            });
-        }
-        if (typeof opts.coerce === 'object') {
-            Object.entries(opts.coerce).forEach(([key, value]) => {
-                if (typeof value === 'function') {
-                    flags.coercions[key] = value;
-                    flags.keys.push(key);
-                }
-            });
-        }
-        if (typeof opts.config !== 'undefined') {
-            if (Array.isArray(opts.config) || typeof opts.config === 'string') {
-                [].concat(opts.config).filter(Boolean).forEach(function (key) {
-                    flags.configs[key] = true;
-                });
-            }
-            else if (typeof opts.config === 'object') {
-                Object.entries(opts.config).forEach(([key, value]) => {
-                    if (typeof value === 'boolean' || typeof value === 'function') {
-                        flags.configs[key] = value;
-                    }
-                });
-            }
-        }
-        extendAliases(opts.key, aliases, opts.default, flags.arrays);
-        Object.keys(defaults).forEach(function (key) {
-            (flags.aliases[key] || []).forEach(function (alias) {
-                defaults[alias] = defaults[key];
-            });
-        });
-        let error = null;
-        checkConfiguration();
-        let notFlags = [];
-        const argv = Object.assign(Object.create(null), { _: [] });
-        const argvReturn = {};
-        for (let i = 0; i < args.length; i++) {
-            const arg = args[i];
-            let broken;
-            let key;
-            let letters;
-            let m;
-            let next;
-            let value;
-            if (arg !== '--' && isUnknownOptionAsArg(arg)) {
-                pushPositional(arg);
-            }
-            else if (arg.match(/^--.+=/) || (!configuration['short-option-groups'] && arg.match(/^-.+=/))) {
-                m = arg.match(/^--?([^=]+)=([\s\S]*)$/);
-                if (m !== null && Array.isArray(m) && m.length >= 3) {
-                    if (checkAllAliases(m[1], flags.arrays)) {
-                        i = eatArray(i, m[1], args, m[2]);
-                    }
-                    else if (checkAllAliases(m[1], flags.nargs) !== false) {
-                        i = eatNargs(i, m[1], args, m[2]);
-                    }
-                    else {
-                        setArg(m[1], m[2]);
-                    }
-                }
-            }
-            else if (arg.match(negatedBoolean) && configuration['boolean-negation']) {
-                m = arg.match(negatedBoolean);
-                if (m !== null && Array.isArray(m) && m.length >= 2) {
-                    key = m[1];
-                    setArg(key, checkAllAliases(key, flags.arrays) ? [false] : false);
-                }
-            }
-            else if (arg.match(/^--.+/) || (!configuration['short-option-groups'] && arg.match(/^-[^-]+/))) {
-                m = arg.match(/^--?(.+)/);
-                if (m !== null && Array.isArray(m) && m.length >= 2) {
-                    key = m[1];
-                    if (checkAllAliases(key, flags.arrays)) {
-                        i = eatArray(i, key, args);
-                    }
-                    else if (checkAllAliases(key, flags.nargs) !== false) {
-                        i = eatNargs(i, key, args);
-                    }
-                    else {
-                        next = args[i + 1];
-                        if (next !== undefined && (!next.match(/^-/) ||
-                            next.match(negative)) &&
-                            !checkAllAliases(key, flags.bools) &&
-                            !checkAllAliases(key, flags.counts)) {
-                            setArg(key, next);
-                            i++;
-                        }
-                        else if (/^(true|false)$/.test(next)) {
-                            setArg(key, next);
-                            i++;
-                        }
-                        else {
-                            setArg(key, defaultValue(key));
-                        }
-                    }
-                }
-            }
-            else if (arg.match(/^-.\..+=/)) {
-                m = arg.match(/^-([^=]+)=([\s\S]*)$/);
-                if (m !== null && Array.isArray(m) && m.length >= 3) {
-                    setArg(m[1], m[2]);
-                }
-            }
-            else if (arg.match(/^-.\..+/) && !arg.match(negative)) {
-                next = args[i + 1];
-                m = arg.match(/^-(.\..+)/);
-                if (m !== null && Array.isArray(m) && m.length >= 2) {
-                    key = m[1];
-                    if (next !== undefined && !next.match(/^-/) &&
-                        !checkAllAliases(key, flags.bools) &&
-                        !checkAllAliases(key, flags.counts)) {
-                        setArg(key, next);
-                        i++;
-                    }
-                    else {
-                        setArg(key, defaultValue(key));
-                    }
-                }
-            }
-            else if (arg.match(/^-[^-]+/) && !arg.match(negative)) {
-                letters = arg.slice(1, -1).split('');
-                broken = false;
-                for (let j = 0; j < letters.length; j++) {
-                    next = arg.slice(j + 2);
-                    if (letters[j + 1] && letters[j + 1] === '=') {
-                        value = arg.slice(j + 3);
-                        key = letters[j];
-                        if (checkAllAliases(key, flags.arrays)) {
-                            i = eatArray(i, key, args, value);
-                        }
-                        else if (checkAllAliases(key, flags.nargs) !== false) {
-                            i = eatNargs(i, key, args, value);
-                        }
-                        else {
-                            setArg(key, value);
-                        }
-                        broken = true;
-                        break;
-                    }
-                    if (next === '-') {
-                        setArg(letters[j], next);
-                        continue;
-                    }
-                    if (/[A-Za-z]/.test(letters[j]) &&
-                        /^-?\d+(\.\d*)?(e-?\d+)?$/.test(next) &&
-                        checkAllAliases(next, flags.bools) === false) {
-                        setArg(letters[j], next);
-                        broken = true;
-                        break;
-                    }
-                    if (letters[j + 1] && letters[j + 1].match(/\W/)) {
-                        setArg(letters[j], next);
-                        broken = true;
-                        break;
-                    }
-                    else {
-                        setArg(letters[j], defaultValue(letters[j]));
-                    }
-                }
-                key = arg.slice(-1)[0];
-                if (!broken && key !== '-') {
-                    if (checkAllAliases(key, flags.arrays)) {
-                        i = eatArray(i, key, args);
-                    }
-                    else if (checkAllAliases(key, flags.nargs) !== false) {
-                        i = eatNargs(i, key, args);
-                    }
-                    else {
-                        next = args[i + 1];
-                        if (next !== undefined && (!/^(-|--)[^-]/.test(next) ||
-                            next.match(negative)) &&
-                            !checkAllAliases(key, flags.bools) &&
-                            !checkAllAliases(key, flags.counts)) {
-                            setArg(key, next);
-                            i++;
-                        }
-                        else if (/^(true|false)$/.test(next)) {
-                            setArg(key, next);
-                            i++;
-                        }
-                        else {
-                            setArg(key, defaultValue(key));
-                        }
-                    }
-                }
-            }
-            else if (arg.match(/^-[0-9]$/) &&
-                arg.match(negative) &&
-                checkAllAliases(arg.slice(1), flags.bools)) {
-                key = arg.slice(1);
-                setArg(key, defaultValue(key));
-            }
-            else if (arg === '--') {
-                notFlags = args.slice(i + 1);
-                break;
-            }
-            else if (configuration['halt-at-non-option']) {
-                notFlags = args.slice(i);
-                break;
-            }
-            else {
-                pushPositional(arg);
-            }
-        }
-        applyEnvVars(argv, true);
-        applyEnvVars(argv, false);
-        setConfig(argv);
-        setConfigObjects();
-        applyDefaultsAndAliases(argv, flags.aliases, defaults, true);
-        applyCoercions(argv);
-        if (configuration['set-placeholder-key'])
-            setPlaceholderKeys(argv);
-        Object.keys(flags.counts).forEach(function (key) {
-            if (!hasKey(argv, key.split('.')))
-                setArg(key, 0);
-        });
-        if (notFlagsOption && notFlags.length)
-            argv[notFlagsArgv] = [];
-        notFlags.forEach(function (key) {
-            argv[notFlagsArgv].push(key);
-        });
-        if (configuration['camel-case-expansion'] && configuration['strip-dashed']) {
-            Object.keys(argv).filter(key => key !== '--' && key.includes('-')).forEach(key => {
-                delete argv[key];
-            });
-        }
-        if (configuration['strip-aliased']) {
-            [].concat(...Object.keys(aliases).map(k => aliases[k])).forEach(alias => {
-                if (configuration['camel-case-expansion'] && alias.includes('-')) {
-                    delete argv[alias.split('.').map(prop => camelCase(prop)).join('.')];
-                }
-                delete argv[alias];
-            });
-        }
-        function pushPositional(arg) {
-            const maybeCoercedNumber = maybeCoerceNumber('_', arg);
-            if (typeof maybeCoercedNumber === 'string' || typeof maybeCoercedNumber === 'number') {
-                argv._.push(maybeCoercedNumber);
-            }
-        }
-        function eatNargs(i, key, args, argAfterEqualSign) {
-            let ii;
-            let toEat = checkAllAliases(key, flags.nargs);
-            toEat = typeof toEat !== 'number' || isNaN(toEat) ? 1 : toEat;
-            if (toEat === 0) {
-                if (!isUndefined(argAfterEqualSign)) {
-                    error = Error(__('Argument unexpected for: %s', key));
-                }
-                setArg(key, defaultValue(key));
-                return i;
-            }
-            let available = isUndefined(argAfterEqualSign) ? 0 : 1;
-            if (configuration['nargs-eats-options']) {
-                if (args.length - (i + 1) + available < toEat) {
-                    error = Error(__('Not enough arguments following: %s', key));
-                }
-                available = toEat;
-            }
-            else {
-                for (ii = i + 1; ii < args.length; ii++) {
-                    if (!args[ii].match(/^-[^0-9]/) || args[ii].match(negative) || isUnknownOptionAsArg(args[ii]))
-                        available++;
-                    else
-                        break;
-                }
-                if (available < toEat)
-                    error = Error(__('Not enough arguments following: %s', key));
-            }
-            let consumed = Math.min(available, toEat);
-            if (!isUndefined(argAfterEqualSign) && consumed > 0) {
-                setArg(key, argAfterEqualSign);
-                consumed--;
-            }
-            for (ii = i + 1; ii < (consumed + i + 1); ii++) {
-                setArg(key, args[ii]);
-            }
-            return (i + consumed);
-        }
-        function eatArray(i, key, args, argAfterEqualSign) {
-            let argsToSet = [];
-            let next = argAfterEqualSign || args[i + 1];
-            const nargsCount = checkAllAliases(key, flags.nargs);
-            if (checkAllAliases(key, flags.bools) && !(/^(true|false)$/.test(next))) {
-                argsToSet.push(true);
-            }
-            else if (isUndefined(next) ||
-                (isUndefined(argAfterEqualSign) && /^-/.test(next) && !negative.test(next) && !isUnknownOptionAsArg(next))) {
-                if (defaults[key] !== undefined) {
-                    const defVal = defaults[key];
-                    argsToSet = Array.isArray(defVal) ? defVal : [defVal];
-                }
-            }
-            else {
-                if (!isUndefined(argAfterEqualSign)) {
-                    argsToSet.push(processValue(key, argAfterEqualSign));
-                }
-                for (let ii = i + 1; ii < args.length; ii++) {
-                    if ((!configuration['greedy-arrays'] && argsToSet.length > 0) ||
-                        (nargsCount && typeof nargsCount === 'number' && argsToSet.length >= nargsCount))
-                        break;
-                    next = args[ii];
-                    if (/^-/.test(next) && !negative.test(next) && !isUnknownOptionAsArg(next))
-                        break;
-                    i = ii;
-                    argsToSet.push(processValue(key, next));
-                }
-            }
-            if (typeof nargsCount === 'number' && ((nargsCount && argsToSet.length < nargsCount) ||
-                (isNaN(nargsCount) && argsToSet.length === 0))) {
-                error = Error(__('Not enough arguments following: %s', key));
-            }
-            setArg(key, argsToSet);
-            return i;
-        }
-        function setArg(key, val) {
-            if (/-/.test(key) && configuration['camel-case-expansion']) {
-                const alias = key.split('.').map(function (prop) {
-                    return camelCase(prop);
-                }).join('.');
-                addNewAlias(key, alias);
-            }
-            const value = processValue(key, val);
-            const splitKey = key.split('.');
-            setKey(argv, splitKey, value);
-            if (flags.aliases[key]) {
-                flags.aliases[key].forEach(function (x) {
-                    const keyProperties = x.split('.');
-                    setKey(argv, keyProperties, value);
-                });
-            }
-            if (splitKey.length > 1 && configuration['dot-notation']) {
-                (flags.aliases[splitKey[0]] || []).forEach(function (x) {
-                    let keyProperties = x.split('.');
-                    const a = [].concat(splitKey);
-                    a.shift();
-                    keyProperties = keyProperties.concat(a);
-                    if (!(flags.aliases[key] || []).includes(keyProperties.join('.'))) {
-                        setKey(argv, keyProperties, value);
-                    }
-                });
-            }
-            if (checkAllAliases(key, flags.normalize) && !checkAllAliases(key, flags.arrays)) {
-                const keys = [key].concat(flags.aliases[key] || []);
-                keys.forEach(function (key) {
-                    Object.defineProperty(argvReturn, key, {
-                        enumerable: true,
-                        get() {
-                            return val;
-                        },
-                        set(value) {
-                            val = typeof value === 'string' ? mixin.normalize(value) : value;
-                        }
-                    });
-                });
-            }
-        }
-        function addNewAlias(key, alias) {
-            if (!(flags.aliases[key] && flags.aliases[key].length)) {
-                flags.aliases[key] = [alias];
-                newAliases[alias] = true;
-            }
-            if (!(flags.aliases[alias] && flags.aliases[alias].length)) {
-                addNewAlias(alias, key);
-            }
-        }
-        function processValue(key, val) {
-            if (typeof val === 'string' &&
-                (val[0] === "'" || val[0] === '"') &&
-                val[val.length - 1] === val[0]) {
-                val = val.substring(1, val.length - 1);
-            }
-            if (checkAllAliases(key, flags.bools) || checkAllAliases(key, flags.counts)) {
-                if (typeof val === 'string')
-                    val = val === 'true';
-            }
-            let value = Array.isArray(val)
-                ? val.map(function (v) { return maybeCoerceNumber(key, v); })
-                : maybeCoerceNumber(key, val);
-            if (checkAllAliases(key, flags.counts) && (isUndefined(value) || typeof value === 'boolean')) {
-                value = increment();
-            }
-            if (checkAllAliases(key, flags.normalize) && checkAllAliases(key, flags.arrays)) {
-                if (Array.isArray(val))
-                    value = val.map((val) => { return mixin.normalize(val); });
-                else
-                    value = mixin.normalize(val);
-            }
-            return value;
-        }
-        function maybeCoerceNumber(key, value) {
-            if (!configuration['parse-positional-numbers'] && key === '_')
-                return value;
-            if (!checkAllAliases(key, flags.strings) && !checkAllAliases(key, flags.bools) && !Array.isArray(value)) {
-                const shouldCoerceNumber = looksLikeNumber(value) && configuration['parse-numbers'] && (Number.isSafeInteger(Math.floor(parseFloat(`${value}`))));
-                if (shouldCoerceNumber || (!isUndefined(value) && checkAllAliases(key, flags.numbers))) {
-                    value = Number(value);
-                }
-            }
-            return value;
-        }
-        function setConfig(argv) {
-            const configLookup = Object.create(null);
-            applyDefaultsAndAliases(configLookup, flags.aliases, defaults);
-            Object.keys(flags.configs).forEach(function (configKey) {
-                const configPath = argv[configKey] || configLookup[configKey];
-                if (configPath) {
-                    try {
-                        let config = null;
-                        const resolvedConfigPath = mixin.resolve(mixin.cwd(), configPath);
-                        const resolveConfig = flags.configs[configKey];
-                        if (typeof resolveConfig === 'function') {
-                            try {
-                                config = resolveConfig(resolvedConfigPath);
-                            }
-                            catch (e) {
-                                config = e;
-                            }
-                            if (config instanceof Error) {
-                                error = config;
-                                return;
-                            }
-                        }
-                        else {
-                            config = mixin.require(resolvedConfigPath);
-                        }
-                        setConfigObject(config);
-                    }
-                    catch (ex) {
-                        if (ex.name === 'PermissionDenied')
-                            error = ex;
-                        else if (argv[configKey])
-                            error = Error(__('Invalid JSON config file: %s', configPath));
-                    }
-                }
-            });
-        }
-        function setConfigObject(config, prev) {
-            Object.keys(config).forEach(function (key) {
-                const value = config[key];
-                const fullKey = prev ? prev + '.' + key : key;
-                if (typeof value === 'object' && value !== null && !Array.isArray(value) && configuration['dot-notation']) {
-                    setConfigObject(value, fullKey);
-                }
-                else {
-                    if (!hasKey(argv, fullKey.split('.')) || (checkAllAliases(fullKey, flags.arrays) && configuration['combine-arrays'])) {
-                        setArg(fullKey, value);
-                    }
-                }
-            });
-        }
-        function setConfigObjects() {
-            if (typeof configObjects !== 'undefined') {
-                configObjects.forEach(function (configObject) {
-                    setConfigObject(configObject);
-                });
-            }
-        }
-        function applyEnvVars(argv, configOnly) {
-            if (typeof envPrefix === 'undefined')
-                return;
-            const prefix = typeof envPrefix === 'string' ? envPrefix : '';
-            const env = mixin.env();
-            Object.keys(env).forEach(function (envVar) {
-                if (prefix === '' || envVar.lastIndexOf(prefix, 0) === 0) {
-                    const keys = envVar.split('__').map(function (key, i) {
-                        if (i === 0) {
-                            key = key.substring(prefix.length);
-                        }
-                        return camelCase(key);
-                    });
-                    if (((configOnly && flags.configs[keys.join('.')]) || !configOnly) && !hasKey(argv, keys)) {
-                        setArg(keys.join('.'), env[envVar]);
-                    }
-                }
-            });
-        }
-        function applyCoercions(argv) {
-            let coerce;
-            const applied = new Set();
-            Object.keys(argv).forEach(function (key) {
-                if (!applied.has(key)) {
-                    coerce = checkAllAliases(key, flags.coercions);
-                    if (typeof coerce === 'function') {
-                        try {
-                            const value = maybeCoerceNumber(key, coerce(argv[key]));
-                            ([].concat(flags.aliases[key] || [], key)).forEach(ali => {
-                                applied.add(ali);
-                                argv[ali] = value;
-                            });
-                        }
-                        catch (err) {
-                            error = err;
-                        }
-                    }
-                }
-            });
-        }
-        function setPlaceholderKeys(argv) {
-            flags.keys.forEach((key) => {
-                if (~key.indexOf('.'))
-                    return;
-                if (typeof argv[key] === 'undefined')
-                    argv[key] = undefined;
-            });
-            return argv;
-        }
-        function applyDefaultsAndAliases(obj, aliases, defaults, canLog = false) {
-            Object.keys(defaults).forEach(function (key) {
-                if (!hasKey(obj, key.split('.'))) {
-                    setKey(obj, key.split('.'), defaults[key]);
-                    if (canLog)
-                        defaulted[key] = true;
-                    (aliases[key] || []).forEach(function (x) {
-                        if (hasKey(obj, x.split('.')))
-                            return;
-                        setKey(obj, x.split('.'), defaults[key]);
-                    });
-                }
-            });
-        }
-        function hasKey(obj, keys) {
-            let o = obj;
-            if (!configuration['dot-notation'])
-                keys = [keys.join('.')];
-            keys.slice(0, -1).forEach(function (key) {
-                o = (o[key] || {});
-            });
-            const key = keys[keys.length - 1];
-            if (typeof o !== 'object')
-                return false;
-            else
-                return key in o;
-        }
-        function setKey(obj, keys, value) {
-            let o = obj;
-            if (!configuration['dot-notation'])
-                keys = [keys.join('.')];
-            keys.slice(0, -1).forEach(function (key) {
-                key = sanitizeKey(key);
-                if (typeof o === 'object' && o[key] === undefined) {
-                    o[key] = {};
-                }
-                if (typeof o[key] !== 'object' || Array.isArray(o[key])) {
-                    if (Array.isArray(o[key])) {
-                        o[key].push({});
-                    }
-                    else {
-                        o[key] = [o[key], {}];
-                    }
-                    o = o[key][o[key].length - 1];
-                }
-                else {
-                    o = o[key];
-                }
-            });
-            const key = sanitizeKey(keys[keys.length - 1]);
-            const isTypeArray = checkAllAliases(keys.join('.'), flags.arrays);
-            const isValueArray = Array.isArray(value);
-            let duplicate = configuration['duplicate-arguments-array'];
-            if (!duplicate && checkAllAliases(key, flags.nargs)) {
-                duplicate = true;
-                if ((!isUndefined(o[key]) && flags.nargs[key] === 1) || (Array.isArray(o[key]) && o[key].length === flags.nargs[key])) {
-                    o[key] = undefined;
-                }
-            }
-            if (value === increment()) {
-                o[key] = increment(o[key]);
-            }
-            else if (Array.isArray(o[key])) {
-                if (duplicate && isTypeArray && isValueArray) {
-                    o[key] = configuration['flatten-duplicate-arrays'] ? o[key].concat(value) : (Array.isArray(o[key][0]) ? o[key] : [o[key]]).concat([value]);
-                }
-                else if (!duplicate && Boolean(isTypeArray) === Boolean(isValueArray)) {
-                    o[key] = value;
-                }
-                else {
-                    o[key] = o[key].concat([value]);
-                }
-            }
-            else if (o[key] === undefined && isTypeArray) {
-                o[key] = isValueArray ? value : [value];
-            }
-            else if (duplicate && !(o[key] === undefined ||
-                checkAllAliases(key, flags.counts) ||
-                checkAllAliases(key, flags.bools))) {
-                o[key] = [o[key], value];
-            }
-            else {
-                o[key] = value;
-            }
-        }
-        function extendAliases(...args) {
-            args.forEach(function (obj) {
-                Object.keys(obj || {}).forEach(function (key) {
-                    if (flags.aliases[key])
-                        return;
-                    flags.aliases[key] = [].concat(aliases[key] || []);
-                    flags.aliases[key].concat(key).forEach(function (x) {
-                        if (/-/.test(x) && configuration['camel-case-expansion']) {
-                            const c = camelCase(x);
-                            if (c !== key && flags.aliases[key].indexOf(c) === -1) {
-                                flags.aliases[key].push(c);
-                                newAliases[c] = true;
-                            }
-                        }
-                    });
-                    flags.aliases[key].concat(key).forEach(function (x) {
-                        if (x.length > 1 && /[A-Z]/.test(x) && configuration['camel-case-expansion']) {
-                            const c = decamelize(x, '-');
-                            if (c !== key && flags.aliases[key].indexOf(c) === -1) {
-                                flags.aliases[key].push(c);
-                                newAliases[c] = true;
-                            }
-                        }
-                    });
-                    flags.aliases[key].forEach(function (x) {
-                        flags.aliases[x] = [key].concat(flags.aliases[key].filter(function (y) {
-                            return x !== y;
-                        }));
-                    });
-                });
-            });
-        }
-        function checkAllAliases(key, flag) {
-            const toCheck = [].concat(flags.aliases[key] || [], key);
-            const keys = Object.keys(flag);
-            const setAlias = toCheck.find(key => keys.includes(key));
-            return setAlias ? flag[setAlias] : false;
-        }
-        function hasAnyFlag(key) {
-            const flagsKeys = Object.keys(flags);
-            const toCheck = [].concat(flagsKeys.map(k => flags[k]));
-            return toCheck.some(function (flag) {
-                return Array.isArray(flag) ? flag.includes(key) : flag[key];
-            });
-        }
-        function hasFlagsMatching(arg, ...patterns) {
-            const toCheck = [].concat(...patterns);
-            return toCheck.some(function (pattern) {
-                const match = arg.match(pattern);
-                return match && hasAnyFlag(match[1]);
-            });
-        }
-        function hasAllShortFlags(arg) {
-            if (arg.match(negative) || !arg.match(/^-[^-]+/)) {
-                return false;
-            }
-            let hasAllFlags = true;
-            let next;
-            const letters = arg.slice(1).split('');
-            for (let j = 0; j < letters.length; j++) {
-                next = arg.slice(j + 2);
-                if (!hasAnyFlag(letters[j])) {
-                    hasAllFlags = false;
-                    break;
-                }
-                if ((letters[j + 1] && letters[j + 1] === '=') ||
-                    next === '-' ||
-                    (/[A-Za-z]/.test(letters[j]) && /^-?\d+(\.\d*)?(e-?\d+)?$/.test(next)) ||
-                    (letters[j + 1] && letters[j + 1].match(/\W/))) {
-                    break;
-                }
-            }
-            return hasAllFlags;
-        }
-        function isUnknownOptionAsArg(arg) {
-            return configuration['unknown-options-as-args'] && isUnknownOption(arg);
-        }
-        function isUnknownOption(arg) {
-            if (arg.match(negative)) {
-                return false;
-            }
-            if (hasAllShortFlags(arg)) {
-                return false;
-            }
-            const flagWithEquals = /^-+([^=]+?)=[\s\S]*$/;
-            const normalFlag = /^-+([^=]+?)$/;
-            const flagEndingInHyphen = /^-+([^=]+?)-$/;
-            const flagEndingInDigits = /^-+([^=]+?\d+)$/;
-            const flagEndingInNonWordCharacters = /^-+([^=]+?)\W+.*$/;
-            return !hasFlagsMatching(arg, flagWithEquals, negatedBoolean, normalFlag, flagEndingInHyphen, flagEndingInDigits, flagEndingInNonWordCharacters);
-        }
-        function defaultValue(key) {
-            if (!checkAllAliases(key, flags.bools) &&
-                !checkAllAliases(key, flags.counts) &&
-                `${key}` in defaults) {
-                return defaults[key];
-            }
-            else {
-                return defaultForType(guessType(key));
-            }
-        }
-        function defaultForType(type) {
-            const def = {
-                boolean: true,
-                string: '',
-                number: undefined,
-                array: []
-            };
-            return def[type];
-        }
-        function guessType(key) {
-            let type = 'boolean';
-            if (checkAllAliases(key, flags.strings))
-                type = 'string';
-            else if (checkAllAliases(key, flags.numbers))
-                type = 'number';
-            else if (checkAllAliases(key, flags.bools))
-                type = 'boolean';
-            else if (checkAllAliases(key, flags.arrays))
-                type = 'array';
-            return type;
-        }
-        function isUndefined(num) {
-            return num === undefined;
-        }
-        function checkConfiguration() {
-            Object.keys(flags.counts).find(key => {
-                if (checkAllAliases(key, flags.arrays)) {
-                    error = Error(__('Invalid configuration: %s, opts.count excludes opts.array.', key));
-                    return true;
-                }
-                else if (checkAllAliases(key, flags.nargs)) {
-                    error = Error(__('Invalid configuration: %s, opts.count excludes opts.narg.', key));
-                    return true;
-                }
-                return false;
-            });
-        }
-        return {
-            aliases: Object.assign({}, flags.aliases),
-            argv: Object.assign(argvReturn, argv),
-            configuration: configuration,
-            defaulted: Object.assign({}, defaulted),
-            error: error,
-            newAliases: Object.assign({}, newAliases)
-        };
-    }
-}
-function combineAliases(aliases) {
-    const aliasArrays = [];
-    const combined = Object.create(null);
-    let change = true;
-    Object.keys(aliases).forEach(function (key) {
-        aliasArrays.push([].concat(aliases[key], key));
-    });
-    while (change) {
-        change = false;
-        for (let i = 0; i < aliasArrays.length; i++) {
-            for (let ii = i + 1; ii < aliasArrays.length; ii++) {
-                const intersect = aliasArrays[i].filter(function (v) {
-                    return aliasArrays[ii].indexOf(v) !== -1;
-                });
-                if (intersect.length) {
-                    aliasArrays[i] = aliasArrays[i].concat(aliasArrays[ii]);
-                    aliasArrays.splice(ii, 1);
-                    change = true;
-                    break;
-                }
-            }
-        }
-    }
-    aliasArrays.forEach(function (aliasArray) {
-        aliasArray = aliasArray.filter(function (v, i, self) {
-            return self.indexOf(v) === i;
-        });
-        const lastAlias = aliasArray.pop();
-        if (lastAlias !== undefined && typeof lastAlias === 'string') {
-            combined[lastAlias] = aliasArray;
-        }
-    });
-    return combined;
-}
-function increment(orig) {
-    return orig !== undefined ? orig + 1 : 1;
-}
-function sanitizeKey(key) {
-    if (key === '__proto__')
-        return '___proto___';
-    return key;
-}
+;// CONCATENATED MODULE: ./node_modules/yargs/lib/platform-shims/esm.mjs
 
-const minNodeVersion = (process && process.env && process.env.YARGS_MIN_NODE_VERSION)
-    ? Number(process.env.YARGS_MIN_NODE_VERSION) : 10;
-if (process && process.version) {
-    const major = Number(process.version.match(/v([^.]+)/)[1]);
-    if (major < minNodeVersion) {
-        throw Error(`yargs parser supports a minimum Node.js version of ${minNodeVersion}. Read our version support policy: https://github.com/yargs/yargs-parser#supported-nodejs-versions`);
-    }
-}
-const env = process ? process.env : {};
-const parser = new YargsParser({
+
+;
+
+
+
+
+
+
+
+
+
+
+
+const REQUIRE_ERROR = 'require is not supported by ESM'
+const REQUIRE_DIRECTORY_ERROR = 'loading a directory of commands is not supported yet for ESM'
+
+const mainFilename = (0,external_url_namespaceObject.fileURLToPath)("file:///Users/arquintlinard/ETH/PhD/check-license-header/node_modules/yargs/lib/platform-shims/esm.mjs").split('node_modules')[0]
+const esm_dirname = (0,external_url_namespaceObject.fileURLToPath)("file:///Users/arquintlinard/ETH/PhD/check-license-header/node_modules/yargs/lib/platform-shims/esm.mjs")
+
+/* harmony default export */ const esm = ({
+  assert: {
+    notStrictEqual: external_assert_.notStrictEqual,
+    strictEqual: external_assert_.strictEqual
+  },
+  cliui: ui,
+  findUp: sync,
+  getEnv: (key) => {
+    return process.env[key]
+  },
+  inspect: external_util_.inspect,
+  getCallerFile: () => {
+    throw new YError(REQUIRE_DIRECTORY_ERROR)
+  },
+  getProcessArgvBin: getProcessArgvBin,
+  mainFilename: mainFilename || process.cwd(),
+  Parser: lib,
+  path: {
+    basename: external_path_.basename,
+    dirname: external_path_.dirname,
+    extname: external_path_.extname,
+    relative: external_path_.relative,
+    resolve: external_path_.resolve
+  },
+  process: {
+    argv: () => process.argv,
     cwd: process.cwd,
-    env: () => {
-        return env;
-    },
-    format: util.format,
-    normalize: path.normalize,
-    resolve: path.resolve,
-    require: (path) => {
-        if (true) {
-            return __webpack_require__(5670)(path);
-        }
-        else {}
-    }
+    execPath: () => process.execPath,
+    exit: process.exit,
+    nextTick: process.nextTick,
+    stdColumns: typeof process.stdout.columns !== 'undefined' ? process.stdout.columns : null
+  },
+  readFileSync: external_fs_.readFileSync,
+  require: () => {
+    throw new YError(REQUIRE_ERROR)
+  },
+  requireDirectory: () => {
+    throw new YError(REQUIRE_DIRECTORY_ERROR)
+  },
+  stringWidth: (str) => {
+    return [...str].length
+  },
+  y18n: node_modules_y18n({
+    directory: (0,external_path_.resolve)(esm_dirname, '../../../locales'),
+    updateFiles: false
+  })
 });
-const yargsParser = function Parser(args, opts) {
-    const result = parser.parse(args.slice(), opts);
-    return result.argv;
-};
-yargsParser.detailed = function (args, opts) {
-    return parser.parse(args.slice(), opts);
-};
-yargsParser.camelCase = camelCase;
-yargsParser.decamelize = decamelize;
-yargsParser.looksLikeNumber = looksLikeNumber;
 
-module.exports = yargsParser;
-
-
-/***/ }),
-
-/***/ 9567:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var assert = __webpack_require__(2357);
-
-class YError extends Error {
-    constructor(msg) {
-        super(msg || 'yargs error');
-        this.name = 'YError';
-        Error.captureStackTrace(this, YError);
-    }
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/typings/common-types.js
+function assertNotStrictEqual(actual, expected, shim, message) {
+    shim.assert.notStrictEqual(actual, expected, message);
+}
+function assertSingleKey(actual, shim) {
+    shim.assert.strictEqual(typeof actual, 'string');
+}
+function objectKeys(object) {
+    return Object.keys(object);
 }
 
-let previouslyVisitedConfigs = [];
-let shim;
-function applyExtends(config, cwd, mergeExtends, _shim) {
-    shim = _shim;
-    let defaultConfig = {};
-    if (Object.prototype.hasOwnProperty.call(config, 'extends')) {
-        if (typeof config.extends !== 'string')
-            return defaultConfig;
-        const isPath = /\.json|\..*rc$/.test(config.extends);
-        let pathToDefault = null;
-        if (!isPath) {
-            try {
-                pathToDefault = /*require.resolve*/(__webpack_require__(9167).resolve(config.extends));
-            }
-            catch (_err) {
-                return config;
-            }
-        }
-        else {
-            pathToDefault = getPathToDefaultConfig(cwd, config.extends);
-        }
-        checkForCircularExtends(pathToDefault);
-        previouslyVisitedConfigs.push(pathToDefault);
-        defaultConfig = isPath
-            ? JSON.parse(shim.readFileSync(pathToDefault, 'utf8'))
-            : __webpack_require__(9167)(config.extends);
-        delete config.extends;
-        defaultConfig = applyExtends(defaultConfig, shim.path.dirname(pathToDefault), mergeExtends, shim);
-    }
-    previouslyVisitedConfigs = [];
-    return mergeExtends
-        ? mergeDeep(defaultConfig, config)
-        : Object.assign({}, defaultConfig, config);
-}
-function checkForCircularExtends(cfgPath) {
-    if (previouslyVisitedConfigs.indexOf(cfgPath) > -1) {
-        throw new YError(`Circular extended configurations: '${cfgPath}'.`);
-    }
-}
-function getPathToDefaultConfig(cwd, pathToExtend) {
-    return shim.path.resolve(cwd, pathToExtend);
-}
-function mergeDeep(config1, config2) {
-    const target = {};
-    function isObject(obj) {
-        return obj && typeof obj === 'object' && !Array.isArray(obj);
-    }
-    Object.assign(target, config1);
-    for (const key of Object.keys(config2)) {
-        if (isObject(config2[key]) && isObject(target[key])) {
-            target[key] = mergeDeep(config1[key], config2[key]);
-        }
-        else {
-            target[key] = config2[key];
-        }
-    }
-    return target;
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/utils/is-promise.js
+function isPromise(maybePromise) {
+    return (!!maybePromise &&
+        !!maybePromise.then &&
+        typeof maybePromise.then === 'function');
 }
 
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/parse-command.js
 function parseCommand(cmd) {
     const extraSpacesStrippedCommand = cmd.replace(/\s{2,}/g, ' ');
     const splitCommand = extraSpacesStrippedCommand.split(/\s+(?![^[]*]|[^<]*>)/);
@@ -14929,6 +12675,9 @@ function parseCommand(cmd) {
     });
     return parsedCommand;
 }
+
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/argsert.js
+
 
 const positionName = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth'];
 function argsert(arg1, arg2, arg3) {
@@ -14991,31 +12740,8 @@ function argumentTypeError(observedType, allowedTypes, position) {
     throw new YError(`Invalid ${positionName[position] || 'manyith'} argument. Expected ${allowedTypes.join(' or ')} but received ${observedType}.`);
 }
 
-function isPromise(maybePromise) {
-    return (!!maybePromise &&
-        !!maybePromise.then &&
-        typeof maybePromise.then === 'function');
-}
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/middleware.js
 
-function assertNotStrictEqual(actual, expected, shim, message) {
-    shim.assert.notStrictEqual(actual, expected, message);
-}
-function assertSingleKey(actual, shim) {
-    shim.assert.strictEqual(typeof actual, 'string');
-}
-function objectKeys(object) {
-    return Object.keys(object);
-}
-
-function objFilter(original = {}, filter = () => true) {
-    const obj = {};
-    objectKeys(original).forEach(key => {
-        if (filter(key, original[key])) {
-            obj[key] = original[key];
-        }
-    });
-    return obj;
-}
 
 function globalMiddlewareFactory(globalMiddleware, context) {
     return function (callback, applyBeforeValidation = false) {
@@ -15069,43 +12795,27 @@ function applyMiddleware(argv, yargs, middlewares, beforeValidation) {
     }, argv);
 }
 
-function getProcessArgvBinIndex() {
-    if (isBundledElectronApp())
-        return 0;
-    return 1;
-}
-function isBundledElectronApp() {
-    return isElectronApp() && !process.defaultApp;
-}
-function isElectronApp() {
-    return !!process.versions.electron;
-}
-function hideBin(argv) {
-    return argv.slice(getProcessArgvBinIndex() + 1);
-}
-function getProcessArgvBin() {
-    return process.argv[getProcessArgvBinIndex()];
-}
-
-var processArgv = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  hideBin: hideBin,
-  getProcessArgvBin: getProcessArgvBin
-});
-
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/utils/which-module.js
 function whichModule(exported) {
-    if (false)
-        {}
-    for (let i = 0, files = Object.keys(__webpack_require__.c), mod; i < files.length; i++) {
-        mod = __webpack_require__.c[files[i]];
+    if (typeof require === 'undefined')
+        return null;
+    for (let i = 0, files = Object.keys(require.cache), mod; i < files.length; i++) {
+        mod = require.cache[files[i]];
         if (mod.exports === exported)
             return mod;
     }
     return null;
 }
 
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/command.js
+
+
+
+
+
+
 const DEFAULT_MARKER = /(^\*)|(^\$0)/;
-function command(yargs, usage, validation, globalMiddleware = [], shim) {
+function command_command(yargs, usage, validation, globalMiddleware = [], shim) {
     const self = {};
     let handlers = {};
     let aliasMap = {};
@@ -15115,8 +12825,14 @@ function command(yargs, usage, validation, globalMiddleware = [], shim) {
         const middlewares = commandMiddlewareFactory(commandMiddleware);
         handler = handler || (() => { });
         if (Array.isArray(cmd)) {
-            aliases = cmd.slice(1);
-            cmd = cmd[0];
+            if (isCommandAndAliases(cmd)) {
+                [cmd, ...aliases] = cmd;
+            }
+            else {
+                for (const command of cmd) {
+                    self.addHandler(command);
+                }
+            }
         }
         else if (isCommandHandlerDefinition(cmd)) {
             let command = Array.isArray(cmd.command) || typeof cmd.command === 'string'
@@ -15127,45 +12843,47 @@ function command(yargs, usage, validation, globalMiddleware = [], shim) {
             self.addHandler(command, extractDesc(cmd), cmd.builder, cmd.handler, cmd.middlewares, cmd.deprecated);
             return;
         }
-        if (isCommandBuilderDefinition(builder)) {
+        else if (isCommandBuilderDefinition(builder)) {
             self.addHandler([cmd].concat(aliases), description, builder.builder, builder.handler, builder.middlewares, builder.deprecated);
             return;
         }
-        const parsedCommand = parseCommand(cmd);
-        aliases = aliases.map(alias => parseCommand(alias).cmd);
-        let isDefault = false;
-        const parsedAliases = [parsedCommand.cmd].concat(aliases).filter(c => {
-            if (DEFAULT_MARKER.test(c)) {
-                isDefault = true;
-                return false;
+        if (typeof cmd === 'string') {
+            const parsedCommand = parseCommand(cmd);
+            aliases = aliases.map(alias => parseCommand(alias).cmd);
+            let isDefault = false;
+            const parsedAliases = [parsedCommand.cmd].concat(aliases).filter(c => {
+                if (DEFAULT_MARKER.test(c)) {
+                    isDefault = true;
+                    return false;
+                }
+                return true;
+            });
+            if (parsedAliases.length === 0 && isDefault)
+                parsedAliases.push('$0');
+            if (isDefault) {
+                parsedCommand.cmd = parsedAliases[0];
+                aliases = parsedAliases.slice(1);
+                cmd = cmd.replace(DEFAULT_MARKER, parsedCommand.cmd);
             }
-            return true;
-        });
-        if (parsedAliases.length === 0 && isDefault)
-            parsedAliases.push('$0');
-        if (isDefault) {
-            parsedCommand.cmd = parsedAliases[0];
-            aliases = parsedAliases.slice(1);
-            cmd = cmd.replace(DEFAULT_MARKER, parsedCommand.cmd);
+            aliases.forEach(alias => {
+                aliasMap[alias] = parsedCommand.cmd;
+            });
+            if (description !== false) {
+                usage.command(cmd, description, isDefault, aliases, deprecated);
+            }
+            handlers[parsedCommand.cmd] = {
+                original: cmd,
+                description,
+                handler,
+                builder: builder || {},
+                middlewares,
+                deprecated,
+                demanded: parsedCommand.demanded,
+                optional: parsedCommand.optional,
+            };
+            if (isDefault)
+                defaultCommand = handlers[parsedCommand.cmd];
         }
-        aliases.forEach(alias => {
-            aliasMap[alias] = parsedCommand.cmd;
-        });
-        if (description !== false) {
-            usage.command(cmd, description, isDefault, aliases, deprecated);
-        }
-        handlers[parsedCommand.cmd] = {
-            original: cmd,
-            description,
-            handler,
-            builder: builder || {},
-            middlewares,
-            deprecated,
-            demanded: parsedCommand.demanded,
-            optional: parsedCommand.optional,
-        };
-        if (isDefault)
-            defaultCommand = handlers[parsedCommand.cmd];
     };
     self.addDirectory = function addDirectory(dir, context, req, callerFile, opts) {
         opts = opts || {};
@@ -15326,7 +13044,7 @@ function command(yargs, usage, validation, globalMiddleware = [], shim) {
         if (isCommandBuilderCallback(builder)) {
             builder(yargs);
         }
-        else {
+        else if (!isCommandBuilderDefinition(builder)) {
             Object.keys(builder).forEach(key => {
                 yargs.option(key, builder[key]);
             });
@@ -15450,13 +13168,18 @@ function command(yargs, usage, validation, globalMiddleware = [], shim) {
     };
     return self;
 }
-function isCommandHandlerDefinition(cmd) {
-    return typeof cmd === 'object';
-}
 function isCommandBuilderDefinition(builder) {
     return (typeof builder === 'object' &&
         !!builder.builder &&
         typeof builder.handler === 'function');
+}
+function isCommandAndAliases(cmd) {
+    if (cmd.every(c => typeof c === 'string')) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 function isCommandBuilderCallback(builder) {
     return typeof builder === 'function';
@@ -15464,7 +13187,23 @@ function isCommandBuilderCallback(builder) {
 function isCommandBuilderOptionDefinitions(builder) {
     return typeof builder === 'object';
 }
+function isCommandHandlerDefinition(cmd) {
+    return typeof cmd === 'object' && !Array.isArray(cmd);
+}
 
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/utils/obj-filter.js
+
+function objFilter(original = {}, filter = () => true) {
+    const obj = {};
+    objectKeys(original).forEach(key => {
+        if (filter(key, original[key])) {
+            obj[key] = original[key];
+        }
+    });
+    return obj;
+}
+
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/utils/set-blocking.js
 function setBlocking(blocking) {
     if (typeof process === 'undefined')
         return;
@@ -15478,7 +13217,12 @@ function setBlocking(blocking) {
     });
 }
 
-function usage(yargs, y18n, shim) {
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/usage.js
+
+
+
+
+function usage_usage(yargs, y18n, shim) {
     const __ = y18n.__;
     const self = {};
     const fails = [];
@@ -16023,6 +13767,7 @@ function getText(text) {
     return isIndentedText(text) ? text.text : text;
 }
 
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/completion-templates.js
 const completionShTemplate = `###-begin-{{app_name}}-completions-###
 #
 # yargs command completion script
@@ -16071,7 +13816,13 @@ compdef _{{app_name}}_yargs_completions {{app_name}}
 ###-end-{{app_name}}-completions-###
 `;
 
-function completion(yargs, usage, command, shim) {
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/completion.js
+
+
+
+
+
+function completion_completion(yargs, usage, command, shim) {
     const self = {
         completionKey: 'get-yargs-completions',
     };
@@ -16195,6 +13946,7 @@ function isSyncCompletionFunction(completionFunction) {
     return completionFunction.length < 3;
 }
 
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/utils/levenshtein.js
 function levenshtein(a, b) {
     if (a.length === 0)
         return b.length;
@@ -16222,8 +13974,13 @@ function levenshtein(a, b) {
     return matrix[b.length][a.length];
 }
 
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/validation.js
+
+
+
+
 const specialKeys = ['$0', '--', '_'];
-function validation(yargs, usage, y18n, shim) {
+function validation_validation(yargs, usage, y18n, shim) {
     const __ = y18n.__;
     const __n = y18n.__n;
     const self = {};
@@ -16527,23 +14284,97 @@ function validation(yargs, usage, y18n, shim) {
     return self;
 }
 
-let shim$1;
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/utils/apply-extends.js
+
+let previouslyVisitedConfigs = [];
+let apply_extends_shim;
+function applyExtends(config, cwd, mergeExtends, _shim) {
+    apply_extends_shim = _shim;
+    let defaultConfig = {};
+    if (Object.prototype.hasOwnProperty.call(config, 'extends')) {
+        if (typeof config.extends !== 'string')
+            return defaultConfig;
+        const isPath = /\.json|\..*rc$/.test(config.extends);
+        let pathToDefault = null;
+        if (!isPath) {
+            try {
+                pathToDefault = require.resolve(config.extends);
+            }
+            catch (_err) {
+                return config;
+            }
+        }
+        else {
+            pathToDefault = getPathToDefaultConfig(cwd, config.extends);
+        }
+        checkForCircularExtends(pathToDefault);
+        previouslyVisitedConfigs.push(pathToDefault);
+        defaultConfig = isPath
+            ? JSON.parse(apply_extends_shim.readFileSync(pathToDefault, 'utf8'))
+            : require(config.extends);
+        delete config.extends;
+        defaultConfig = applyExtends(defaultConfig, apply_extends_shim.path.dirname(pathToDefault), mergeExtends, apply_extends_shim);
+    }
+    previouslyVisitedConfigs = [];
+    return mergeExtends
+        ? mergeDeep(defaultConfig, config)
+        : Object.assign({}, defaultConfig, config);
+}
+function checkForCircularExtends(cfgPath) {
+    if (previouslyVisitedConfigs.indexOf(cfgPath) > -1) {
+        throw new YError(`Circular extended configurations: '${cfgPath}'.`);
+    }
+}
+function getPathToDefaultConfig(cwd, pathToExtend) {
+    return apply_extends_shim.path.resolve(cwd, pathToExtend);
+}
+function mergeDeep(config1, config2) {
+    const target = {};
+    function isObject(obj) {
+        return obj && typeof obj === 'object' && !Array.isArray(obj);
+    }
+    Object.assign(target, config1);
+    for (const key of Object.keys(config2)) {
+        if (isObject(config2[key]) && isObject(target[key])) {
+            target[key] = mergeDeep(config1[key], config2[key]);
+        }
+        else {
+            target[key] = config2[key];
+        }
+    }
+    return target;
+}
+
+;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/yargs-factory.js
+
+
+
+
+
+
+
+
+
+
+
+
+let yargs_factory_shim;
 function YargsWithShim(_shim) {
-    shim$1 = _shim;
+    yargs_factory_shim = _shim;
     return Yargs;
 }
-function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
+function Yargs(processArgs = [], cwd = yargs_factory_shim.process.cwd(), parentRequire) {
     const self = {};
-    let command$1;
-    let completion$1 = null;
+    let command;
+    let completion = null;
     let groups = {};
     const globalMiddleware = [];
     let output = '';
     const preservedGroups = {};
-    let usage$1;
-    let validation$1;
+    let usage;
+    let validation;
     let handlerFinishCommand = null;
-    const y18n = shim$1.y18n;
+    const y18n = yargs_factory_shim.y18n;
     self.middleware = globalMiddlewareFactory(globalMiddleware, self);
     self.scriptName = function (scriptName) {
         self.customScriptName = true;
@@ -16551,11 +14382,11 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
         return self;
     };
     let default$0;
-    if (/\b(node|iojs|electron)(\.exe)?$/.test(shim$1.process.argv()[0])) {
-        default$0 = shim$1.process.argv().slice(1, 2);
+    if (/\b(node|iojs|electron)(\.exe)?$/.test(yargs_factory_shim.process.argv()[0])) {
+        default$0 = yargs_factory_shim.process.argv().slice(1, 2);
     }
     else {
-        default$0 = shim$1.process.argv().slice(0, 1);
+        default$0 = yargs_factory_shim.process.argv().slice(0, 1);
     }
     self.$0 = default$0
         .map(x => {
@@ -16564,10 +14395,10 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
     })
         .join(' ')
         .trim();
-    if (shim$1.getEnv('_') && shim$1.getProcessArgvBin() === shim$1.getEnv('_')) {
-        self.$0 = shim$1
+    if (yargs_factory_shim.getEnv('_') && yargs_factory_shim.getProcessArgvBin() === yargs_factory_shim.getEnv('_')) {
+        self.$0 = yargs_factory_shim
             .getEnv('_')
-            .replace(`${shim$1.path.dirname(shim$1.process.execPath())}/`, '');
+            .replace(`${yargs_factory_shim.path.dirname(yargs_factory_shim.process.execPath())}/`, '');
     }
     const context = { resets: -1, commands: [], fullCommands: [], files: [] };
     self.getContext = () => context;
@@ -16577,7 +14408,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
         hasOutput = true;
         exitError = err;
         if (exitProcess)
-            shim$1.process.exit(code);
+            yargs_factory_shim.process.exit(code);
     };
     let completionCommand = null;
     self.completion = function (cmd, desc, fn) {
@@ -16592,7 +14423,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
         }
         self.command(completionCommand, desc);
         if (fn)
-            completion$1.registerFunction(fn);
+            completion.registerFunction(fn);
         return self;
     };
     let options;
@@ -16650,15 +14481,15 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
         });
         tmpOptions.envPrefix = options.envPrefix;
         options = tmpOptions;
-        usage$1 = usage$1 ? usage$1.reset(localLookup) : usage(self, y18n, shim$1);
-        validation$1 = validation$1
-            ? validation$1.reset(localLookup)
-            : validation(self, usage$1, y18n, shim$1);
-        command$1 = command$1
-            ? command$1.reset()
-            : command(self, usage$1, validation$1, globalMiddleware, shim$1);
-        if (!completion$1)
-            completion$1 = completion(self, usage$1, command$1, shim$1);
+        usage = usage ? usage.reset(localLookup) : usage_usage(self, y18n, yargs_factory_shim);
+        validation = validation
+            ? validation.reset(localLookup)
+            : validation_validation(self, usage, y18n, yargs_factory_shim);
+        command = command
+            ? command.reset()
+            : command_command(self, usage, validation, globalMiddleware, yargs_factory_shim);
+        if (!completion)
+            completion = completion_completion(self, usage, command, yargs_factory_shim);
         completionCommand = null;
         output = '';
         exitError = null;
@@ -16686,13 +14517,13 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
             parseContext,
             handlerFinishCommand,
         });
-        usage$1.freeze();
-        validation$1.freeze();
-        command$1.freeze();
+        usage.freeze();
+        validation.freeze();
+        command.freeze();
     }
     function unfreeze() {
         const frozen = frozens.pop();
-        assertNotStrictEqual(frozen, undefined, shim$1);
+        assertNotStrictEqual(frozen, undefined, yargs_factory_shim);
         let configObjects;
         ({
             options,
@@ -16712,9 +14543,9 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
             handlerFinishCommand,
         } = frozen);
         options.configObjects = configObjects;
-        usage$1.unfreeze();
-        validation$1.unfreeze();
-        command$1.unfreeze();
+        usage.unfreeze();
+        validation.unfreeze();
+        command.unfreeze();
     }
     self.boolean = function (keys) {
         argsert('<array|string>', [keys], arguments.length);
@@ -16786,13 +14617,13 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
     self.default = self.defaults = function (key, value, defaultDescription) {
         argsert('<object|string|array> [*] [string]', [key, value, defaultDescription], arguments.length);
         if (defaultDescription) {
-            assertSingleKey(key, shim$1);
+            assertSingleKey(key, yargs_factory_shim);
             options.defaultDescription[key] = defaultDescription;
         }
         if (typeof value === 'function') {
-            assertSingleKey(key, shim$1);
+            assertSingleKey(key, yargs_factory_shim);
             if (!options.defaultDescription[key])
-                options.defaultDescription[key] = usage$1.functionDescription(value);
+                options.defaultDescription[key] = usage.functionDescription(value);
             value = value.call();
         }
         populateParserHintSingleValueDictionary(self.default, 'default', key, value);
@@ -16801,7 +14632,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
     self.describe = function (key, desc) {
         argsert('<object|string|array> [string]', [key, desc], arguments.length);
         setKey(key, true);
-        usage$1.describe(key, desc);
+        usage.describe(key, desc);
         return self;
     };
     function setKey(key, set) {
@@ -16862,12 +14693,12 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
                 delete hint[optionKey];
             }
         });
-        delete usage$1.getDescriptions()[optionKey];
+        delete usage.getDescriptions()[optionKey];
     }
     self.config = function config(key = 'config', msg, parseFn) {
         argsert('[object|string] [string|function] [function]', [key, msg, parseFn], arguments.length);
         if (typeof key === 'object' && !Array.isArray(key)) {
-            key = applyExtends(key, cwd, self.getParserConfiguration()['deep-merge-config'] || false, shim$1);
+            key = applyExtends(key, cwd, self.getParserConfiguration()['deep-merge-config'] || false, yargs_factory_shim);
             options.configObjects = (options.configObjects || []).concat(key);
             return self;
         }
@@ -16875,7 +14706,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
             parseFn = msg;
             msg = undefined;
         }
-        self.describe(key, msg || usage$1.deferY18nLookup('Path to JSON config file'));
+        self.describe(key, msg || usage.deferY18nLookup('Path to JSON config file'));
         (Array.isArray(key) ? key : [key]).forEach(k => {
             options.config[k] = parseFn || true;
         });
@@ -16887,25 +14718,25 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
             cmd.forEach(exampleParams => self.example(...exampleParams));
         }
         else {
-            usage$1.example(cmd, description);
+            usage.example(cmd, description);
         }
         return self;
     };
     self.command = function (cmd, description, builder, handler, middlewares, deprecated) {
         argsert('<string|array|object> [string|boolean] [function|object] [function] [array] [boolean|string]', [cmd, description, builder, handler, middlewares, deprecated], arguments.length);
-        command$1.addHandler(cmd, description, builder, handler, middlewares, deprecated);
+        command.addHandler(cmd, description, builder, handler, middlewares, deprecated);
         return self;
     };
     self.commandDir = function (dir, opts) {
         argsert('<string> [object]', [dir, opts], arguments.length);
-        const req = parentRequire || shim$1.require;
-        command$1.addDirectory(dir, self.getContext(), req, shim$1.getCallerFile(), opts);
+        const req = parentRequire || yargs_factory_shim.require;
+        command.addDirectory(dir, self.getContext(), req, yargs_factory_shim.getCallerFile(), opts);
         return self;
     };
     self.demand = self.required = self.require = function demand(keys, max, msg) {
         if (Array.isArray(max)) {
             max.forEach(key => {
-                assertNotStrictEqual(msg, true, shim$1);
+                assertNotStrictEqual(msg, true, yargs_factory_shim);
                 demandOption(key, msg);
             });
             max = Infinity;
@@ -16915,12 +14746,12 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
             max = Infinity;
         }
         if (typeof keys === 'number') {
-            assertNotStrictEqual(msg, true, shim$1);
+            assertNotStrictEqual(msg, true, yargs_factory_shim);
             self.demandCommand(keys, max, msg, msg);
         }
         else if (Array.isArray(keys)) {
             keys.forEach(key => {
-                assertNotStrictEqual(msg, true, shim$1);
+                assertNotStrictEqual(msg, true, yargs_factory_shim);
                 demandOption(key, msg);
             });
         }
@@ -16968,18 +14799,18 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
     };
     self.implies = function (key, value) {
         argsert('<string|object> [number|string|array]', [key, value], arguments.length);
-        validation$1.implies(key, value);
+        validation.implies(key, value);
         return self;
     };
     self.conflicts = function (key1, key2) {
         argsert('<string|object> [string|array]', [key1, key2], arguments.length);
-        validation$1.conflicts(key1, key2);
+        validation.conflicts(key1, key2);
         return self;
     };
     self.usage = function (msg, description, builder, handler) {
         argsert('<string|null|undefined> [string|boolean] [function|object] [function]', [msg, description, builder, handler], arguments.length);
         if (description !== undefined) {
-            assertNotStrictEqual(msg, null, shim$1);
+            assertNotStrictEqual(msg, null, yargs_factory_shim);
             if ((msg || '').match(/^\$0( |$)/)) {
                 return self.command(msg, description, builder, handler);
             }
@@ -16988,18 +14819,18 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
             }
         }
         else {
-            usage$1.usage(msg);
+            usage.usage(msg);
             return self;
         }
     };
     self.epilogue = self.epilog = function (msg) {
         argsert('<string>', [msg], arguments.length);
-        usage$1.epilog(msg);
+        usage.epilog(msg);
         return self;
     };
     self.fail = function (f) {
         argsert('<function>', [f], arguments.length);
-        usage$1.failFn(f);
+        usage.failFn(f);
         return self;
     };
     self.onFinishCommand = function (f) {
@@ -17010,7 +14841,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
     self.getHandlerFinishCommand = () => handlerFinishCommand;
     self.check = function (f, _global) {
         argsert('<function> [boolean]', [f, _global], arguments.length);
-        validation$1.check(f, _global !== false);
+        validation.check(f, _global !== false);
         return self;
     };
     self.global = function global(globals, global) {
@@ -17032,7 +14863,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
         let conf = null;
         const obj = pkgUp(rootPath || cwd);
         if (obj[key] && typeof obj[key] === 'object') {
-            conf = applyExtends(obj[key], rootPath || cwd, self.getParserConfiguration()['deep-merge-config'] || false, shim$1);
+            conf = applyExtends(obj[key], rootPath || cwd, self.getParserConfiguration()['deep-merge-config'] || false, yargs_factory_shim);
             options.configObjects = (options.configObjects || []).concat(conf);
         }
         return self;
@@ -17044,11 +14875,11 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
             return pkgs[npath];
         let obj = {};
         try {
-            let startDir = rootPath || shim$1.mainFilename;
-            if (!rootPath && shim$1.path.extname(startDir)) {
-                startDir = shim$1.path.dirname(startDir);
+            let startDir = rootPath || yargs_factory_shim.mainFilename;
+            if (!rootPath && yargs_factory_shim.path.extname(startDir)) {
+                startDir = yargs_factory_shim.path.dirname(startDir);
             }
-            const pkgJsonPath = shim$1.findUp(startDir, (dir, names) => {
+            const pkgJsonPath = yargs_factory_shim.findUp(startDir, (dir, names) => {
                 if (names.includes('package.json')) {
                     return 'package.json';
                 }
@@ -17056,8 +14887,8 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
                     return undefined;
                 }
             });
-            assertNotStrictEqual(pkgJsonPath, undefined, shim$1);
-            obj = JSON.parse(shim$1.readFileSync(pkgJsonPath, 'utf8'));
+            assertNotStrictEqual(pkgJsonPath, undefined, yargs_factory_shim);
+            obj = JSON.parse(yargs_factory_shim.readFileSync(pkgJsonPath, 'utf8'));
         }
         catch (_noop) { }
         pkgs[npath] = obj || {};
@@ -17088,7 +14919,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
         if (parseFn)
             exitProcess = false;
         const parsed = self._parseArgs(args, !!shortCircuit);
-        completion$1.setParsed(self.parsed);
+        completion.setParsed(self.parsed);
         if (parseFn)
             parseFn(exitError, parsed, output);
         unfreeze();
@@ -17219,7 +15050,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
         });
         const fullCommand = context.fullCommands[context.fullCommands.length - 1];
         const parseOptions = fullCommand
-            ? command$1.cmdToParseOptions(fullCommand)
+            ? command.cmdToParseOptions(fullCommand)
             : {
                 array: [],
                 alias: {},
@@ -17237,7 +15068,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
                     opts[pk] = parseOption[key];
             }
         });
-        self.group(key, usage$1.getPositionalGroupName());
+        self.group(key, usage.getPositionalGroupName());
         return self.option(key, opts);
     };
     self.group = function group(opts, groupName) {
@@ -17265,7 +15096,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
     };
     self.wrap = function (cols) {
         argsert('<number|null|undefined>', [cols], arguments.length);
-        usage$1.wrap(cols);
+        usage.wrap(cols);
         return self;
     };
     let strict = false;
@@ -17300,11 +15131,11 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
         argsert('[string|function]', [level], arguments.length);
         if (!self.parsed)
             self._parseArgs(processArgs);
-        if (command$1.hasDefaultCommand()) {
+        if (command.hasDefaultCommand()) {
             context.resets++;
-            command$1.runDefaultBuilderOn(self);
+            command.runDefaultBuilderOn(self);
         }
-        usage$1.showHelp(level);
+        usage.showHelp(level);
         return self;
     };
     let versionOpt = null;
@@ -17313,7 +15144,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
         argsert('[boolean|string] [string] [string]', [opt, msg, ver], arguments.length);
         if (versionOpt) {
             deleteFromParserHintObject(versionOpt);
-            usage$1.version(undefined);
+            usage.version(undefined);
             versionOpt = null;
         }
         if (arguments.length === 0) {
@@ -17332,8 +15163,8 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
             msg = undefined;
         }
         versionOpt = typeof opt === 'string' ? opt : defaultVersionOpt;
-        msg = msg || usage$1.deferY18nLookup('Show version number');
-        usage$1.version(ver || undefined);
+        msg = msg || usage.deferY18nLookup('Show version number');
+        usage.version(ver || undefined);
         self.boolean(versionOpt);
         self.describe(versionOpt, msg);
         return self;
@@ -17356,7 +15187,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
         }
         helpOpt = typeof opt === 'string' ? opt : defaultHelpOpt;
         self.boolean(helpOpt);
-        self.describe(helpOpt, msg || usage$1.deferY18nLookup('Show help'));
+        self.describe(helpOpt, msg || usage.deferY18nLookup('Show help'));
         return self;
     };
     const defaultShowHiddenOpt = 'show-hidden';
@@ -17369,7 +15200,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
         }
         const showHiddenOpt = typeof opt === 'string' ? opt : defaultShowHiddenOpt;
         self.boolean(showHiddenOpt);
-        self.describe(showHiddenOpt, msg || usage$1.deferY18nLookup('Show hidden options'));
+        self.describe(showHiddenOpt, msg || usage.deferY18nLookup('Show hidden options'));
         options.showHiddenOpt = showHiddenOpt;
         return self;
     };
@@ -17380,7 +15211,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
     };
     self.showHelpOnFail = function showHelpOnFail(enabled, message) {
         argsert('[boolean|string] [string]', [enabled, message], arguments.length);
-        usage$1.showHelpOnFail(enabled, message);
+        usage.showHelpOnFail(enabled, message);
         return self;
     };
     let exitProcess = true;
@@ -17393,12 +15224,12 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
     self.showCompletionScript = function ($0, cmd) {
         argsert('[string] [string]', [$0, cmd], arguments.length);
         $0 = $0 || self.$0;
-        _logger.log(completion$1.generateCompletionScript($0, cmd || completionCommand || 'completion'));
+        _logger.log(completion.generateCompletionScript($0, cmd || completionCommand || 'completion'));
         return self;
     };
     self.getCompletion = function (args, done) {
         argsert('<array> <function>', [args, done], arguments.length);
-        completion$1.getCompletion(args, done);
+        completion.getCompletion(args, done);
     };
     self.locale = function (locale) {
         argsert('[string]', [locale], arguments.length);
@@ -17452,12 +15283,12 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
         recommendCommands = recommend;
         return self;
     };
-    self.getUsageInstance = () => usage$1;
-    self.getValidationInstance = () => validation$1;
-    self.getCommandInstance = () => command$1;
+    self.getUsageInstance = () => usage;
+    self.getValidationInstance = () => validation;
+    self.getCommandInstance = () => command;
     self.terminalWidth = () => {
         argsert([], 0);
-        return shim$1.process.stdColumns;
+        return yargs_factory_shim.process.stdColumns;
     };
     Object.defineProperty(self, 'argv', {
         get: () => self._parseArgs(processArgs),
@@ -17472,7 +15303,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
         const config = Object.assign({}, options.configuration, {
             'populate--': true,
         });
-        const parsed = shim$1.Parser.detailed(args, Object.assign({}, options, {
+        const parsed = yargs_factory_shim.Parser.detailed(args, Object.assign({}, options, {
             configuration: Object.assign({ 'parse-positional-numbers': false }, config),
         }));
         let argv = parsed.argv;
@@ -17495,8 +15326,8 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
                     argv[helpOpt] = true;
                 }
             }
-            const handlerKeys = command$1.getCommands();
-            const requestCompletions = completion$1.completionKey in argv;
+            const handlerKeys = command.getCommands();
+            const requestCompletions = completion.completionKey in argv;
             const skipRecommendation = argv[helpOpt] || requestCompletions;
             const skipDefaultCommand = skipRecommendation &&
                 (handlerKeys.length > 1 || handlerKeys[0] !== '$0');
@@ -17506,7 +15337,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
                     for (let i = commandIndex || 0, cmd; argv._[i] !== undefined; i++) {
                         cmd = String(argv._[i]);
                         if (~handlerKeys.indexOf(cmd) && cmd !== completionCommand) {
-                            const innerArgv = command$1.runCommand(cmd, self, parsed, i + 1);
+                            const innerArgv = command.runCommand(cmd, self, parsed, i + 1);
                             return self._postProcess(innerArgv, populateDoubleDash);
                         }
                         else if (!firstUnknownCommand && cmd !== completionCommand) {
@@ -17514,12 +15345,12 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
                             break;
                         }
                     }
-                    if (command$1.hasDefaultCommand() && !skipDefaultCommand) {
-                        const innerArgv = command$1.runCommand(null, self, parsed);
+                    if (command.hasDefaultCommand() && !skipDefaultCommand) {
+                        const innerArgv = command.runCommand(null, self, parsed);
                         return self._postProcess(innerArgv, populateDoubleDash);
                     }
                     if (recommendCommands && firstUnknownCommand && !skipRecommendation) {
-                        validation$1.recommendCommands(firstUnknownCommand, handlerKeys);
+                        validation.recommendCommands(firstUnknownCommand, handlerKeys);
                     }
                 }
                 if (completionCommand &&
@@ -17531,16 +15362,16 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
                     self.exit(0);
                 }
             }
-            else if (command$1.hasDefaultCommand() && !skipDefaultCommand) {
-                const innerArgv = command$1.runCommand(null, self, parsed);
+            else if (command.hasDefaultCommand() && !skipDefaultCommand) {
+                const innerArgv = command.runCommand(null, self, parsed);
                 return self._postProcess(innerArgv, populateDoubleDash);
             }
             if (requestCompletions) {
                 if (exitProcess)
                     setBlocking(true);
                 args = [].concat(args);
-                const completionArgs = args.slice(args.indexOf(`--${completion$1.completionKey}`) + 1);
-                completion$1.getCompletion(completionArgs, completions => {
+                const completionArgs = args.slice(args.indexOf(`--${completion.completionKey}`) + 1);
+                completion.getCompletion(completionArgs, completions => {
                     (completions || []).forEach(completion => {
                         _logger.log(completion);
                     });
@@ -17561,7 +15392,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
                         if (exitProcess)
                             setBlocking(true);
                         skipValidation = true;
-                        usage$1.showVersion();
+                        usage.showVersion();
                         self.exit(0);
                     }
                 });
@@ -17579,7 +15410,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
         }
         catch (err) {
             if (err instanceof YError)
-                usage$1.fail(err.message, err);
+                usage.fail(err.message, err);
             else
                 throw err;
         }
@@ -17613,7 +15444,7 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
     self._parsePositionalNumbers = function (argv) {
         const args = argv['--'] ? argv['--'] : argv._;
         for (let i = 0, arg; (arg = args[i]) !== undefined; i++) {
-            if (shim$1.Parser.looksLikeNumber(arg) &&
+            if (yargs_factory_shim.Parser.looksLikeNumber(arg) &&
                 Number.isSafeInteger(Math.floor(parseFloat(`${arg}`)))) {
                 args[i] = Number(arg);
             }
@@ -17623,30 +15454,30 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
     self._runValidation = function runValidation(argv, aliases, positionalMap, parseErrors, isDefaultCommand = false) {
         if (parseErrors)
             throw new YError(parseErrors.message);
-        validation$1.nonOptionCount(argv);
-        validation$1.requiredArguments(argv);
+        validation.nonOptionCount(argv);
+        validation.requiredArguments(argv);
         let failedStrictCommands = false;
         if (strictCommands) {
-            failedStrictCommands = validation$1.unknownCommands(argv);
+            failedStrictCommands = validation.unknownCommands(argv);
         }
         if (strict && !failedStrictCommands) {
-            validation$1.unknownArguments(argv, aliases, positionalMap, isDefaultCommand);
+            validation.unknownArguments(argv, aliases, positionalMap, isDefaultCommand);
         }
         else if (strictOptions) {
-            validation$1.unknownArguments(argv, aliases, {}, false, false);
+            validation.unknownArguments(argv, aliases, {}, false, false);
         }
-        validation$1.customChecks(argv, aliases);
-        validation$1.limitedChoices(argv);
-        validation$1.implications(argv);
-        validation$1.conflicting(argv);
+        validation.customChecks(argv, aliases);
+        validation.limitedChoices(argv);
+        validation.implications(argv);
+        validation.conflicting(argv);
     };
     function guessLocale() {
         if (!detectLocale)
             return;
-        const locale = shim$1.getEnv('LC_ALL') ||
-            shim$1.getEnv('LC_MESSAGES') ||
-            shim$1.getEnv('LANG') ||
-            shim$1.getEnv('LANGUAGE') ||
+        const locale = yargs_factory_shim.getEnv('LC_ALL') ||
+            yargs_factory_shim.getEnv('LC_MESSAGES') ||
+            yargs_factory_shim.getEnv('LANG') ||
+            yargs_factory_shim.getEnv('LANGUAGE') ||
             'en_US';
         self.locale(locale.replace(/[.:].*/, ''));
     }
@@ -17654,292 +15485,422 @@ function Yargs(processArgs = [], cwd = shim$1.process.cwd(), parentRequire) {
     self.version();
     return self;
 }
-const rebase = (base, dir) => shim$1.path.relative(base, dir);
+const rebase = (base, dir) => yargs_factory_shim.path.relative(base, dir);
 function isYargsInstance(y) {
     return !!y && typeof y._parseArgs === 'function';
 }
 
-var _a, _b;
-const { readFileSync } = __webpack_require__(5747);
-const { inspect } = __webpack_require__(1669);
-const { resolve } = __webpack_require__(5622);
-const y18n = __webpack_require__(9087);
-const Parser = __webpack_require__(8909);
-var cjsPlatformShim = {
-    assert: {
-        notStrictEqual: assert.notStrictEqual,
-        strictEqual: assert.strictEqual,
-    },
-    cliui: __webpack_require__(6702),
-    findUp: __webpack_require__(2644),
-    getEnv: (key) => {
-        return process.env[key];
-    },
-    getCallerFile: __webpack_require__(351),
-    getProcessArgvBin: getProcessArgvBin,
-    inspect,
-    mainFilename: (_b = (_a =  false || __webpack_require__(9167) === void 0 ? void 0 : __webpack_require__.c[__webpack_require__.s]) === null || _a === void 0 ? void 0 : _a.filename) !== null && _b !== void 0 ? _b : process.cwd(),
-    Parser,
-    path: __webpack_require__(5622),
-    process: {
-        argv: () => process.argv,
-        cwd: process.cwd,
-        execPath: () => process.execPath,
-        exit: (code) => {
-            process.exit(code);
-        },
-        nextTick: process.nextTick,
-        stdColumns: typeof process.stdout.columns !== 'undefined'
-            ? process.stdout.columns
-            : null,
-    },
-    readFileSync,
-    require: __webpack_require__(9167),
-    requireDirectory: __webpack_require__(9200),
-    stringWidth: __webpack_require__(3808),
-    y18n: y18n({
-        directory: resolve(__dirname, '../locales'),
-        updateFiles: false,
-    }),
-};
+;// CONCATENATED MODULE: ./node_modules/yargs/index.mjs
 
-const minNodeVersion = process && process.env && process.env.YARGS_MIN_NODE_VERSION
-    ? Number(process.env.YARGS_MIN_NODE_VERSION)
-    : 10;
-if (process && process.version) {
-    const major = Number(process.version.match(/v([^.]+)/)[1]);
-    if (major < minNodeVersion) {
-        throw Error(`yargs supports a minimum Node.js version of ${minNodeVersion}. Read our version support policy: https://github.com/yargs/yargs#supported-nodejs-versions`);
+
+// Bootstraps yargs for ESM:
+
+
+
+const yargs_Yargs = YargsWithShim(esm);
+/* harmony default export */ const yargs = ((/* unused pure expression or super */ null && (yargs_Yargs)));
+
+// EXTERNAL MODULE: ./node_modules/ajv/lib/ajv.js
+var lib_ajv = __nccwpck_require__(4941);
+var ajv_default = /*#__PURE__*/__nccwpck_require__.n(lib_ajv);
+;// CONCATENATED MODULE: ./src/parse.ts
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// Copyright (c) 2011-2020 ETH Zurich.
+
+function parseConfig(text) {
+    const ajv = new (ajv_default())();
+    const validate = ajv.compile({
+        type: 'array',
+        items: {
+            type: 'object',
+            required: ['include'],
+            properties: {
+                include: {
+                    type: 'array',
+                    items: {
+                        type: 'string'
+                    }
+                },
+                exclude: {
+                    type: 'array',
+                    items: {
+                        type: 'string'
+                    }
+                },
+                license: {
+                    type: 'string'
+                }
+            }
+        }
+    });
+    let data;
+    try {
+        data = JSON.parse(text);
     }
+    catch (_a) {
+        return Promise.reject(new Error(`Parsing configuration has failed`));
+    }
+    if (!validate(data)) {
+        return Promise.reject(new Error(`Configuration validation has failed: '${ajv.errorsText(validate.errors)}'`));
+    }
+    return Promise.resolve(data);
 }
-const Parser$1 = __webpack_require__(8909);
-const Yargs$1 = YargsWithShim(cjsPlatformShim);
-var cjs = {
-    applyExtends,
-    cjsPlatformShim,
-    Yargs: Yargs$1,
-    argsert,
-    globalMiddlewareFactory,
-    isPromise,
-    objFilter,
-    parseCommand,
-    Parser: Parser$1,
-    processArgv,
-    rebase,
-    YError,
+
+// EXTERNAL MODULE: ./node_modules/glob/glob.js
+var glob = __nccwpck_require__(1957);
+;// CONCATENATED MODULE: ./src/find.ts
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// Copyright (c) 2011-2020 ETH Zurich.
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
 
-module.exports = cjs;
 
+function findFiles(cwd, includePatterns, excludePatterns) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let includePattern;
+        if (includePatterns.length === 0) {
+            return Promise.resolve([]);
+        }
+        else if (includePatterns.length === 1) {
+            includePattern = includePatterns[0];
+        }
+        else {
+            includePattern = `{${includePatterns.join(',')}}`;
+        }
+        const options = {
+            ignore: excludePatterns,
+            cwd,
+            nodir: true // only return files (no directories)
+        };
+        const files = yield new Promise((resolve, reject) => {
+            (0,glob.glob)(includePattern, options, (err, matches) => {
+                if (err == null) {
+                    resolve(matches);
+                }
+                else {
+                    reject(new Error(`scanning files has failed with error '${err.message}'`));
+                }
+            });
+        });
+        // files are relative to cwd, hence join them:
+        return files.map(f => external_path_.join(cwd, f));
+    });
+}
+/*
+async function getFilesRecursively(path: string): Promise<string[]> {
+    const dirContent = await readdir(path);
+    const stats = await Promise.all(dirContent.map(stat));
+    const dirs = stats.filter(stat => stat.isDir);
+    const files = stats.filter(stat => stat.isFile)
+        .map(stat => stat.path);
 
-/***/ }),
-
-/***/ 4139:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-// classic singleton yargs API, to use yargs
-// without running as a singleton do:
-// require('yargs/yargs')(process.argv.slice(2))
-const {Yargs, processArgv} = __webpack_require__(9567);
-
-Argv(processArgv.hideBin(process.argv));
-
-module.exports = Argv;
-
-function Argv(processArgs, cwd) {
-  const argv = Yargs(processArgs, cwd, __webpack_require__(4907));
-  singletonify(argv);
-  return argv;
+    const recursiveFiles = await Promise.all(dirs.map(dir => getFilesRecursively(dir.path)))
+        .then(flatten);
+    return files.concat(recursiveFiles);
 }
 
-/*  Hack an instance of Argv with process.argv into Argv
-    so people can do
-    require('yargs')(['--beeble=1','-z','zizzle']).argv
-    to parse a list of args and
-    require('yargs').argv
-    to get a parsed version of process.argv.
+function readdir(path: string): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+        fs.readdir(path, (err, files) => {
+            if (err == null) {
+                resolve(files);
+            } else {
+                reject(new Error(`reading directory ${path} failed with error ${err.message}`));
+            }
+        });
+    })
+}
+
+function stat(path: string): Promise<Status> {
+    return new Promise((resolve, reject) => {
+        fs.stat(path, (err, stats) => {
+            if (err == null) {
+                resolve({path: path, isDir: stats.isDirectory(), isFile: stats.isFile()});
+            } else {
+                reject(new Error(`getting file status for ${path} failed with error ${err.message}`));
+            }
+        })
+    })
+}
+
+interface Status {
+    path: string;
+    isDir: boolean;
+    isFile: boolean;
+}
+
+function flatten<T>(matrix: T[][]): T[] {
+
+}
 */
-function singletonify(inst) {
-  Object.keys(inst).forEach(key => {
-    if (key === 'argv') {
-      Argv.__defineGetter__(key, inst.__lookupGetter__(key));
-    } else if (typeof inst[key] === 'function') {
-      Argv[key] = inst[key].bind(inst);
-    } else {
-      Argv.__defineGetter__('$0', () => {
-        return inst.$0;
-      });
-      Argv.__defineGetter__('parsed', () => {
-        return inst.parsed;
-      });
+
+;// CONCATENATED MODULE: ./src/check.ts
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// Copyright (c) 2011-2020 ETH Zurich.
+var check_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+const CURRENT_YEAR_IDENTIFIER = '%year%';
+function checkLicenses(cwd, configPath) {
+    return check_awaiter(this, void 0, void 0, function* () {
+        const config = yield getConfig(configPath);
+        return checkLicensesWithConfig(cwd, config);
+    });
+}
+function getConfig(configPath) {
+    const configString = external_fs_.readFileSync(configPath, 'utf8');
+    return parseConfig(configString);
+}
+function checkLicensesWithConfig(cwd, config) {
+    return check_awaiter(this, void 0, void 0, function* () {
+        const results = yield Promise.all(config.map(c => checkLicense(cwd, c)));
+        return flatten(results);
+    });
+}
+function getUncoveredFiles(cwd, configPath) {
+    return check_awaiter(this, void 0, void 0, function* () {
+        const config = yield getConfig(configPath);
+        return getUncoveredFilesWithConfig(cwd, config);
+    });
+}
+function getUncoveredFilesWithConfig(cwd, config) {
+    return check_awaiter(this, void 0, void 0, function* () {
+        // get all files:
+        const allFiles = new Set(yield findFiles(cwd, ['**'], []));
+        // get files covered by config:
+        const converedFilesResults = yield Promise.all(config.map(c => getFiles(cwd, c)));
+        const coveredFiles = new Set(flatten(converedFilesResults));
+        const remainingFiles = setminus(allFiles, coveredFiles);
+        return [...remainingFiles];
+    });
+}
+function filterFailures(results) {
+    return results.filter(r => !r.success).map(f => f);
+}
+function setminus(set1, set2) {
+    const copy = new Set(set1);
+    for (const elem of set2) {
+        copy.delete(elem);
     }
-  });
+    return copy;
+}
+function checkLicense(cwd, licenseConfig) {
+    return check_awaiter(this, void 0, void 0, function* () {
+        if (!licenseConfig.license) {
+            // no license provided
+            return [];
+        }
+        let licensePath;
+        if (external_path_.isAbsolute(licenseConfig.license)) {
+            licensePath = licenseConfig.license;
+        }
+        else {
+            licensePath = external_path_.join(cwd, licenseConfig.license);
+        }
+        const errorMessageGenerator = (file) => `'${file}' does not contain license from '${licensePath}'`;
+        const licenseString = external_fs_.readFileSync(licensePath, 'utf8');
+        const licenseRegex = convertHeaderToRegex(licenseString);
+        const files = yield getFiles(cwd, licenseConfig);
+        return yield Promise.all(files.map(f => contains(f, licenseRegex, errorMessageGenerator)));
+    });
+}
+function getFiles(cwd, licenseConfig) {
+    const excludePatterns = licenseConfig.exclude || [];
+    return findFiles(cwd, licenseConfig.include, excludePatterns);
+}
+function convertHeaderToRegex(header) {
+    let modifiedHeader = header;
+    // escape characters that have a special meaning in a regex
+    // taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+    modifiedHeader = modifiedHeader.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+    // replace sequences of the following form to the corresponding regex
+    // "%regexp:\d{x}%" is escaped "%regexp:\\d\{x\}%" where x is a number digits
+    // the corresponding regex to find this escaped sequence is "%regexp:\\\\d\\{(\d+)\\}%"
+    // this character sequence should be replaced by "\d{x}"
+    modifiedHeader = modifiedHeader.replace(/%regexp:\\\\d\\{(\d+)\\}%/g, '\\d{$1}');
+    // replace "%year%" by a regex that matches 4 digits:
+    modifiedHeader = modifiedHeader.replace(CURRENT_YEAR_IDENTIFIER, '\\d{4}');
+    return new RegExp(modifiedHeader);
+}
+function contains(file, regex, errorMessageGenerator) {
+    return new Promise((resolve, reject) => {
+        external_fs_.readFile(file, 'utf8', (err, data) => {
+            if (err == null) {
+                // check whether data contains a match:
+                if (regex.test(data)) {
+                    resolve(new CheckSuccess(file));
+                }
+                else {
+                    resolve(new CheckFailure(file, errorMessageGenerator(file)));
+                }
+            }
+            else {
+                reject(new Error(`Error while reading file '${file}': '${err.message}'`));
+            }
+        });
+    });
+}
+function flatten(matrix) {
+    const res = [];
+    for (const elem of matrix) {
+        res.push(...elem);
+    }
+    return res;
+}
+class CheckSuccess {
+    constructor(filePath) {
+        this.path = filePath;
+    }
+    get success() {
+        return true;
+    }
+    get filePath() {
+        return this.path;
+    }
+}
+class CheckFailure {
+    constructor(filePath, msg) {
+        this.path = filePath;
+        this.msg = msg;
+    }
+    get success() {
+        return false;
+    }
+    get filePath() {
+        return this.path;
+    }
+    get message() {
+        return this.msg;
+    }
 }
 
+;// CONCATENATED MODULE: ./src/bin.ts
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// Copyright (c) 2011-2020 ETH Zurich.
+var bin_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 
-/***/ }),
 
-/***/ 6835:
-/***/ ((module) => {
-
-"use strict";
-module.exports = JSON.parse("{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"$id\":\"https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#\",\"description\":\"Meta-schema for $data reference (JSON Schema extension proposal)\",\"type\":\"object\",\"required\":[\"$data\"],\"properties\":{\"$data\":{\"type\":\"string\",\"anyOf\":[{\"format\":\"relative-json-pointer\"},{\"format\":\"json-pointer\"}]}},\"additionalProperties\":false}");
-
-/***/ }),
-
-/***/ 38:
-/***/ ((module) => {
-
-"use strict";
-module.exports = JSON.parse("{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"$id\":\"http://json-schema.org/draft-07/schema#\",\"title\":\"Core schema meta-schema\",\"definitions\":{\"schemaArray\":{\"type\":\"array\",\"minItems\":1,\"items\":{\"$ref\":\"#\"}},\"nonNegativeInteger\":{\"type\":\"integer\",\"minimum\":0},\"nonNegativeIntegerDefault0\":{\"allOf\":[{\"$ref\":\"#/definitions/nonNegativeInteger\"},{\"default\":0}]},\"simpleTypes\":{\"enum\":[\"array\",\"boolean\",\"integer\",\"null\",\"number\",\"object\",\"string\"]},\"stringArray\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"uniqueItems\":true,\"default\":[]}},\"type\":[\"object\",\"boolean\"],\"properties\":{\"$id\":{\"type\":\"string\",\"format\":\"uri-reference\"},\"$schema\":{\"type\":\"string\",\"format\":\"uri\"},\"$ref\":{\"type\":\"string\",\"format\":\"uri-reference\"},\"$comment\":{\"type\":\"string\"},\"title\":{\"type\":\"string\"},\"description\":{\"type\":\"string\"},\"default\":true,\"readOnly\":{\"type\":\"boolean\",\"default\":false},\"examples\":{\"type\":\"array\",\"items\":true},\"multipleOf\":{\"type\":\"number\",\"exclusiveMinimum\":0},\"maximum\":{\"type\":\"number\"},\"exclusiveMaximum\":{\"type\":\"number\"},\"minimum\":{\"type\":\"number\"},\"exclusiveMinimum\":{\"type\":\"number\"},\"maxLength\":{\"$ref\":\"#/definitions/nonNegativeInteger\"},\"minLength\":{\"$ref\":\"#/definitions/nonNegativeIntegerDefault0\"},\"pattern\":{\"type\":\"string\",\"format\":\"regex\"},\"additionalItems\":{\"$ref\":\"#\"},\"items\":{\"anyOf\":[{\"$ref\":\"#\"},{\"$ref\":\"#/definitions/schemaArray\"}],\"default\":true},\"maxItems\":{\"$ref\":\"#/definitions/nonNegativeInteger\"},\"minItems\":{\"$ref\":\"#/definitions/nonNegativeIntegerDefault0\"},\"uniqueItems\":{\"type\":\"boolean\",\"default\":false},\"contains\":{\"$ref\":\"#\"},\"maxProperties\":{\"$ref\":\"#/definitions/nonNegativeInteger\"},\"minProperties\":{\"$ref\":\"#/definitions/nonNegativeIntegerDefault0\"},\"required\":{\"$ref\":\"#/definitions/stringArray\"},\"additionalProperties\":{\"$ref\":\"#\"},\"definitions\":{\"type\":\"object\",\"additionalProperties\":{\"$ref\":\"#\"},\"default\":{}},\"properties\":{\"type\":\"object\",\"additionalProperties\":{\"$ref\":\"#\"},\"default\":{}},\"patternProperties\":{\"type\":\"object\",\"additionalProperties\":{\"$ref\":\"#\"},\"propertyNames\":{\"format\":\"regex\"},\"default\":{}},\"dependencies\":{\"type\":\"object\",\"additionalProperties\":{\"anyOf\":[{\"$ref\":\"#\"},{\"$ref\":\"#/definitions/stringArray\"}]}},\"propertyNames\":{\"$ref\":\"#\"},\"const\":true,\"enum\":{\"type\":\"array\",\"items\":true,\"minItems\":1,\"uniqueItems\":true},\"type\":{\"anyOf\":[{\"$ref\":\"#/definitions/simpleTypes\"},{\"type\":\"array\",\"items\":{\"$ref\":\"#/definitions/simpleTypes\"},\"minItems\":1,\"uniqueItems\":true}]},\"format\":{\"type\":\"string\"},\"contentMediaType\":{\"type\":\"string\"},\"contentEncoding\":{\"type\":\"string\"},\"if\":{\"$ref\":\"#\"},\"then\":{\"$ref\":\"#\"},\"else\":{\"$ref\":\"#\"},\"allOf\":{\"$ref\":\"#/definitions/schemaArray\"},\"anyOf\":{\"$ref\":\"#/definitions/schemaArray\"},\"oneOf\":{\"$ref\":\"#/definitions/schemaArray\"},\"not\":{\"$ref\":\"#\"}},\"default\":true}");
-
-/***/ }),
-
-/***/ 5670:
-/***/ ((module) => {
-
-function webpackEmptyContext(req) {
-	var e = new Error("Cannot find module '" + req + "'");
-	e.code = 'MODULE_NOT_FOUND';
-	throw e;
+// entry point for the binary version, e.g. when locally running it using `npx`
+// turn no-console es-lint errors off for this file:
+/* eslint no-console: 0 */
+function run() {
+    return bin_awaiter(this, void 0, void 0, function* () {
+        try {
+            const argv = yargs_namespaceObject.usage('Usage: $0 <command> [options]')
+                .command('check', 'Check license headers', function (y) {
+                return y.option('strict', {
+                    description: 'Specifies whether files not covered by the configuration should be treated as errors',
+                    type: 'boolean',
+                    default: false
+                });
+            })
+                .example('$0 check --config config.js', 'Check license headers using configuration stored in config.js')
+                .command('update', 'Update license headers. Currently, only updating "%year%" to the current year is supported')
+                // at least one command is required
+                .demand(1, 'Please specify one of the commands!')
+                .strict()
+                // both command use the following two options:
+                .option('c', {
+                alias: 'config',
+                type: 'string',
+                demand: 'Please specify path to config file',
+                nargs: 1,
+                describe: 'Path to JSON config file',
+                global: true
+            })
+                .option('path', {
+                description: 'Path to working directory',
+                type: 'string',
+                default: process.cwd(),
+                global: true
+            })
+                .help('h')
+                .alias('h', 'help').argv;
+            const path = argv.path;
+            const configPath = argv.c;
+            if (argv._.length === 1 && argv._[0] === 'check') {
+                const strictMode = argv.strict;
+                return check(path, configPath, strictMode);
+            }
+            else {
+                console.error(`unknown command specified, has to be 'check'`);
+                process.exit(1);
+            }
+        }
+        catch (error) {
+            console.error(error.message);
+            process.exit(1);
+        }
+    });
 }
-webpackEmptyContext.keys = () => [];
-webpackEmptyContext.resolve = webpackEmptyContext;
-webpackEmptyContext.id = 5670;
-module.exports = webpackEmptyContext;
-
-/***/ }),
-
-/***/ 9167:
-/***/ ((module) => {
-
-function webpackEmptyContext(req) {
-	var e = new Error("Cannot find module '" + req + "'");
-	e.code = 'MODULE_NOT_FOUND';
-	throw e;
+function check(path, configPath, strictMode) {
+    return bin_awaiter(this, void 0, void 0, function* () {
+        const results = yield checkLicenses(path, configPath);
+        const errors = filterFailures(results);
+        const missedFiles = yield getUncoveredFiles(path, configPath);
+        // emit a warning for all missed files:
+        for (const missedFile of missedFiles) {
+            console.warn(`Config does not cover the file '${missedFile}'`);
+        }
+        // emit an error for all erroneous files:
+        for (const error of errors) {
+            console.error(error.message);
+        }
+        if (strictMode) {
+            console.error(`${errors.length} error(s) and ${missedFiles.length} warning(s) found. Warnings are treated as errors.`);
+            process.exit(1);
+        }
+        else if (errors.length !== 0) {
+            console.error(`${errors.length} error(s) found`);
+            process.exit(1);
+        }
+        else {
+            console.info(`${errors.length} error(s) and ${missedFiles.length} warning(s) found.`);
+            process.exit(0);
+        }
+    });
 }
-webpackEmptyContext.keys = () => [];
-webpackEmptyContext.resolve = webpackEmptyContext;
-webpackEmptyContext.id = 9167;
-module.exports = webpackEmptyContext;
+run();
 
-/***/ }),
+})();
 
-/***/ 4907:
-/***/ ((module) => {
-
-function webpackEmptyContext(req) {
-	var e = new Error("Cannot find module '" + req + "'");
-	e.code = 'MODULE_NOT_FOUND';
-	throw e;
-}
-webpackEmptyContext.keys = () => [];
-webpackEmptyContext.resolve = webpackEmptyContext;
-webpackEmptyContext.id = 4907;
-module.exports = webpackEmptyContext;
-
-/***/ }),
-
-/***/ 2357:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("assert");
-
-/***/ }),
-
-/***/ 8614:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("events");
-
-/***/ }),
-
-/***/ 5747:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("fs");
-
-/***/ }),
-
-/***/ 5622:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("path");
-
-/***/ }),
-
-/***/ 1669:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("util");
-
-/***/ })
-
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		if(__webpack_module_cache__[moduleId]) {
-/******/ 			return __webpack_module_cache__[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			id: moduleId,
-/******/ 			loaded: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		var threw = true;
-/******/ 		try {
-/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/ 			threw = false;
-/******/ 		} finally {
-/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
-/******/ 		}
-/******/ 	
-/******/ 		// Flag the module as loaded
-/******/ 		module.loaded = true;
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = __webpack_module_cache__;
-/******/ 	
-/************************************************************************/
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop)
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/node module decorator */
-/******/ 	(() => {
-/******/ 		__webpack_require__.nmd = (module) => {
-/******/ 			module.paths = [];
-/******/ 			if (!module.children) module.children = [];
-/******/ 			return module;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/compat */
-/******/ 	
-/******/ 	__webpack_require__.ab = __dirname + "/";/************************************************************************/
-/******/ 	// module cache are used so entry inlining is disabled
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3370);
+module.exports = __webpack_exports__;
 /******/ })()
 ;

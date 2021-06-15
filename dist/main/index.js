@@ -1,22 +1,34 @@
-require('./sourcemap-register.js');module.exports =
-/******/ (() => { // webpackBootstrap
+require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 7351:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const os = __importStar(__webpack_require__(2087));
-const utils_1 = __webpack_require__(5278);
+exports.issue = exports.issueCommand = void 0;
+const os = __importStar(__nccwpck_require__(2087));
+const utils_1 = __nccwpck_require__(5278);
 /**
  * Commands
  *
@@ -89,10 +101,29 @@ function escapeProperty(s) {
 /***/ }),
 
 /***/ 2186:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -102,19 +133,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const command_1 = __webpack_require__(7351);
-const file_command_1 = __webpack_require__(717);
-const utils_1 = __webpack_require__(5278);
-const os = __importStar(__webpack_require__(2087));
-const path = __importStar(__webpack_require__(5622));
+exports.getState = exports.saveState = exports.group = exports.endGroup = exports.startGroup = exports.info = exports.warning = exports.error = exports.debug = exports.isDebug = exports.setFailed = exports.setCommandEcho = exports.setOutput = exports.getBooleanInput = exports.getMultilineInput = exports.getInput = exports.addPath = exports.setSecret = exports.exportVariable = exports.ExitCode = void 0;
+const command_1 = __nccwpck_require__(7351);
+const file_command_1 = __nccwpck_require__(717);
+const utils_1 = __nccwpck_require__(5278);
+const os = __importStar(__nccwpck_require__(2087));
+const path = __importStar(__nccwpck_require__(5622));
 /**
  * The code to exit an action
  */
@@ -176,7 +201,9 @@ function addPath(inputPath) {
 }
 exports.addPath = addPath;
 /**
- * Gets the value of an input.  The value is also trimmed.
+ * Gets the value of an input.
+ * Unless trimWhitespace is set to false in InputOptions, the value is also trimmed.
+ * Returns an empty string if the value is not defined.
  *
  * @param     name     name of the input to get
  * @param     options  optional. See InputOptions.
@@ -187,9 +214,49 @@ function getInput(name, options) {
     if (options && options.required && !val) {
         throw new Error(`Input required and not supplied: ${name}`);
     }
+    if (options && options.trimWhitespace === false) {
+        return val;
+    }
     return val.trim();
 }
 exports.getInput = getInput;
+/**
+ * Gets the values of an multiline input.  Each value is also trimmed.
+ *
+ * @param     name     name of the input to get
+ * @param     options  optional. See InputOptions.
+ * @returns   string[]
+ *
+ */
+function getMultilineInput(name, options) {
+    const inputs = getInput(name, options)
+        .split('\n')
+        .filter(x => x !== '');
+    return inputs;
+}
+exports.getMultilineInput = getMultilineInput;
+/**
+ * Gets the input value of the boolean type in the YAML 1.2 "core schema" specification.
+ * Support boolean input list: `true | True | TRUE | false | False | FALSE` .
+ * The return value is also in boolean type.
+ * ref: https://yaml.org/spec/1.2/spec.html#id2804923
+ *
+ * @param     name     name of the input to get
+ * @param     options  optional. See InputOptions.
+ * @returns   boolean
+ */
+function getBooleanInput(name, options) {
+    const trueValue = ['true', 'True', 'TRUE'];
+    const falseValue = ['false', 'False', 'FALSE'];
+    const val = getInput(name, options);
+    if (trueValue.includes(val))
+        return true;
+    if (falseValue.includes(val))
+        return false;
+    throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}\n` +
+        `Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
+}
+exports.getBooleanInput = getBooleanInput;
 /**
  * Sets the value of an output.
  *
@@ -198,6 +265,7 @@ exports.getInput = getInput;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function setOutput(name, value) {
+    process.stdout.write(os.EOL);
     command_1.issueCommand('set-output', { name }, value);
 }
 exports.setOutput = setOutput;
@@ -334,24 +402,37 @@ exports.getState = getState;
 /***/ }),
 
 /***/ 717:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
 // For internal use, subject to change.
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.issueCommand = void 0;
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const fs = __importStar(__webpack_require__(5747));
-const os = __importStar(__webpack_require__(2087));
-const utils_1 = __webpack_require__(5278);
+const fs = __importStar(__nccwpck_require__(5747));
+const os = __importStar(__nccwpck_require__(2087));
+const utils_1 = __nccwpck_require__(5278);
 function issueCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) {
@@ -377,6 +458,7 @@ exports.issueCommand = issueCommand;
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.toCommandValue = void 0;
 /**
  * Sanitizes an input into a string so it can be passed into issueCommand safely
  * @param input input to sanitize into a string
@@ -396,20 +478,20 @@ exports.toCommandValue = toCommandValue;
 /***/ }),
 
 /***/ 4941:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var compileSchema = __webpack_require__(875)
-  , resolve = __webpack_require__(3896)
-  , Cache = __webpack_require__(3679)
-  , SchemaObject = __webpack_require__(7605)
-  , stableStringify = __webpack_require__(969)
-  , formats = __webpack_require__(6627)
-  , rules = __webpack_require__(8561)
-  , $dataMetaSchema = __webpack_require__(1412)
-  , util = __webpack_require__(6578);
+var compileSchema = __nccwpck_require__(875)
+  , resolve = __nccwpck_require__(3896)
+  , Cache = __nccwpck_require__(3679)
+  , SchemaObject = __nccwpck_require__(7605)
+  , stableStringify = __nccwpck_require__(969)
+  , formats = __nccwpck_require__(6627)
+  , rules = __nccwpck_require__(8561)
+  , $dataMetaSchema = __nccwpck_require__(1412)
+  , util = __nccwpck_require__(6578);
 
 module.exports = Ajv;
 
@@ -426,14 +508,14 @@ Ajv.prototype.errorsText = errorsText;
 Ajv.prototype._addSchema = _addSchema;
 Ajv.prototype._compile = _compile;
 
-Ajv.prototype.compileAsync = __webpack_require__(890);
-var customKeyword = __webpack_require__(3297);
+Ajv.prototype.compileAsync = __nccwpck_require__(890);
+var customKeyword = __nccwpck_require__(3297);
 Ajv.prototype.addKeyword = customKeyword.add;
 Ajv.prototype.getKeyword = customKeyword.get;
 Ajv.prototype.removeKeyword = customKeyword.remove;
 Ajv.prototype.validateKeyword = customKeyword.validate;
 
-var errorClasses = __webpack_require__(5726);
+var errorClasses = __nccwpck_require__(5726);
 Ajv.ValidationError = errorClasses.Validation;
 Ajv.MissingRefError = errorClasses.MissingRef;
 Ajv.$dataMetaSchema = $dataMetaSchema;
@@ -842,11 +924,11 @@ function addFormat(name, format) {
 function addDefaultMetaSchema(self) {
   var $dataSchema;
   if (self._opts.$data) {
-    $dataSchema = __webpack_require__(6835);
+    $dataSchema = __nccwpck_require__(6835);
     self.addMetaSchema($dataSchema, $dataSchema.$id, true);
   }
   if (self._opts.meta === false) return;
-  var metaSchema = __webpack_require__(38);
+  var metaSchema = __nccwpck_require__(38);
   if (self._opts.$data) metaSchema = $dataMetaSchema(metaSchema, META_SUPPORT_DATA);
   self.addMetaSchema(metaSchema, META_SCHEMA_ID, true);
   self._refs['http://json-schema.org/schema'] = META_SCHEMA_ID;
@@ -944,12 +1026,12 @@ Cache.prototype.clear = function Cache_clear() {
 /***/ }),
 
 /***/ 890:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var MissingRefError = __webpack_require__(5726).MissingRef;
+var MissingRefError = __nccwpck_require__(5726).MissingRef;
 
 module.exports = compileAsync;
 
@@ -1042,12 +1124,12 @@ function compileAsync(schema, meta, callback) {
 /***/ }),
 
 /***/ 5726:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var resolve = __webpack_require__(3896);
+var resolve = __nccwpck_require__(3896);
 
 module.exports = {
   Validation: errorSubclass(ValidationError),
@@ -1084,12 +1166,12 @@ function errorSubclass(Subclass) {
 /***/ }),
 
 /***/ 6627:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var util = __webpack_require__(6578);
+var util = __nccwpck_require__(6578);
 
 var DATE = /^(\d\d\d\d)-(\d\d)-(\d\d)$/;
 var DAYS = [0,31,28,31,30,31,30,31,31,30,31,30,31];
@@ -1234,24 +1316,24 @@ function regex(str) {
 /***/ }),
 
 /***/ 875:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var resolve = __webpack_require__(3896)
-  , util = __webpack_require__(6578)
-  , errorClasses = __webpack_require__(5726)
-  , stableStringify = __webpack_require__(969);
+var resolve = __nccwpck_require__(3896)
+  , util = __nccwpck_require__(6578)
+  , errorClasses = __nccwpck_require__(5726)
+  , stableStringify = __nccwpck_require__(969);
 
-var validateGenerator = __webpack_require__(9585);
+var validateGenerator = __nccwpck_require__(9585);
 
 /**
  * Functions below are used inside compiled validations function
  */
 
 var ucs2length = util.ucs2length;
-var equal = __webpack_require__(8206);
+var equal = __nccwpck_require__(8206);
 
 // this error is thrown by async schemas to return validation errors via exception
 var ValidationError = errorClasses.Validation;
@@ -1629,16 +1711,16 @@ function vars(arr, statement) {
 /***/ }),
 
 /***/ 3896:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var URI = __webpack_require__(20)
-  , equal = __webpack_require__(8206)
-  , util = __webpack_require__(6578)
-  , SchemaObject = __webpack_require__(7605)
-  , traverse = __webpack_require__(2533);
+var URI = __nccwpck_require__(20)
+  , equal = __nccwpck_require__(8206)
+  , util = __nccwpck_require__(6578)
+  , SchemaObject = __nccwpck_require__(7605)
+  , traverse = __nccwpck_require__(2533);
 
 module.exports = resolve;
 
@@ -1907,13 +1989,13 @@ function resolveIds(schema) {
 /***/ }),
 
 /***/ 8561:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var ruleModules = __webpack_require__(5810)
-  , toHash = __webpack_require__(6578).toHash;
+var ruleModules = __nccwpck_require__(5810)
+  , toHash = __nccwpck_require__(6578).toHash;
 
 module.exports = function rules() {
   var RULES = [
@@ -1981,12 +2063,12 @@ module.exports = function rules() {
 /***/ }),
 
 /***/ 7605:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var util = __webpack_require__(6578);
+var util = __nccwpck_require__(6578);
 
 module.exports = SchemaObject;
 
@@ -2026,7 +2108,7 @@ module.exports = function ucs2length(str) {
 /***/ }),
 
 /***/ 6578:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
@@ -2040,8 +2122,8 @@ module.exports = {
   toHash: toHash,
   getProperty: getProperty,
   escapeQuotes: escapeQuotes,
-  equal: __webpack_require__(8206),
-  ucs2length: __webpack_require__(4580),
+  equal: __nccwpck_require__(8206),
+  ucs2length: __nccwpck_require__(4580),
   varOccurences: varOccurences,
   varReplace: varReplace,
   schemaHasRules: schemaHasRules,
@@ -2330,12 +2412,12 @@ module.exports = function (metaSchema, keywordsJsonPointers) {
 /***/ }),
 
 /***/ 458:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var metaSchema = __webpack_require__(38);
+var metaSchema = __nccwpck_require__(38);
 
 module.exports = {
   $id: 'https://github.com/ajv-validator/ajv/blob/master/lib/definition_schema.js',
@@ -3876,41 +3958,41 @@ module.exports = function generate_if(it, $keyword, $ruleType) {
 /***/ }),
 
 /***/ 5810:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
 //all requires must be explicit because browserify won't work with dynamic requires
 module.exports = {
-  '$ref': __webpack_require__(2393),
-  allOf: __webpack_require__(9443),
-  anyOf: __webpack_require__(3093),
-  '$comment': __webpack_require__(134),
-  const: __webpack_require__(1661),
-  contains: __webpack_require__(5964),
-  dependencies: __webpack_require__(2591),
-  'enum': __webpack_require__(163),
-  format: __webpack_require__(3847),
-  'if': __webpack_require__(862),
-  items: __webpack_require__(4408),
-  maximum: __webpack_require__(7404),
-  minimum: __webpack_require__(7404),
-  maxItems: __webpack_require__(4683),
-  minItems: __webpack_require__(4683),
-  maxLength: __webpack_require__(2114),
-  minLength: __webpack_require__(2114),
-  maxProperties: __webpack_require__(1142),
-  minProperties: __webpack_require__(1142),
-  multipleOf: __webpack_require__(9772),
-  not: __webpack_require__(750),
-  oneOf: __webpack_require__(6106),
-  pattern: __webpack_require__(3912),
-  properties: __webpack_require__(2924),
-  propertyNames: __webpack_require__(9195),
-  required: __webpack_require__(8420),
-  uniqueItems: __webpack_require__(4995),
-  validate: __webpack_require__(9585)
+  '$ref': __nccwpck_require__(2393),
+  allOf: __nccwpck_require__(9443),
+  anyOf: __nccwpck_require__(3093),
+  '$comment': __nccwpck_require__(134),
+  const: __nccwpck_require__(1661),
+  contains: __nccwpck_require__(5964),
+  dependencies: __nccwpck_require__(2591),
+  'enum': __nccwpck_require__(163),
+  format: __nccwpck_require__(3847),
+  'if': __nccwpck_require__(862),
+  items: __nccwpck_require__(4408),
+  maximum: __nccwpck_require__(7404),
+  minimum: __nccwpck_require__(7404),
+  maxItems: __nccwpck_require__(4683),
+  minItems: __nccwpck_require__(4683),
+  maxLength: __nccwpck_require__(2114),
+  minLength: __nccwpck_require__(2114),
+  maxProperties: __nccwpck_require__(1142),
+  minProperties: __nccwpck_require__(1142),
+  multipleOf: __nccwpck_require__(9772),
+  not: __nccwpck_require__(750),
+  oneOf: __nccwpck_require__(6106),
+  pattern: __nccwpck_require__(3912),
+  properties: __nccwpck_require__(2924),
+  propertyNames: __nccwpck_require__(9195),
+  required: __nccwpck_require__(8420),
+  uniqueItems: __nccwpck_require__(4995),
+  validate: __nccwpck_require__(9585)
 };
 
 
@@ -5835,14 +5917,14 @@ module.exports = function generate_validate(it, $keyword, $ruleType) {
 /***/ }),
 
 /***/ 3297:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
 var IDENTIFIER = /^[a-z_$][a-z0-9_$-]*$/i;
-var customRuleCode = __webpack_require__(5912);
-var definitionSchema = __webpack_require__(458);
+var customRuleCode = __nccwpck_require__(5912);
+var definitionSchema = __nccwpck_require__(458);
 
 module.exports = {
   add: addKeyword,
@@ -6022,6 +6104,9 @@ function range(a, b, str) {
   var i = ai;
 
   if (ai >= 0 && bi > 0) {
+    if(a===b) {
+      return [ai, bi];
+    }
     begs = [];
     left = str.length;
 
@@ -6056,10 +6141,10 @@ function range(a, b, str) {
 /***/ }),
 
 /***/ 3717:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var concatMap = __webpack_require__(6891);
-var balanced = __webpack_require__(9417);
+var concatMap = __nccwpck_require__(6891);
+var balanced = __nccwpck_require__(9417);
 
 module.exports = expandTop;
 
@@ -6405,7 +6490,7 @@ module.exports = function (data, opts) {
 /***/ }),
 
 /***/ 6863:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 module.exports = realpath
 realpath.realpath = realpath
@@ -6414,13 +6499,13 @@ realpath.realpathSync = realpathSync
 realpath.monkeypatch = monkeypatch
 realpath.unmonkeypatch = unmonkeypatch
 
-var fs = __webpack_require__(5747)
+var fs = __nccwpck_require__(5747)
 var origRealpath = fs.realpath
 var origRealpathSync = fs.realpathSync
 
 var version = process.version
 var ok = /^v[0-5]\./.test(version)
-var old = __webpack_require__(1734)
+var old = __nccwpck_require__(1734)
 
 function newError (er) {
   return er && er.syscall === 'realpath' && (
@@ -6478,7 +6563,7 @@ function unmonkeypatch () {
 /***/ }),
 
 /***/ 1734:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -6501,9 +6586,9 @@ function unmonkeypatch () {
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-var pathModule = __webpack_require__(5622);
+var pathModule = __nccwpck_require__(5622);
 var isWindows = process.platform === 'win32';
-var fs = __webpack_require__(5747);
+var fs = __nccwpck_require__(5747);
 
 // JavaScript implementation of realpath, ported from node pre-v6
 
@@ -6788,10 +6873,8 @@ exports.realpath = function realpath(p, cache, cb) {
 /***/ }),
 
 /***/ 7625:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-exports.alphasort = alphasort
-exports.alphasorti = alphasorti
 exports.setopts = setopts
 exports.ownProp = ownProp
 exports.makeAbs = makeAbs
@@ -6804,17 +6887,13 @@ function ownProp (obj, field) {
   return Object.prototype.hasOwnProperty.call(obj, field)
 }
 
-var path = __webpack_require__(5622)
-var minimatch = __webpack_require__(3973)
-var isAbsolute = __webpack_require__(8714)
+var path = __nccwpck_require__(5622)
+var minimatch = __nccwpck_require__(3973)
+var isAbsolute = __nccwpck_require__(8714)
 var Minimatch = minimatch.Minimatch
 
-function alphasorti (a, b) {
-  return a.toLowerCase().localeCompare(b.toLowerCase())
-}
-
 function alphasort (a, b) {
-  return a.localeCompare(b)
+  return a.localeCompare(b, 'en')
 }
 
 function setupIgnores (self, options) {
@@ -6942,7 +7021,7 @@ function finish (self) {
     all = Object.keys(all)
 
   if (!self.nosort)
-    all = all.sort(self.nocase ? alphasorti : alphasort)
+    all = all.sort(alphasort)
 
   // at *some* point we statted all of these
   if (self.mark) {
@@ -7035,7 +7114,7 @@ function childrenIgnored (self, path) {
 /***/ }),
 
 /***/ 1957:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 // Approach:
 //
@@ -7079,27 +7158,25 @@ function childrenIgnored (self, path) {
 
 module.exports = glob
 
-var fs = __webpack_require__(5747)
-var rp = __webpack_require__(6863)
-var minimatch = __webpack_require__(3973)
+var fs = __nccwpck_require__(5747)
+var rp = __nccwpck_require__(6863)
+var minimatch = __nccwpck_require__(3973)
 var Minimatch = minimatch.Minimatch
-var inherits = __webpack_require__(4124)
-var EE = __webpack_require__(8614).EventEmitter
-var path = __webpack_require__(5622)
-var assert = __webpack_require__(2357)
-var isAbsolute = __webpack_require__(8714)
-var globSync = __webpack_require__(9010)
-var common = __webpack_require__(7625)
-var alphasort = common.alphasort
-var alphasorti = common.alphasorti
+var inherits = __nccwpck_require__(4124)
+var EE = __nccwpck_require__(8614).EventEmitter
+var path = __nccwpck_require__(5622)
+var assert = __nccwpck_require__(2357)
+var isAbsolute = __nccwpck_require__(8714)
+var globSync = __nccwpck_require__(9010)
+var common = __nccwpck_require__(7625)
 var setopts = common.setopts
 var ownProp = common.ownProp
-var inflight = __webpack_require__(2492)
-var util = __webpack_require__(1669)
+var inflight = __nccwpck_require__(2492)
+var util = __nccwpck_require__(1669)
 var childrenIgnored = common.childrenIgnored
 var isIgnored = common.isIgnored
 
-var once = __webpack_require__(1223)
+var once = __nccwpck_require__(1223)
 
 function glob (pattern, options, cb) {
   if (typeof options === 'function') cb = options, options = {}
@@ -7832,23 +7909,21 @@ Glob.prototype._stat2 = function (f, abs, er, stat, cb) {
 /***/ }),
 
 /***/ 9010:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 module.exports = globSync
 globSync.GlobSync = GlobSync
 
-var fs = __webpack_require__(5747)
-var rp = __webpack_require__(6863)
-var minimatch = __webpack_require__(3973)
+var fs = __nccwpck_require__(5747)
+var rp = __nccwpck_require__(6863)
+var minimatch = __nccwpck_require__(3973)
 var Minimatch = minimatch.Minimatch
-var Glob = __webpack_require__(1957).Glob
-var util = __webpack_require__(1669)
-var path = __webpack_require__(5622)
-var assert = __webpack_require__(2357)
-var isAbsolute = __webpack_require__(8714)
-var common = __webpack_require__(7625)
-var alphasort = common.alphasort
-var alphasorti = common.alphasorti
+var Glob = __nccwpck_require__(1957).Glob
+var util = __nccwpck_require__(1669)
+var path = __nccwpck_require__(5622)
+var assert = __nccwpck_require__(2357)
+var isAbsolute = __nccwpck_require__(8714)
+var common = __nccwpck_require__(7625)
 var setopts = common.setopts
 var ownProp = common.ownProp
 var childrenIgnored = common.childrenIgnored
@@ -8325,11 +8400,11 @@ GlobSync.prototype._makeAbs = function (f) {
 /***/ }),
 
 /***/ 2492:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var wrappy = __webpack_require__(2940)
+var wrappy = __nccwpck_require__(2940)
 var reqs = Object.create(null)
-var once = __webpack_require__(1223)
+var once = __nccwpck_require__(1223)
 
 module.exports = wrappy(inflight)
 
@@ -8386,16 +8461,16 @@ function slice (args) {
 /***/ }),
 
 /***/ 4124:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 try {
-  var util = __webpack_require__(1669);
+  var util = __nccwpck_require__(1669);
   /* istanbul ignore next */
   if (typeof util.inherits !== 'function') throw '';
   module.exports = util.inherits;
 } catch (e) {
   /* istanbul ignore next */
-  module.exports = __webpack_require__(8544);
+  module.exports = __nccwpck_require__(8544);
 }
 
 
@@ -8533,18 +8608,18 @@ function escapeJsonPtr(str) {
 /***/ }),
 
 /***/ 3973:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 module.exports = minimatch
 minimatch.Minimatch = Minimatch
 
 var path = { sep: '/' }
 try {
-  path = __webpack_require__(5622)
+  path = __nccwpck_require__(5622)
 } catch (er) {}
 
 var GLOBSTAR = minimatch.GLOBSTAR = Minimatch.GLOBSTAR = {}
-var expand = __webpack_require__(3717)
+var expand = __nccwpck_require__(3717)
 
 var plTypes = {
   '!': { open: '(?:(?!(?:', close: '))[^/]*?)'},
@@ -9463,9 +9538,9 @@ function regExpEscape (s) {
 /***/ }),
 
 /***/ 1223:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var wrappy = __webpack_require__(2940)
+var wrappy = __nccwpck_require__(2940)
 module.exports = wrappy(once)
 module.exports.strict = wrappy(onceStrict)
 
@@ -9542,7 +9617,7 @@ module.exports.win32 = win32;
 /***/ 20:
 /***/ (function(__unused_webpack_module, exports) {
 
-/** @license URI.js v4.4.0 (c) 2011 Gary Court. License: http://github.com/garycourt/uri-js */
+/** @license URI.js v4.4.1 (c) 2011 Gary Court. License: http://github.com/garycourt/uri-js */
 (function (global, factory) {
 	 true ? factory(exports) :
 	0;
@@ -11028,224 +11103,217 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 6409:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ 6835:
+/***/ ((module) => {
 
 "use strict";
-
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-//
-// Copyright (c) 2011-2020 ETH Zurich.
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CheckFailure = exports.CheckSuccess = exports.filterFailures = exports.getUncoveredFilesWithConfig = exports.getUncoveredFiles = exports.checkLicensesWithConfig = exports.checkLicenses = void 0;
-const fs = __importStar(__webpack_require__(5747));
-const path = __importStar(__webpack_require__(5622));
-const parse_1 = __webpack_require__(6089);
-const find_1 = __webpack_require__(3288);
-const CURRENT_YEAR_IDENTIFIER = '%year%';
-function checkLicenses(cwd, configPath) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const config = yield getConfig(configPath);
-        return checkLicensesWithConfig(cwd, config);
-    });
-}
-exports.checkLicenses = checkLicenses;
-function getConfig(configPath) {
-    const configString = fs.readFileSync(configPath, 'utf8');
-    return parse_1.parseConfig(configString);
-}
-function checkLicensesWithConfig(cwd, config) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const results = yield Promise.all(config.map(c => checkLicense(cwd, c)));
-        return flatten(results);
-    });
-}
-exports.checkLicensesWithConfig = checkLicensesWithConfig;
-function getUncoveredFiles(cwd, configPath) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const config = yield getConfig(configPath);
-        return getUncoveredFilesWithConfig(cwd, config);
-    });
-}
-exports.getUncoveredFiles = getUncoveredFiles;
-function getUncoveredFilesWithConfig(cwd, config) {
-    return __awaiter(this, void 0, void 0, function* () {
-        // get all files:
-        const allFiles = new Set(yield find_1.findFiles(cwd, ['**'], []));
-        // get files covered by config:
-        const converedFilesResults = yield Promise.all(config.map(c => getFiles(cwd, c)));
-        const coveredFiles = new Set(flatten(converedFilesResults));
-        const remainingFiles = setminus(allFiles, coveredFiles);
-        return [...remainingFiles];
-    });
-}
-exports.getUncoveredFilesWithConfig = getUncoveredFilesWithConfig;
-function filterFailures(results) {
-    return results.filter(r => !r.success).map(f => f);
-}
-exports.filterFailures = filterFailures;
-function setminus(set1, set2) {
-    const copy = new Set(set1);
-    for (const elem of set2) {
-        copy.delete(elem);
-    }
-    return copy;
-}
-function checkLicense(cwd, licenseConfig) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (!licenseConfig.license) {
-            // no license provided
-            return [];
-        }
-        let licensePath;
-        if (path.isAbsolute(licenseConfig.license)) {
-            licensePath = licenseConfig.license;
-        }
-        else {
-            licensePath = path.join(cwd, licenseConfig.license);
-        }
-        const errorMessageGenerator = (file) => `'${file}' does not contain license from '${licensePath}'`;
-        const licenseString = fs.readFileSync(licensePath, 'utf8');
-        const licenseRegex = convertHeaderToRegex(licenseString);
-        const files = yield getFiles(cwd, licenseConfig);
-        return yield Promise.all(files.map(f => contains(f, licenseRegex, errorMessageGenerator)));
-    });
-}
-function getFiles(cwd, licenseConfig) {
-    const excludePatterns = licenseConfig.exclude || [];
-    return find_1.findFiles(cwd, licenseConfig.include, excludePatterns);
-}
-function convertHeaderToRegex(header) {
-    let modifiedHeader = header;
-    // escape characters that have a special meaning in a regex
-    // taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
-    modifiedHeader = modifiedHeader.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-    // replace sequences of the following form to the corresponding regex
-    // "%regexp:\d{x}%" is escaped "%regexp:\\d\{x\}%" where x is a number digits
-    // the corresponding regex to find this escaped sequence is "%regexp:\\\\d\\{(\d+)\\}%"
-    // this character sequence should be replaced by "\d{x}"
-    modifiedHeader = modifiedHeader.replace(/%regexp:\\\\d\\{(\d+)\\}%/g, '\\d{$1}');
-    // replace "%year%" by a regex that matches 4 digits:
-    modifiedHeader = modifiedHeader.replace(CURRENT_YEAR_IDENTIFIER, '\\d{4}');
-    return new RegExp(modifiedHeader);
-}
-function contains(file, regex, errorMessageGenerator) {
-    return new Promise((resolve, reject) => {
-        fs.readFile(file, 'utf8', (err, data) => {
-            if (err == null) {
-                // check whether data contains a match:
-                if (regex.test(data)) {
-                    resolve(new CheckSuccess(file));
-                }
-                else {
-                    resolve(new CheckFailure(file, errorMessageGenerator(file)));
-                }
-            }
-            else {
-                reject(new Error(`Error while reading file '${file}': '${err.message}'`));
-            }
-        });
-    });
-}
-function flatten(matrix) {
-    const res = [];
-    for (const elem of matrix) {
-        res.push(...elem);
-    }
-    return res;
-}
-class CheckSuccess {
-    constructor(filePath) {
-        this.path = filePath;
-    }
-    get success() {
-        return true;
-    }
-    get filePath() {
-        return this.path;
-    }
-}
-exports.CheckSuccess = CheckSuccess;
-class CheckFailure {
-    constructor(filePath, msg) {
-        this.path = filePath;
-        this.msg = msg;
-    }
-    get success() {
-        return false;
-    }
-    get filePath() {
-        return this.path;
-    }
-    get message() {
-        return this.msg;
-    }
-}
-exports.CheckFailure = CheckFailure;
-
+module.exports = JSON.parse('{"$schema":"http://json-schema.org/draft-07/schema#","$id":"https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#","description":"Meta-schema for $data reference (JSON Schema extension proposal)","type":"object","required":["$data"],"properties":{"$data":{"type":"string","anyOf":[{"format":"relative-json-pointer"},{"format":"json-pointer"}]}},"additionalProperties":false}');
 
 /***/ }),
 
-/***/ 3288:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ 38:
+/***/ ((module) => {
 
 "use strict";
+module.exports = JSON.parse('{"$schema":"http://json-schema.org/draft-07/schema#","$id":"http://json-schema.org/draft-07/schema#","title":"Core schema meta-schema","definitions":{"schemaArray":{"type":"array","minItems":1,"items":{"$ref":"#"}},"nonNegativeInteger":{"type":"integer","minimum":0},"nonNegativeIntegerDefault0":{"allOf":[{"$ref":"#/definitions/nonNegativeInteger"},{"default":0}]},"simpleTypes":{"enum":["array","boolean","integer","null","number","object","string"]},"stringArray":{"type":"array","items":{"type":"string"},"uniqueItems":true,"default":[]}},"type":["object","boolean"],"properties":{"$id":{"type":"string","format":"uri-reference"},"$schema":{"type":"string","format":"uri"},"$ref":{"type":"string","format":"uri-reference"},"$comment":{"type":"string"},"title":{"type":"string"},"description":{"type":"string"},"default":true,"readOnly":{"type":"boolean","default":false},"examples":{"type":"array","items":true},"multipleOf":{"type":"number","exclusiveMinimum":0},"maximum":{"type":"number"},"exclusiveMaximum":{"type":"number"},"minimum":{"type":"number"},"exclusiveMinimum":{"type":"number"},"maxLength":{"$ref":"#/definitions/nonNegativeInteger"},"minLength":{"$ref":"#/definitions/nonNegativeIntegerDefault0"},"pattern":{"type":"string","format":"regex"},"additionalItems":{"$ref":"#"},"items":{"anyOf":[{"$ref":"#"},{"$ref":"#/definitions/schemaArray"}],"default":true},"maxItems":{"$ref":"#/definitions/nonNegativeInteger"},"minItems":{"$ref":"#/definitions/nonNegativeIntegerDefault0"},"uniqueItems":{"type":"boolean","default":false},"contains":{"$ref":"#"},"maxProperties":{"$ref":"#/definitions/nonNegativeInteger"},"minProperties":{"$ref":"#/definitions/nonNegativeIntegerDefault0"},"required":{"$ref":"#/definitions/stringArray"},"additionalProperties":{"$ref":"#"},"definitions":{"type":"object","additionalProperties":{"$ref":"#"},"default":{}},"properties":{"type":"object","additionalProperties":{"$ref":"#"},"default":{}},"patternProperties":{"type":"object","additionalProperties":{"$ref":"#"},"propertyNames":{"format":"regex"},"default":{}},"dependencies":{"type":"object","additionalProperties":{"anyOf":[{"$ref":"#"},{"$ref":"#/definitions/stringArray"}]}},"propertyNames":{"$ref":"#"},"const":true,"enum":{"type":"array","items":true,"minItems":1,"uniqueItems":true},"type":{"anyOf":[{"$ref":"#/definitions/simpleTypes"},{"type":"array","items":{"$ref":"#/definitions/simpleTypes"},"minItems":1,"uniqueItems":true}]},"format":{"type":"string"},"contentMediaType":{"type":"string"},"contentEncoding":{"type":"string"},"if":{"$ref":"#"},"then":{"$ref":"#"},"else":{"$ref":"#"},"allOf":{"$ref":"#/definitions/schemaArray"},"anyOf":{"$ref":"#/definitions/schemaArray"},"oneOf":{"$ref":"#/definitions/schemaArray"},"not":{"$ref":"#"}},"default":true}');
 
+/***/ }),
+
+/***/ 2357:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("assert");;
+
+/***/ }),
+
+/***/ 8614:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("events");;
+
+/***/ }),
+
+/***/ 5747:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs");;
+
+/***/ }),
+
+/***/ 2087:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("os");;
+
+/***/ }),
+
+/***/ 5622:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("path");;
+
+/***/ }),
+
+/***/ 1669:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("util");;
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __nccwpck_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		var threw = true;
+/******/ 		try {
+/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
+/******/ 			threw = false;
+/******/ 		} finally {
+/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
+/******/ 		}
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__nccwpck_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__nccwpck_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__nccwpck_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__nccwpck_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/compat */
+/******/ 	
+/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+// ESM COMPAT FLAG
+__nccwpck_require__.r(__webpack_exports__);
+
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __nccwpck_require__(2186);
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __nccwpck_require__(5747);
+// EXTERNAL MODULE: external "path"
+var external_path_ = __nccwpck_require__(5622);
+// EXTERNAL MODULE: ./node_modules/ajv/lib/ajv.js
+var lib_ajv = __nccwpck_require__(4941);
+var ajv_default = /*#__PURE__*/__nccwpck_require__.n(lib_ajv);
+;// CONCATENATED MODULE: ./src/parse.ts
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //
 // Copyright (c) 2011-2020 ETH Zurich.
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+
+function parseConfig(text) {
+    const ajv = new (ajv_default())();
+    const validate = ajv.compile({
+        type: 'array',
+        items: {
+            type: 'object',
+            required: ['include'],
+            properties: {
+                include: {
+                    type: 'array',
+                    items: {
+                        type: 'string'
+                    }
+                },
+                exclude: {
+                    type: 'array',
+                    items: {
+                        type: 'string'
+                    }
+                },
+                license: {
+                    type: 'string'
+                }
+            }
+        }
+    });
+    let data;
+    try {
+        data = JSON.parse(text);
+    }
+    catch (_a) {
+        return Promise.reject(new Error(`Parsing configuration has failed`));
+    }
+    if (!validate(data)) {
+        return Promise.reject(new Error(`Configuration validation has failed: '${ajv.errorsText(validate.errors)}'`));
+    }
+    return Promise.resolve(data);
+}
+
+// EXTERNAL MODULE: ./node_modules/glob/glob.js
+var glob = __nccwpck_require__(1957);
+;// CONCATENATED MODULE: ./src/find.ts
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// Copyright (c) 2011-2020 ETH Zurich.
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -11254,10 +11322,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.findFiles = void 0;
-const path = __importStar(__webpack_require__(5622));
-const glob_1 = __webpack_require__(1957);
+
+
 function findFiles(cwd, includePatterns, excludePatterns) {
     return __awaiter(this, void 0, void 0, function* () {
         let includePattern;
@@ -11276,7 +11342,7 @@ function findFiles(cwd, includePatterns, excludePatterns) {
             nodir: true // only return files (no directories)
         };
         const files = yield new Promise((resolve, reject) => {
-            glob_1.glob(includePattern, options, (err, matches) => {
+            (0,glob.glob)(includePattern, options, (err, matches) => {
                 if (err == null) {
                     resolve(matches);
                 }
@@ -11286,10 +11352,9 @@ function findFiles(cwd, includePatterns, excludePatterns) {
             });
         });
         // files are relative to cwd, hence join them:
-        return files.map(f => path.join(cwd, f));
+        return files.map(f => external_path_.join(cwd, f));
     });
 }
-exports.findFiles = findFiles;
 /*
 async function getFilesRecursively(path: string): Promise<string[]> {
     const dirContent = await readdir(path);
@@ -11338,39 +11403,13 @@ function flatten<T>(matrix: T[][]): T[] {
 }
 */
 
-
-/***/ }),
-
-/***/ 399:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
+;// CONCATENATED MODULE: ./src/check.ts
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //
 // Copyright (c) 2011-2020 ETH Zurich.
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+var check_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -11379,18 +11418,170 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__webpack_require__(2186));
-const check_1 = __webpack_require__(6409);
+
+
+
+
+const CURRENT_YEAR_IDENTIFIER = '%year%';
+function checkLicenses(cwd, configPath) {
+    return check_awaiter(this, void 0, void 0, function* () {
+        const config = yield getConfig(configPath);
+        return checkLicensesWithConfig(cwd, config);
+    });
+}
+function getConfig(configPath) {
+    const configString = external_fs_.readFileSync(configPath, 'utf8');
+    return parseConfig(configString);
+}
+function checkLicensesWithConfig(cwd, config) {
+    return check_awaiter(this, void 0, void 0, function* () {
+        const results = yield Promise.all(config.map(c => checkLicense(cwd, c)));
+        return flatten(results);
+    });
+}
+function getUncoveredFiles(cwd, configPath) {
+    return check_awaiter(this, void 0, void 0, function* () {
+        const config = yield getConfig(configPath);
+        return getUncoveredFilesWithConfig(cwd, config);
+    });
+}
+function getUncoveredFilesWithConfig(cwd, config) {
+    return check_awaiter(this, void 0, void 0, function* () {
+        // get all files:
+        const allFiles = new Set(yield findFiles(cwd, ['**'], []));
+        // get files covered by config:
+        const converedFilesResults = yield Promise.all(config.map(c => getFiles(cwd, c)));
+        const coveredFiles = new Set(flatten(converedFilesResults));
+        const remainingFiles = setminus(allFiles, coveredFiles);
+        return [...remainingFiles];
+    });
+}
+function filterFailures(results) {
+    return results.filter(r => !r.success).map(f => f);
+}
+function setminus(set1, set2) {
+    const copy = new Set(set1);
+    for (const elem of set2) {
+        copy.delete(elem);
+    }
+    return copy;
+}
+function checkLicense(cwd, licenseConfig) {
+    return check_awaiter(this, void 0, void 0, function* () {
+        if (!licenseConfig.license) {
+            // no license provided
+            return [];
+        }
+        let licensePath;
+        if (external_path_.isAbsolute(licenseConfig.license)) {
+            licensePath = licenseConfig.license;
+        }
+        else {
+            licensePath = external_path_.join(cwd, licenseConfig.license);
+        }
+        const errorMessageGenerator = (file) => `'${file}' does not contain license from '${licensePath}'`;
+        const licenseString = external_fs_.readFileSync(licensePath, 'utf8');
+        const licenseRegex = convertHeaderToRegex(licenseString);
+        const files = yield getFiles(cwd, licenseConfig);
+        return yield Promise.all(files.map(f => contains(f, licenseRegex, errorMessageGenerator)));
+    });
+}
+function getFiles(cwd, licenseConfig) {
+    const excludePatterns = licenseConfig.exclude || [];
+    return findFiles(cwd, licenseConfig.include, excludePatterns);
+}
+function convertHeaderToRegex(header) {
+    let modifiedHeader = header;
+    // escape characters that have a special meaning in a regex
+    // taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+    modifiedHeader = modifiedHeader.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+    // replace sequences of the following form to the corresponding regex
+    // "%regexp:\d{x}%" is escaped "%regexp:\\d\{x\}%" where x is a number digits
+    // the corresponding regex to find this escaped sequence is "%regexp:\\\\d\\{(\d+)\\}%"
+    // this character sequence should be replaced by "\d{x}"
+    modifiedHeader = modifiedHeader.replace(/%regexp:\\\\d\\{(\d+)\\}%/g, '\\d{$1}');
+    // replace "%year%" by a regex that matches 4 digits:
+    modifiedHeader = modifiedHeader.replace(CURRENT_YEAR_IDENTIFIER, '\\d{4}');
+    return new RegExp(modifiedHeader);
+}
+function contains(file, regex, errorMessageGenerator) {
+    return new Promise((resolve, reject) => {
+        external_fs_.readFile(file, 'utf8', (err, data) => {
+            if (err == null) {
+                // check whether data contains a match:
+                if (regex.test(data)) {
+                    resolve(new CheckSuccess(file));
+                }
+                else {
+                    resolve(new CheckFailure(file, errorMessageGenerator(file)));
+                }
+            }
+            else {
+                reject(new Error(`Error while reading file '${file}': '${err.message}'`));
+            }
+        });
+    });
+}
+function flatten(matrix) {
+    const res = [];
+    for (const elem of matrix) {
+        res.push(...elem);
+    }
+    return res;
+}
+class CheckSuccess {
+    constructor(filePath) {
+        this.path = filePath;
+    }
+    get success() {
+        return true;
+    }
+    get filePath() {
+        return this.path;
+    }
+}
+class CheckFailure {
+    constructor(filePath, msg) {
+        this.path = filePath;
+        this.msg = msg;
+    }
+    get success() {
+        return false;
+    }
+    get filePath() {
+        return this.path;
+    }
+    get message() {
+        return this.msg;
+    }
+}
+
+;// CONCATENATED MODULE: ./src/main.ts
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// Copyright (c) 2011-2020 ETH Zurich.
+var main_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
 function run() {
-    return __awaiter(this, void 0, void 0, function* () {
+    return main_awaiter(this, void 0, void 0, function* () {
         try {
             const path = core.getInput('path');
             const configPath = core.getInput('config');
             const strictMode = core.getInput('strict', { required: false }) === 'true';
-            const results = yield check_1.checkLicenses(path, configPath);
-            const errors = check_1.filterFailures(results);
-            const missedFiles = yield check_1.getUncoveredFiles(path, configPath);
+            const results = yield checkLicenses(path, configPath);
+            const errors = filterFailures(results);
+            const missedFiles = yield getUncoveredFiles(path, configPath);
             // emit a warning for all missed files:
             for (const missedFile of missedFiles) {
                 core.warning(`Config does not cover the file '${missedFile}'`);
@@ -11416,171 +11607,9 @@ function run() {
 }
 run();
 
+})();
 
-/***/ }),
-
-/***/ 6089:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-//
-// Copyright (c) 2011-2020 ETH Zurich.
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseConfig = void 0;
-const ajv_1 = __importDefault(__webpack_require__(4941));
-function parseConfig(text) {
-    const ajv = new ajv_1.default();
-    const validate = ajv.compile({
-        type: 'array',
-        items: {
-            type: 'object',
-            required: ['include'],
-            properties: {
-                include: {
-                    type: 'array',
-                    items: {
-                        type: 'string'
-                    }
-                },
-                exclude: {
-                    type: 'array',
-                    items: {
-                        type: 'string'
-                    }
-                },
-                license: {
-                    type: 'string'
-                }
-            }
-        }
-    });
-    let data;
-    try {
-        data = JSON.parse(text);
-    }
-    catch (_a) {
-        return Promise.reject(new Error(`Parsing configuration has failed`));
-    }
-    if (!validate(data)) {
-        return Promise.reject(new Error(`Configuration validation has failed: '${ajv.errorsText(validate.errors)}'`));
-    }
-    return Promise.resolve(data);
-}
-exports.parseConfig = parseConfig;
-
-
-/***/ }),
-
-/***/ 6835:
-/***/ ((module) => {
-
-"use strict";
-module.exports = JSON.parse("{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"$id\":\"https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#\",\"description\":\"Meta-schema for $data reference (JSON Schema extension proposal)\",\"type\":\"object\",\"required\":[\"$data\"],\"properties\":{\"$data\":{\"type\":\"string\",\"anyOf\":[{\"format\":\"relative-json-pointer\"},{\"format\":\"json-pointer\"}]}},\"additionalProperties\":false}");
-
-/***/ }),
-
-/***/ 38:
-/***/ ((module) => {
-
-"use strict";
-module.exports = JSON.parse("{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"$id\":\"http://json-schema.org/draft-07/schema#\",\"title\":\"Core schema meta-schema\",\"definitions\":{\"schemaArray\":{\"type\":\"array\",\"minItems\":1,\"items\":{\"$ref\":\"#\"}},\"nonNegativeInteger\":{\"type\":\"integer\",\"minimum\":0},\"nonNegativeIntegerDefault0\":{\"allOf\":[{\"$ref\":\"#/definitions/nonNegativeInteger\"},{\"default\":0}]},\"simpleTypes\":{\"enum\":[\"array\",\"boolean\",\"integer\",\"null\",\"number\",\"object\",\"string\"]},\"stringArray\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"uniqueItems\":true,\"default\":[]}},\"type\":[\"object\",\"boolean\"],\"properties\":{\"$id\":{\"type\":\"string\",\"format\":\"uri-reference\"},\"$schema\":{\"type\":\"string\",\"format\":\"uri\"},\"$ref\":{\"type\":\"string\",\"format\":\"uri-reference\"},\"$comment\":{\"type\":\"string\"},\"title\":{\"type\":\"string\"},\"description\":{\"type\":\"string\"},\"default\":true,\"readOnly\":{\"type\":\"boolean\",\"default\":false},\"examples\":{\"type\":\"array\",\"items\":true},\"multipleOf\":{\"type\":\"number\",\"exclusiveMinimum\":0},\"maximum\":{\"type\":\"number\"},\"exclusiveMaximum\":{\"type\":\"number\"},\"minimum\":{\"type\":\"number\"},\"exclusiveMinimum\":{\"type\":\"number\"},\"maxLength\":{\"$ref\":\"#/definitions/nonNegativeInteger\"},\"minLength\":{\"$ref\":\"#/definitions/nonNegativeIntegerDefault0\"},\"pattern\":{\"type\":\"string\",\"format\":\"regex\"},\"additionalItems\":{\"$ref\":\"#\"},\"items\":{\"anyOf\":[{\"$ref\":\"#\"},{\"$ref\":\"#/definitions/schemaArray\"}],\"default\":true},\"maxItems\":{\"$ref\":\"#/definitions/nonNegativeInteger\"},\"minItems\":{\"$ref\":\"#/definitions/nonNegativeIntegerDefault0\"},\"uniqueItems\":{\"type\":\"boolean\",\"default\":false},\"contains\":{\"$ref\":\"#\"},\"maxProperties\":{\"$ref\":\"#/definitions/nonNegativeInteger\"},\"minProperties\":{\"$ref\":\"#/definitions/nonNegativeIntegerDefault0\"},\"required\":{\"$ref\":\"#/definitions/stringArray\"},\"additionalProperties\":{\"$ref\":\"#\"},\"definitions\":{\"type\":\"object\",\"additionalProperties\":{\"$ref\":\"#\"},\"default\":{}},\"properties\":{\"type\":\"object\",\"additionalProperties\":{\"$ref\":\"#\"},\"default\":{}},\"patternProperties\":{\"type\":\"object\",\"additionalProperties\":{\"$ref\":\"#\"},\"propertyNames\":{\"format\":\"regex\"},\"default\":{}},\"dependencies\":{\"type\":\"object\",\"additionalProperties\":{\"anyOf\":[{\"$ref\":\"#\"},{\"$ref\":\"#/definitions/stringArray\"}]}},\"propertyNames\":{\"$ref\":\"#\"},\"const\":true,\"enum\":{\"type\":\"array\",\"items\":true,\"minItems\":1,\"uniqueItems\":true},\"type\":{\"anyOf\":[{\"$ref\":\"#/definitions/simpleTypes\"},{\"type\":\"array\",\"items\":{\"$ref\":\"#/definitions/simpleTypes\"},\"minItems\":1,\"uniqueItems\":true}]},\"format\":{\"type\":\"string\"},\"contentMediaType\":{\"type\":\"string\"},\"contentEncoding\":{\"type\":\"string\"},\"if\":{\"$ref\":\"#\"},\"then\":{\"$ref\":\"#\"},\"else\":{\"$ref\":\"#\"},\"allOf\":{\"$ref\":\"#/definitions/schemaArray\"},\"anyOf\":{\"$ref\":\"#/definitions/schemaArray\"},\"oneOf\":{\"$ref\":\"#/definitions/schemaArray\"},\"not\":{\"$ref\":\"#\"}},\"default\":true}");
-
-/***/ }),
-
-/***/ 2357:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("assert");
-
-/***/ }),
-
-/***/ 8614:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("events");
-
-/***/ }),
-
-/***/ 5747:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("fs");
-
-/***/ }),
-
-/***/ 2087:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("os");
-
-/***/ }),
-
-/***/ 5622:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("path");
-
-/***/ }),
-
-/***/ 1669:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("util");
-
-/***/ })
-
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		if(__webpack_module_cache__[moduleId]) {
-/******/ 			return __webpack_module_cache__[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		var threw = true;
-/******/ 		try {
-/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/ 			threw = false;
-/******/ 		} finally {
-/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
-/******/ 		}
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/************************************************************************/
-/******/ 	/* webpack/runtime/compat */
-/******/ 	
-/******/ 	__webpack_require__.ab = __dirname + "/";/************************************************************************/
-/******/ 	// module exports must be returned from runtime so entry inlining is disabled
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(399);
+module.exports = __webpack_exports__;
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map
