@@ -52,14 +52,17 @@ Currently, two special patterns are supported in files containing a license head
 `npx github:viperproject/check-license-header#v1 check --config <path to config>` can be used to locally run the checks.
 
 ## Create a new Release
-1. Checkout this repository
-2. Create a new release branch (replace `v1`): `git checkout -b releases/v1`
-3. Run `npm run package`
-4. Force add the dist folder: `git add -f dist`
-5. Commit: `git commit -m "<commit message>`
-6. Push release branch: `git push`
-7. Create a GitHub release with a tag, e.g. `v1.0.0`
-8. Move the major tag (e.g. `v1`) to the latest release:
+1. Checkout this repository and pull remote changes `git pull`
+2. Checkout or create a release branch (replace `v1` with the major version number): 
+  - `git checkout releases/v1; git pull origin main` or 
+  - `git checkout -b releases/v1`
+3. Run `rm -rf dist; rm -rf node_modules; npm ci`
+4. Run `npm run package`
+5. Force add the dist folder: `git add -f dist`
+6. Commit: `git commit -m "<commit message>`
+7. Push release branch: `git push`
+8. Create a GitHub release with a tag, e.g. `v1.0.0`
+9. Move the major tag (e.g. `v1`) to the latest release:
 ```
 git tag -fa v1 -m "Update v1 tag"
 git push origin v1 --force
