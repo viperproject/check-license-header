@@ -15,7 +15,7 @@ import {
     getUncoveredFiles,
     filterFailures
 } from '../src/check';
-import Config from '../src/Config';
+import Config from '../src/config';
 
 const FILES_PATH = path.join(__dirname, 'data', 'files');
 const HEADERS_PATH = path.join(__dirname, 'data', 'headers');
