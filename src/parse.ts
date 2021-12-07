@@ -5,7 +5,7 @@
 // Copyright (c) 2011-2020 ETH Zurich.
 
 import Ajv from 'ajv';
-import {Config} from './Config';
+import {Config} from './config';
 
 export function parseConfig(text: string): Promise<Config> {
     const ajv = new Ajv();

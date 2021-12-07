@@ -6,9 +6,9 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import {parseConfig} from './parse';
+import {Config, LicenseConfig} from './config';
 import {findFiles} from './find';
-import {Config, LicenseConfig} from './Config';
+import {parseConfig} from './parse';
 
 const CURRENT_YEAR_IDENTIFIER = '%year%';
 
