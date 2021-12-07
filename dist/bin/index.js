@@ -3,5595 +3,5837 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 4941:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+/***/ 2426:
+/***/ ((module, exports, __nccwpck_require__) => {
 
 "use strict";
 
-
-var compileSchema = __nccwpck_require__(875)
-  , resolve = __nccwpck_require__(3896)
-  , Cache = __nccwpck_require__(3679)
-  , SchemaObject = __nccwpck_require__(7605)
-  , stableStringify = __nccwpck_require__(969)
-  , formats = __nccwpck_require__(6627)
-  , rules = __nccwpck_require__(8561)
-  , $dataMetaSchema = __nccwpck_require__(1412)
-  , util = __nccwpck_require__(6578);
-
-module.exports = Ajv;
-
-Ajv.prototype.validate = validate;
-Ajv.prototype.compile = compile;
-Ajv.prototype.addSchema = addSchema;
-Ajv.prototype.addMetaSchema = addMetaSchema;
-Ajv.prototype.validateSchema = validateSchema;
-Ajv.prototype.getSchema = getSchema;
-Ajv.prototype.removeSchema = removeSchema;
-Ajv.prototype.addFormat = addFormat;
-Ajv.prototype.errorsText = errorsText;
-
-Ajv.prototype._addSchema = _addSchema;
-Ajv.prototype._compile = _compile;
-
-Ajv.prototype.compileAsync = __nccwpck_require__(890);
-var customKeyword = __nccwpck_require__(3297);
-Ajv.prototype.addKeyword = customKeyword.add;
-Ajv.prototype.getKeyword = customKeyword.get;
-Ajv.prototype.removeKeyword = customKeyword.remove;
-Ajv.prototype.validateKeyword = customKeyword.validate;
-
-var errorClasses = __nccwpck_require__(5726);
-Ajv.ValidationError = errorClasses.Validation;
-Ajv.MissingRefError = errorClasses.MissingRef;
-Ajv.$dataMetaSchema = $dataMetaSchema;
-
-var META_SCHEMA_ID = 'http://json-schema.org/draft-07/schema';
-
-var META_IGNORE_OPTIONS = [ 'removeAdditional', 'useDefaults', 'coerceTypes', 'strictDefaults' ];
-var META_SUPPORT_DATA = ['/properties'];
-
-/**
- * Creates validator instance.
- * Usage: `Ajv(opts)`
- * @param {Object} opts optional options
- * @return {Object} ajv instance
- */
-function Ajv(opts) {
-  if (!(this instanceof Ajv)) return new Ajv(opts);
-  opts = this._opts = util.copy(opts) || {};
-  setLogger(this);
-  this._schemas = {};
-  this._refs = {};
-  this._fragments = {};
-  this._formats = formats(opts.format);
-
-  this._cache = opts.cache || new Cache;
-  this._loadingSchemas = {};
-  this._compilations = [];
-  this.RULES = rules();
-  this._getId = chooseGetId(opts);
-
-  opts.loopRequired = opts.loopRequired || Infinity;
-  if (opts.errorDataPath == 'property') opts._errorDataPathProperty = true;
-  if (opts.serialize === undefined) opts.serialize = stableStringify;
-  this._metaOpts = getMetaSchemaOptions(this);
-
-  if (opts.formats) addInitialFormats(this);
-  if (opts.keywords) addInitialKeywords(this);
-  addDefaultMetaSchema(this);
-  if (typeof opts.meta == 'object') this.addMetaSchema(opts.meta);
-  if (opts.nullable) this.addKeyword('nullable', {metaSchema: {type: 'boolean'}});
-  addInitialSchemas(this);
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = void 0;
+const core_1 = __nccwpck_require__(2685);
+const draft7_1 = __nccwpck_require__(691);
+const discriminator_1 = __nccwpck_require__(4025);
+const draft7MetaSchema = __nccwpck_require__(98);
+const META_SUPPORT_DATA = ["/properties"];
+const META_SCHEMA_ID = "http://json-schema.org/draft-07/schema";
+class Ajv extends core_1.default {
+    _addVocabularies() {
+        super._addVocabularies();
+        draft7_1.default.forEach((v) => this.addVocabulary(v));
+        if (this.opts.discriminator)
+            this.addKeyword(discriminator_1.default);
+    }
+    _addDefaultMetaSchema() {
+        super._addDefaultMetaSchema();
+        if (!this.opts.meta)
+            return;
+        const metaSchema = this.opts.$data
+            ? this.$dataMetaSchema(draft7MetaSchema, META_SUPPORT_DATA)
+            : draft7MetaSchema;
+        this.addMetaSchema(metaSchema, META_SCHEMA_ID, false);
+        this.refs["http://json-schema.org/schema"] = META_SCHEMA_ID;
+    }
+    defaultMeta() {
+        return (this.opts.defaultMeta =
+            super.defaultMeta() || (this.getSchema(META_SCHEMA_ID) ? META_SCHEMA_ID : undefined));
+    }
 }
+module.exports = exports = Ajv;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports["default"] = Ajv;
+var validate_1 = __nccwpck_require__(8955);
+Object.defineProperty(exports, "KeywordCxt", ({ enumerable: true, get: function () { return validate_1.KeywordCxt; } }));
+var codegen_1 = __nccwpck_require__(9179);
+Object.defineProperty(exports, "_", ({ enumerable: true, get: function () { return codegen_1._; } }));
+Object.defineProperty(exports, "str", ({ enumerable: true, get: function () { return codegen_1.str; } }));
+Object.defineProperty(exports, "stringify", ({ enumerable: true, get: function () { return codegen_1.stringify; } }));
+Object.defineProperty(exports, "nil", ({ enumerable: true, get: function () { return codegen_1.nil; } }));
+Object.defineProperty(exports, "Name", ({ enumerable: true, get: function () { return codegen_1.Name; } }));
+Object.defineProperty(exports, "CodeGen", ({ enumerable: true, get: function () { return codegen_1.CodeGen; } }));
+//# sourceMappingURL=ajv.js.map
 
+/***/ }),
 
+/***/ 8358:
+/***/ ((__unused_webpack_module, exports) => {
 
-/**
- * Validate data using schema
- * Schema will be compiled and cached (using serialized JSON as key. [fast-json-stable-stringify](https://github.com/epoberezkin/fast-json-stable-stringify) is used to serialize.
- * @this   Ajv
- * @param  {String|Object} schemaKeyRef key, ref or schema object
- * @param  {Any} data to be validated
- * @return {Boolean} validation result. Errors from the last validation will be available in `ajv.errors` (and also in compiled schema: `schema.errors`).
- */
-function validate(schemaKeyRef, data) {
-  var v;
-  if (typeof schemaKeyRef == 'string') {
-    v = this.getSchema(schemaKeyRef);
-    if (!v) throw new Error('no schema with key or ref "' + schemaKeyRef + '"');
-  } else {
-    var schemaObj = this._addSchema(schemaKeyRef);
-    v = schemaObj.validate || this._compile(schemaObj);
-  }
+"use strict";
 
-  var valid = v(data);
-  if (v.$async !== true) this.errors = v.errors;
-  return valid;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.regexpCode = exports.getProperty = exports.safeStringify = exports.stringify = exports.strConcat = exports.addCodeArg = exports.str = exports._ = exports.nil = exports._Code = exports.Name = exports.IDENTIFIER = exports._CodeOrName = void 0;
+class _CodeOrName {
 }
-
-
-/**
- * Create validating function for passed schema.
- * @this   Ajv
- * @param  {Object} schema schema object
- * @param  {Boolean} _meta true if schema is a meta-schema. Used internally to compile meta schemas of custom keywords.
- * @return {Function} validating function
- */
-function compile(schema, _meta) {
-  var schemaObj = this._addSchema(schema, undefined, _meta);
-  return schemaObj.validate || this._compile(schemaObj);
+exports._CodeOrName = _CodeOrName;
+exports.IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i;
+class Name extends _CodeOrName {
+    constructor(s) {
+        super();
+        if (!exports.IDENTIFIER.test(s))
+            throw new Error("CodeGen: name must be a valid identifier");
+        this.str = s;
+    }
+    toString() {
+        return this.str;
+    }
+    emptyStr() {
+        return false;
+    }
+    get names() {
+        return { [this.str]: 1 };
+    }
 }
-
-
-/**
- * Adds schema to the instance.
- * @this   Ajv
- * @param {Object|Array} schema schema or array of schemas. If array is passed, `key` and other parameters will be ignored.
- * @param {String} key Optional schema key. Can be passed to `validate` method instead of schema object or id/ref. One schema per instance can have empty `id` and `key`.
- * @param {Boolean} _skipValidation true to skip schema validation. Used internally, option validateSchema should be used instead.
- * @param {Boolean} _meta true if schema is a meta-schema. Used internally, addMetaSchema should be used instead.
- * @return {Ajv} this for method chaining
- */
-function addSchema(schema, key, _skipValidation, _meta) {
-  if (Array.isArray(schema)){
-    for (var i=0; i<schema.length; i++) this.addSchema(schema[i], undefined, _skipValidation, _meta);
-    return this;
-  }
-  var id = this._getId(schema);
-  if (id !== undefined && typeof id != 'string')
-    throw new Error('schema id must be string');
-  key = resolve.normalizeId(key || id);
-  checkUnique(this, key);
-  this._schemas[key] = this._addSchema(schema, _skipValidation, _meta, true);
-  return this;
+exports.Name = Name;
+class _Code extends _CodeOrName {
+    constructor(code) {
+        super();
+        this._items = typeof code === "string" ? [code] : code;
+    }
+    toString() {
+        return this.str;
+    }
+    emptyStr() {
+        if (this._items.length > 1)
+            return false;
+        const item = this._items[0];
+        return item === "" || item === '""';
+    }
+    get str() {
+        var _a;
+        return ((_a = this._str) !== null && _a !== void 0 ? _a : (this._str = this._items.reduce((s, c) => `${s}${c}`, "")));
+    }
+    get names() {
+        var _a;
+        return ((_a = this._names) !== null && _a !== void 0 ? _a : (this._names = this._items.reduce((names, c) => {
+            if (c instanceof Name)
+                names[c.str] = (names[c.str] || 0) + 1;
+            return names;
+        }, {})));
+    }
 }
-
-
-/**
- * Add schema that will be used to validate other schemas
- * options in META_IGNORE_OPTIONS are alway set to false
- * @this   Ajv
- * @param {Object} schema schema object
- * @param {String} key optional schema key
- * @param {Boolean} skipValidation true to skip schema validation, can be used to override validateSchema option for meta-schema
- * @return {Ajv} this for method chaining
- */
-function addMetaSchema(schema, key, skipValidation) {
-  this.addSchema(schema, key, skipValidation, true);
-  return this;
+exports._Code = _Code;
+exports.nil = new _Code("");
+function _(strs, ...args) {
+    const code = [strs[0]];
+    let i = 0;
+    while (i < args.length) {
+        addCodeArg(code, args[i]);
+        code.push(strs[++i]);
+    }
+    return new _Code(code);
 }
-
-
-/**
- * Validate schema
- * @this   Ajv
- * @param {Object} schema schema to validate
- * @param {Boolean} throwOrLogError pass true to throw (or log) an error if invalid
- * @return {Boolean} true if schema is valid
- */
-function validateSchema(schema, throwOrLogError) {
-  var $schema = schema.$schema;
-  if ($schema !== undefined && typeof $schema != 'string')
-    throw new Error('$schema must be a string');
-  $schema = $schema || this._opts.defaultMeta || defaultMeta(this);
-  if (!$schema) {
-    this.logger.warn('meta-schema not available');
-    this.errors = null;
-    return true;
-  }
-  var valid = this.validate($schema, schema);
-  if (!valid && throwOrLogError) {
-    var message = 'schema is invalid: ' + this.errorsText();
-    if (this._opts.validateSchema == 'log') this.logger.error(message);
-    else throw new Error(message);
-  }
-  return valid;
+exports._ = _;
+const plus = new _Code("+");
+function str(strs, ...args) {
+    const expr = [safeStringify(strs[0])];
+    let i = 0;
+    while (i < args.length) {
+        expr.push(plus);
+        addCodeArg(expr, args[i]);
+        expr.push(plus, safeStringify(strs[++i]));
+    }
+    optimize(expr);
+    return new _Code(expr);
 }
-
-
-function defaultMeta(self) {
-  var meta = self._opts.meta;
-  self._opts.defaultMeta = typeof meta == 'object'
-                            ? self._getId(meta) || meta
-                            : self.getSchema(META_SCHEMA_ID)
-                              ? META_SCHEMA_ID
-                              : undefined;
-  return self._opts.defaultMeta;
+exports.str = str;
+function addCodeArg(code, arg) {
+    if (arg instanceof _Code)
+        code.push(...arg._items);
+    else if (arg instanceof Name)
+        code.push(arg);
+    else
+        code.push(interpolate(arg));
 }
-
-
-/**
- * Get compiled schema from the instance by `key` or `ref`.
- * @this   Ajv
- * @param  {String} keyRef `key` that was passed to `addSchema` or full schema reference (`schema.id` or resolved id).
- * @return {Function} schema validating function (with property `schema`).
- */
-function getSchema(keyRef) {
-  var schemaObj = _getSchemaObj(this, keyRef);
-  switch (typeof schemaObj) {
-    case 'object': return schemaObj.validate || this._compile(schemaObj);
-    case 'string': return this.getSchema(schemaObj);
-    case 'undefined': return _getSchemaFragment(this, keyRef);
-  }
+exports.addCodeArg = addCodeArg;
+function optimize(expr) {
+    let i = 1;
+    while (i < expr.length - 1) {
+        if (expr[i] === plus) {
+            const res = mergeExprItems(expr[i - 1], expr[i + 1]);
+            if (res !== undefined) {
+                expr.splice(i - 1, 3, res);
+                continue;
+            }
+            expr[i++] = "+";
+        }
+        i++;
+    }
 }
+function mergeExprItems(a, b) {
+    if (b === '""')
+        return a;
+    if (a === '""')
+        return b;
+    if (typeof a == "string") {
+        if (b instanceof Name || a[a.length - 1] !== '"')
+            return;
+        if (typeof b != "string")
+            return `${a.slice(0, -1)}${b}"`;
+        if (b[0] === '"')
+            return a.slice(0, -1) + b.slice(1);
+        return;
+    }
+    if (typeof b == "string" && b[0] === '"' && !(a instanceof Name))
+        return `"${a}${b.slice(1)}`;
+    return;
+}
+function strConcat(c1, c2) {
+    return c2.emptyStr() ? c1 : c1.emptyStr() ? c2 : str `${c1}${c2}`;
+}
+exports.strConcat = strConcat;
+// TODO do not allow arrays here
+function interpolate(x) {
+    return typeof x == "number" || typeof x == "boolean" || x === null
+        ? x
+        : safeStringify(Array.isArray(x) ? x.join(",") : x);
+}
+function stringify(x) {
+    return new _Code(safeStringify(x));
+}
+exports.stringify = stringify;
+function safeStringify(x) {
+    return JSON.stringify(x)
+        .replace(/\u2028/g, "\\u2028")
+        .replace(/\u2029/g, "\\u2029");
+}
+exports.safeStringify = safeStringify;
+function getProperty(key) {
+    return typeof key == "string" && exports.IDENTIFIER.test(key) ? new _Code(`.${key}`) : _ `[${key}]`;
+}
+exports.getProperty = getProperty;
+function regexpCode(rx) {
+    return new _Code(rx.toString());
+}
+exports.regexpCode = regexpCode;
+//# sourceMappingURL=code.js.map
 
+/***/ }),
 
-function _getSchemaFragment(self, ref) {
-  var res = resolve.schema.call(self, { schema: {} }, ref);
-  if (res) {
-    var schema = res.schema
-      , root = res.root
-      , baseId = res.baseId;
-    var v = compileSchema.call(self, schema, root, undefined, baseId);
-    self._fragments[ref] = new SchemaObject({
-      ref: ref,
-      fragment: true,
-      schema: schema,
-      root: root,
-      baseId: baseId,
-      validate: v
+/***/ 9179:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.or = exports.and = exports.not = exports.CodeGen = exports.operators = exports.varKinds = exports.ValueScopeName = exports.ValueScope = exports.Scope = exports.Name = exports.regexpCode = exports.stringify = exports.getProperty = exports.nil = exports.strConcat = exports.str = exports._ = void 0;
+const code_1 = __nccwpck_require__(8358);
+const scope_1 = __nccwpck_require__(2893);
+var code_2 = __nccwpck_require__(8358);
+Object.defineProperty(exports, "_", ({ enumerable: true, get: function () { return code_2._; } }));
+Object.defineProperty(exports, "str", ({ enumerable: true, get: function () { return code_2.str; } }));
+Object.defineProperty(exports, "strConcat", ({ enumerable: true, get: function () { return code_2.strConcat; } }));
+Object.defineProperty(exports, "nil", ({ enumerable: true, get: function () { return code_2.nil; } }));
+Object.defineProperty(exports, "getProperty", ({ enumerable: true, get: function () { return code_2.getProperty; } }));
+Object.defineProperty(exports, "stringify", ({ enumerable: true, get: function () { return code_2.stringify; } }));
+Object.defineProperty(exports, "regexpCode", ({ enumerable: true, get: function () { return code_2.regexpCode; } }));
+Object.defineProperty(exports, "Name", ({ enumerable: true, get: function () { return code_2.Name; } }));
+var scope_2 = __nccwpck_require__(2893);
+Object.defineProperty(exports, "Scope", ({ enumerable: true, get: function () { return scope_2.Scope; } }));
+Object.defineProperty(exports, "ValueScope", ({ enumerable: true, get: function () { return scope_2.ValueScope; } }));
+Object.defineProperty(exports, "ValueScopeName", ({ enumerable: true, get: function () { return scope_2.ValueScopeName; } }));
+Object.defineProperty(exports, "varKinds", ({ enumerable: true, get: function () { return scope_2.varKinds; } }));
+exports.operators = {
+    GT: new code_1._Code(">"),
+    GTE: new code_1._Code(">="),
+    LT: new code_1._Code("<"),
+    LTE: new code_1._Code("<="),
+    EQ: new code_1._Code("==="),
+    NEQ: new code_1._Code("!=="),
+    NOT: new code_1._Code("!"),
+    OR: new code_1._Code("||"),
+    AND: new code_1._Code("&&"),
+    ADD: new code_1._Code("+"),
+};
+class Node {
+    optimizeNodes() {
+        return this;
+    }
+    optimizeNames(_names, _constants) {
+        return this;
+    }
+}
+class Def extends Node {
+    constructor(varKind, name, rhs) {
+        super();
+        this.varKind = varKind;
+        this.name = name;
+        this.rhs = rhs;
+    }
+    render({ es5, _n }) {
+        const varKind = es5 ? scope_1.varKinds.var : this.varKind;
+        const rhs = this.rhs === undefined ? "" : ` = ${this.rhs}`;
+        return `${varKind} ${this.name}${rhs};` + _n;
+    }
+    optimizeNames(names, constants) {
+        if (!names[this.name.str])
+            return;
+        if (this.rhs)
+            this.rhs = optimizeExpr(this.rhs, names, constants);
+        return this;
+    }
+    get names() {
+        return this.rhs instanceof code_1._CodeOrName ? this.rhs.names : {};
+    }
+}
+class Assign extends Node {
+    constructor(lhs, rhs, sideEffects) {
+        super();
+        this.lhs = lhs;
+        this.rhs = rhs;
+        this.sideEffects = sideEffects;
+    }
+    render({ _n }) {
+        return `${this.lhs} = ${this.rhs};` + _n;
+    }
+    optimizeNames(names, constants) {
+        if (this.lhs instanceof code_1.Name && !names[this.lhs.str] && !this.sideEffects)
+            return;
+        this.rhs = optimizeExpr(this.rhs, names, constants);
+        return this;
+    }
+    get names() {
+        const names = this.lhs instanceof code_1.Name ? {} : { ...this.lhs.names };
+        return addExprNames(names, this.rhs);
+    }
+}
+class AssignOp extends Assign {
+    constructor(lhs, op, rhs, sideEffects) {
+        super(lhs, rhs, sideEffects);
+        this.op = op;
+    }
+    render({ _n }) {
+        return `${this.lhs} ${this.op}= ${this.rhs};` + _n;
+    }
+}
+class Label extends Node {
+    constructor(label) {
+        super();
+        this.label = label;
+        this.names = {};
+    }
+    render({ _n }) {
+        return `${this.label}:` + _n;
+    }
+}
+class Break extends Node {
+    constructor(label) {
+        super();
+        this.label = label;
+        this.names = {};
+    }
+    render({ _n }) {
+        const label = this.label ? ` ${this.label}` : "";
+        return `break${label};` + _n;
+    }
+}
+class Throw extends Node {
+    constructor(error) {
+        super();
+        this.error = error;
+    }
+    render({ _n }) {
+        return `throw ${this.error};` + _n;
+    }
+    get names() {
+        return this.error.names;
+    }
+}
+class AnyCode extends Node {
+    constructor(code) {
+        super();
+        this.code = code;
+    }
+    render({ _n }) {
+        return `${this.code};` + _n;
+    }
+    optimizeNodes() {
+        return `${this.code}` ? this : undefined;
+    }
+    optimizeNames(names, constants) {
+        this.code = optimizeExpr(this.code, names, constants);
+        return this;
+    }
+    get names() {
+        return this.code instanceof code_1._CodeOrName ? this.code.names : {};
+    }
+}
+class ParentNode extends Node {
+    constructor(nodes = []) {
+        super();
+        this.nodes = nodes;
+    }
+    render(opts) {
+        return this.nodes.reduce((code, n) => code + n.render(opts), "");
+    }
+    optimizeNodes() {
+        const { nodes } = this;
+        let i = nodes.length;
+        while (i--) {
+            const n = nodes[i].optimizeNodes();
+            if (Array.isArray(n))
+                nodes.splice(i, 1, ...n);
+            else if (n)
+                nodes[i] = n;
+            else
+                nodes.splice(i, 1);
+        }
+        return nodes.length > 0 ? this : undefined;
+    }
+    optimizeNames(names, constants) {
+        const { nodes } = this;
+        let i = nodes.length;
+        while (i--) {
+            // iterating backwards improves 1-pass optimization
+            const n = nodes[i];
+            if (n.optimizeNames(names, constants))
+                continue;
+            subtractNames(names, n.names);
+            nodes.splice(i, 1);
+        }
+        return nodes.length > 0 ? this : undefined;
+    }
+    get names() {
+        return this.nodes.reduce((names, n) => addNames(names, n.names), {});
+    }
+}
+class BlockNode extends ParentNode {
+    render(opts) {
+        return "{" + opts._n + super.render(opts) + "}" + opts._n;
+    }
+}
+class Root extends ParentNode {
+}
+class Else extends BlockNode {
+}
+Else.kind = "else";
+class If extends BlockNode {
+    constructor(condition, nodes) {
+        super(nodes);
+        this.condition = condition;
+    }
+    render(opts) {
+        let code = `if(${this.condition})` + super.render(opts);
+        if (this.else)
+            code += "else " + this.else.render(opts);
+        return code;
+    }
+    optimizeNodes() {
+        super.optimizeNodes();
+        const cond = this.condition;
+        if (cond === true)
+            return this.nodes; // else is ignored here
+        let e = this.else;
+        if (e) {
+            const ns = e.optimizeNodes();
+            e = this.else = Array.isArray(ns) ? new Else(ns) : ns;
+        }
+        if (e) {
+            if (cond === false)
+                return e instanceof If ? e : e.nodes;
+            if (this.nodes.length)
+                return this;
+            return new If(not(cond), e instanceof If ? [e] : e.nodes);
+        }
+        if (cond === false || !this.nodes.length)
+            return undefined;
+        return this;
+    }
+    optimizeNames(names, constants) {
+        var _a;
+        this.else = (_a = this.else) === null || _a === void 0 ? void 0 : _a.optimizeNames(names, constants);
+        if (!(super.optimizeNames(names, constants) || this.else))
+            return;
+        this.condition = optimizeExpr(this.condition, names, constants);
+        return this;
+    }
+    get names() {
+        const names = super.names;
+        addExprNames(names, this.condition);
+        if (this.else)
+            addNames(names, this.else.names);
+        return names;
+    }
+}
+If.kind = "if";
+class For extends BlockNode {
+}
+For.kind = "for";
+class ForLoop extends For {
+    constructor(iteration) {
+        super();
+        this.iteration = iteration;
+    }
+    render(opts) {
+        return `for(${this.iteration})` + super.render(opts);
+    }
+    optimizeNames(names, constants) {
+        if (!super.optimizeNames(names, constants))
+            return;
+        this.iteration = optimizeExpr(this.iteration, names, constants);
+        return this;
+    }
+    get names() {
+        return addNames(super.names, this.iteration.names);
+    }
+}
+class ForRange extends For {
+    constructor(varKind, name, from, to) {
+        super();
+        this.varKind = varKind;
+        this.name = name;
+        this.from = from;
+        this.to = to;
+    }
+    render(opts) {
+        const varKind = opts.es5 ? scope_1.varKinds.var : this.varKind;
+        const { name, from, to } = this;
+        return `for(${varKind} ${name}=${from}; ${name}<${to}; ${name}++)` + super.render(opts);
+    }
+    get names() {
+        const names = addExprNames(super.names, this.from);
+        return addExprNames(names, this.to);
+    }
+}
+class ForIter extends For {
+    constructor(loop, varKind, name, iterable) {
+        super();
+        this.loop = loop;
+        this.varKind = varKind;
+        this.name = name;
+        this.iterable = iterable;
+    }
+    render(opts) {
+        return `for(${this.varKind} ${this.name} ${this.loop} ${this.iterable})` + super.render(opts);
+    }
+    optimizeNames(names, constants) {
+        if (!super.optimizeNames(names, constants))
+            return;
+        this.iterable = optimizeExpr(this.iterable, names, constants);
+        return this;
+    }
+    get names() {
+        return addNames(super.names, this.iterable.names);
+    }
+}
+class Func extends BlockNode {
+    constructor(name, args, async) {
+        super();
+        this.name = name;
+        this.args = args;
+        this.async = async;
+    }
+    render(opts) {
+        const _async = this.async ? "async " : "";
+        return `${_async}function ${this.name}(${this.args})` + super.render(opts);
+    }
+}
+Func.kind = "func";
+class Return extends ParentNode {
+    render(opts) {
+        return "return " + super.render(opts);
+    }
+}
+Return.kind = "return";
+class Try extends BlockNode {
+    render(opts) {
+        let code = "try" + super.render(opts);
+        if (this.catch)
+            code += this.catch.render(opts);
+        if (this.finally)
+            code += this.finally.render(opts);
+        return code;
+    }
+    optimizeNodes() {
+        var _a, _b;
+        super.optimizeNodes();
+        (_a = this.catch) === null || _a === void 0 ? void 0 : _a.optimizeNodes();
+        (_b = this.finally) === null || _b === void 0 ? void 0 : _b.optimizeNodes();
+        return this;
+    }
+    optimizeNames(names, constants) {
+        var _a, _b;
+        super.optimizeNames(names, constants);
+        (_a = this.catch) === null || _a === void 0 ? void 0 : _a.optimizeNames(names, constants);
+        (_b = this.finally) === null || _b === void 0 ? void 0 : _b.optimizeNames(names, constants);
+        return this;
+    }
+    get names() {
+        const names = super.names;
+        if (this.catch)
+            addNames(names, this.catch.names);
+        if (this.finally)
+            addNames(names, this.finally.names);
+        return names;
+    }
+}
+class Catch extends BlockNode {
+    constructor(error) {
+        super();
+        this.error = error;
+    }
+    render(opts) {
+        return `catch(${this.error})` + super.render(opts);
+    }
+}
+Catch.kind = "catch";
+class Finally extends BlockNode {
+    render(opts) {
+        return "finally" + super.render(opts);
+    }
+}
+Finally.kind = "finally";
+class CodeGen {
+    constructor(extScope, opts = {}) {
+        this._values = {};
+        this._blockStarts = [];
+        this._constants = {};
+        this.opts = { ...opts, _n: opts.lines ? "\n" : "" };
+        this._extScope = extScope;
+        this._scope = new scope_1.Scope({ parent: extScope });
+        this._nodes = [new Root()];
+    }
+    toString() {
+        return this._root.render(this.opts);
+    }
+    // returns unique name in the internal scope
+    name(prefix) {
+        return this._scope.name(prefix);
+    }
+    // reserves unique name in the external scope
+    scopeName(prefix) {
+        return this._extScope.name(prefix);
+    }
+    // reserves unique name in the external scope and assigns value to it
+    scopeValue(prefixOrName, value) {
+        const name = this._extScope.value(prefixOrName, value);
+        const vs = this._values[name.prefix] || (this._values[name.prefix] = new Set());
+        vs.add(name);
+        return name;
+    }
+    getScopeValue(prefix, keyOrRef) {
+        return this._extScope.getValue(prefix, keyOrRef);
+    }
+    // return code that assigns values in the external scope to the names that are used internally
+    // (same names that were returned by gen.scopeName or gen.scopeValue)
+    scopeRefs(scopeName) {
+        return this._extScope.scopeRefs(scopeName, this._values);
+    }
+    scopeCode() {
+        return this._extScope.scopeCode(this._values);
+    }
+    _def(varKind, nameOrPrefix, rhs, constant) {
+        const name = this._scope.toName(nameOrPrefix);
+        if (rhs !== undefined && constant)
+            this._constants[name.str] = rhs;
+        this._leafNode(new Def(varKind, name, rhs));
+        return name;
+    }
+    // `const` declaration (`var` in es5 mode)
+    const(nameOrPrefix, rhs, _constant) {
+        return this._def(scope_1.varKinds.const, nameOrPrefix, rhs, _constant);
+    }
+    // `let` declaration with optional assignment (`var` in es5 mode)
+    let(nameOrPrefix, rhs, _constant) {
+        return this._def(scope_1.varKinds.let, nameOrPrefix, rhs, _constant);
+    }
+    // `var` declaration with optional assignment
+    var(nameOrPrefix, rhs, _constant) {
+        return this._def(scope_1.varKinds.var, nameOrPrefix, rhs, _constant);
+    }
+    // assignment code
+    assign(lhs, rhs, sideEffects) {
+        return this._leafNode(new Assign(lhs, rhs, sideEffects));
+    }
+    // `+=` code
+    add(lhs, rhs) {
+        return this._leafNode(new AssignOp(lhs, exports.operators.ADD, rhs));
+    }
+    // appends passed SafeExpr to code or executes Block
+    code(c) {
+        if (typeof c == "function")
+            c();
+        else if (c !== code_1.nil)
+            this._leafNode(new AnyCode(c));
+        return this;
+    }
+    // returns code for object literal for the passed argument list of key-value pairs
+    object(...keyValues) {
+        const code = ["{"];
+        for (const [key, value] of keyValues) {
+            if (code.length > 1)
+                code.push(",");
+            code.push(key);
+            if (key !== value || this.opts.es5) {
+                code.push(":");
+                (0, code_1.addCodeArg)(code, value);
+            }
+        }
+        code.push("}");
+        return new code_1._Code(code);
+    }
+    // `if` clause (or statement if `thenBody` and, optionally, `elseBody` are passed)
+    if(condition, thenBody, elseBody) {
+        this._blockNode(new If(condition));
+        if (thenBody && elseBody) {
+            this.code(thenBody).else().code(elseBody).endIf();
+        }
+        else if (thenBody) {
+            this.code(thenBody).endIf();
+        }
+        else if (elseBody) {
+            throw new Error('CodeGen: "else" body without "then" body');
+        }
+        return this;
+    }
+    // `else if` clause - invalid without `if` or after `else` clauses
+    elseIf(condition) {
+        return this._elseNode(new If(condition));
+    }
+    // `else` clause - only valid after `if` or `else if` clauses
+    else() {
+        return this._elseNode(new Else());
+    }
+    // end `if` statement (needed if gen.if was used only with condition)
+    endIf() {
+        return this._endBlockNode(If, Else);
+    }
+    _for(node, forBody) {
+        this._blockNode(node);
+        if (forBody)
+            this.code(forBody).endFor();
+        return this;
+    }
+    // a generic `for` clause (or statement if `forBody` is passed)
+    for(iteration, forBody) {
+        return this._for(new ForLoop(iteration), forBody);
+    }
+    // `for` statement for a range of values
+    forRange(nameOrPrefix, from, to, forBody, varKind = this.opts.es5 ? scope_1.varKinds.var : scope_1.varKinds.let) {
+        const name = this._scope.toName(nameOrPrefix);
+        return this._for(new ForRange(varKind, name, from, to), () => forBody(name));
+    }
+    // `for-of` statement (in es5 mode replace with a normal for loop)
+    forOf(nameOrPrefix, iterable, forBody, varKind = scope_1.varKinds.const) {
+        const name = this._scope.toName(nameOrPrefix);
+        if (this.opts.es5) {
+            const arr = iterable instanceof code_1.Name ? iterable : this.var("_arr", iterable);
+            return this.forRange("_i", 0, (0, code_1._) `${arr}.length`, (i) => {
+                this.var(name, (0, code_1._) `${arr}[${i}]`);
+                forBody(name);
+            });
+        }
+        return this._for(new ForIter("of", varKind, name, iterable), () => forBody(name));
+    }
+    // `for-in` statement.
+    // With option `ownProperties` replaced with a `for-of` loop for object keys
+    forIn(nameOrPrefix, obj, forBody, varKind = this.opts.es5 ? scope_1.varKinds.var : scope_1.varKinds.const) {
+        if (this.opts.ownProperties) {
+            return this.forOf(nameOrPrefix, (0, code_1._) `Object.keys(${obj})`, forBody);
+        }
+        const name = this._scope.toName(nameOrPrefix);
+        return this._for(new ForIter("in", varKind, name, obj), () => forBody(name));
+    }
+    // end `for` loop
+    endFor() {
+        return this._endBlockNode(For);
+    }
+    // `label` statement
+    label(label) {
+        return this._leafNode(new Label(label));
+    }
+    // `break` statement
+    break(label) {
+        return this._leafNode(new Break(label));
+    }
+    // `return` statement
+    return(value) {
+        const node = new Return();
+        this._blockNode(node);
+        this.code(value);
+        if (node.nodes.length !== 1)
+            throw new Error('CodeGen: "return" should have one node');
+        return this._endBlockNode(Return);
+    }
+    // `try` statement
+    try(tryBody, catchCode, finallyCode) {
+        if (!catchCode && !finallyCode)
+            throw new Error('CodeGen: "try" without "catch" and "finally"');
+        const node = new Try();
+        this._blockNode(node);
+        this.code(tryBody);
+        if (catchCode) {
+            const error = this.name("e");
+            this._currNode = node.catch = new Catch(error);
+            catchCode(error);
+        }
+        if (finallyCode) {
+            this._currNode = node.finally = new Finally();
+            this.code(finallyCode);
+        }
+        return this._endBlockNode(Catch, Finally);
+    }
+    // `throw` statement
+    throw(error) {
+        return this._leafNode(new Throw(error));
+    }
+    // start self-balancing block
+    block(body, nodeCount) {
+        this._blockStarts.push(this._nodes.length);
+        if (body)
+            this.code(body).endBlock(nodeCount);
+        return this;
+    }
+    // end the current self-balancing block
+    endBlock(nodeCount) {
+        const len = this._blockStarts.pop();
+        if (len === undefined)
+            throw new Error("CodeGen: not in self-balancing block");
+        const toClose = this._nodes.length - len;
+        if (toClose < 0 || (nodeCount !== undefined && toClose !== nodeCount)) {
+            throw new Error(`CodeGen: wrong number of nodes: ${toClose} vs ${nodeCount} expected`);
+        }
+        this._nodes.length = len;
+        return this;
+    }
+    // `function` heading (or definition if funcBody is passed)
+    func(name, args = code_1.nil, async, funcBody) {
+        this._blockNode(new Func(name, args, async));
+        if (funcBody)
+            this.code(funcBody).endFunc();
+        return this;
+    }
+    // end function definition
+    endFunc() {
+        return this._endBlockNode(Func);
+    }
+    optimize(n = 1) {
+        while (n-- > 0) {
+            this._root.optimizeNodes();
+            this._root.optimizeNames(this._root.names, this._constants);
+        }
+    }
+    _leafNode(node) {
+        this._currNode.nodes.push(node);
+        return this;
+    }
+    _blockNode(node) {
+        this._currNode.nodes.push(node);
+        this._nodes.push(node);
+    }
+    _endBlockNode(N1, N2) {
+        const n = this._currNode;
+        if (n instanceof N1 || (N2 && n instanceof N2)) {
+            this._nodes.pop();
+            return this;
+        }
+        throw new Error(`CodeGen: not in block "${N2 ? `${N1.kind}/${N2.kind}` : N1.kind}"`);
+    }
+    _elseNode(node) {
+        const n = this._currNode;
+        if (!(n instanceof If)) {
+            throw new Error('CodeGen: "else" without "if"');
+        }
+        this._currNode = n.else = node;
+        return this;
+    }
+    get _root() {
+        return this._nodes[0];
+    }
+    get _currNode() {
+        const ns = this._nodes;
+        return ns[ns.length - 1];
+    }
+    set _currNode(node) {
+        const ns = this._nodes;
+        ns[ns.length - 1] = node;
+    }
+}
+exports.CodeGen = CodeGen;
+function addNames(names, from) {
+    for (const n in from)
+        names[n] = (names[n] || 0) + (from[n] || 0);
+    return names;
+}
+function addExprNames(names, from) {
+    return from instanceof code_1._CodeOrName ? addNames(names, from.names) : names;
+}
+function optimizeExpr(expr, names, constants) {
+    if (expr instanceof code_1.Name)
+        return replaceName(expr);
+    if (!canOptimize(expr))
+        return expr;
+    return new code_1._Code(expr._items.reduce((items, c) => {
+        if (c instanceof code_1.Name)
+            c = replaceName(c);
+        if (c instanceof code_1._Code)
+            items.push(...c._items);
+        else
+            items.push(c);
+        return items;
+    }, []));
+    function replaceName(n) {
+        const c = constants[n.str];
+        if (c === undefined || names[n.str] !== 1)
+            return n;
+        delete names[n.str];
+        return c;
+    }
+    function canOptimize(e) {
+        return (e instanceof code_1._Code &&
+            e._items.some((c) => c instanceof code_1.Name && names[c.str] === 1 && constants[c.str] !== undefined));
+    }
+}
+function subtractNames(names, from) {
+    for (const n in from)
+        names[n] = (names[n] || 0) - (from[n] || 0);
+}
+function not(x) {
+    return typeof x == "boolean" || typeof x == "number" || x === null ? !x : (0, code_1._) `!${par(x)}`;
+}
+exports.not = not;
+const andCode = mappend(exports.operators.AND);
+// boolean AND (&&) expression with the passed arguments
+function and(...args) {
+    return args.reduce(andCode);
+}
+exports.and = and;
+const orCode = mappend(exports.operators.OR);
+// boolean OR (||) expression with the passed arguments
+function or(...args) {
+    return args.reduce(orCode);
+}
+exports.or = or;
+function mappend(op) {
+    return (x, y) => (x === code_1.nil ? y : y === code_1.nil ? x : (0, code_1._) `${par(x)} ${op} ${par(y)}`);
+}
+function par(x) {
+    return x instanceof code_1.Name ? x : (0, code_1._) `(${x})`;
+}
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 2893:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ValueScope = exports.ValueScopeName = exports.Scope = exports.varKinds = exports.UsedValueState = void 0;
+const code_1 = __nccwpck_require__(8358);
+class ValueError extends Error {
+    constructor(name) {
+        super(`CodeGen: "code" for ${name} not defined`);
+        this.value = name.value;
+    }
+}
+var UsedValueState;
+(function (UsedValueState) {
+    UsedValueState[UsedValueState["Started"] = 0] = "Started";
+    UsedValueState[UsedValueState["Completed"] = 1] = "Completed";
+})(UsedValueState = exports.UsedValueState || (exports.UsedValueState = {}));
+exports.varKinds = {
+    const: new code_1.Name("const"),
+    let: new code_1.Name("let"),
+    var: new code_1.Name("var"),
+};
+class Scope {
+    constructor({ prefixes, parent } = {}) {
+        this._names = {};
+        this._prefixes = prefixes;
+        this._parent = parent;
+    }
+    toName(nameOrPrefix) {
+        return nameOrPrefix instanceof code_1.Name ? nameOrPrefix : this.name(nameOrPrefix);
+    }
+    name(prefix) {
+        return new code_1.Name(this._newName(prefix));
+    }
+    _newName(prefix) {
+        const ng = this._names[prefix] || this._nameGroup(prefix);
+        return `${prefix}${ng.index++}`;
+    }
+    _nameGroup(prefix) {
+        var _a, _b;
+        if (((_b = (_a = this._parent) === null || _a === void 0 ? void 0 : _a._prefixes) === null || _b === void 0 ? void 0 : _b.has(prefix)) || (this._prefixes && !this._prefixes.has(prefix))) {
+            throw new Error(`CodeGen: prefix "${prefix}" is not allowed in this scope`);
+        }
+        return (this._names[prefix] = { prefix, index: 0 });
+    }
+}
+exports.Scope = Scope;
+class ValueScopeName extends code_1.Name {
+    constructor(prefix, nameStr) {
+        super(nameStr);
+        this.prefix = prefix;
+    }
+    setValue(value, { property, itemIndex }) {
+        this.value = value;
+        this.scopePath = (0, code_1._) `.${new code_1.Name(property)}[${itemIndex}]`;
+    }
+}
+exports.ValueScopeName = ValueScopeName;
+const line = (0, code_1._) `\n`;
+class ValueScope extends Scope {
+    constructor(opts) {
+        super(opts);
+        this._values = {};
+        this._scope = opts.scope;
+        this.opts = { ...opts, _n: opts.lines ? line : code_1.nil };
+    }
+    get() {
+        return this._scope;
+    }
+    name(prefix) {
+        return new ValueScopeName(prefix, this._newName(prefix));
+    }
+    value(nameOrPrefix, value) {
+        var _a;
+        if (value.ref === undefined)
+            throw new Error("CodeGen: ref must be passed in value");
+        const name = this.toName(nameOrPrefix);
+        const { prefix } = name;
+        const valueKey = (_a = value.key) !== null && _a !== void 0 ? _a : value.ref;
+        let vs = this._values[prefix];
+        if (vs) {
+            const _name = vs.get(valueKey);
+            if (_name)
+                return _name;
+        }
+        else {
+            vs = this._values[prefix] = new Map();
+        }
+        vs.set(valueKey, name);
+        const s = this._scope[prefix] || (this._scope[prefix] = []);
+        const itemIndex = s.length;
+        s[itemIndex] = value.ref;
+        name.setValue(value, { property: prefix, itemIndex });
+        return name;
+    }
+    getValue(prefix, keyOrRef) {
+        const vs = this._values[prefix];
+        if (!vs)
+            return;
+        return vs.get(keyOrRef);
+    }
+    scopeRefs(scopeName, values = this._values) {
+        return this._reduceValues(values, (name) => {
+            if (name.scopePath === undefined)
+                throw new Error(`CodeGen: name "${name}" has no value`);
+            return (0, code_1._) `${scopeName}${name.scopePath}`;
+        });
+    }
+    scopeCode(values = this._values, usedValues, getCode) {
+        return this._reduceValues(values, (name) => {
+            if (name.value === undefined)
+                throw new Error(`CodeGen: name "${name}" has no value`);
+            return name.value.code;
+        }, usedValues, getCode);
+    }
+    _reduceValues(values, valueCode, usedValues = {}, getCode) {
+        let code = code_1.nil;
+        for (const prefix in values) {
+            const vs = values[prefix];
+            if (!vs)
+                continue;
+            const nameSet = (usedValues[prefix] = usedValues[prefix] || new Map());
+            vs.forEach((name) => {
+                if (nameSet.has(name))
+                    return;
+                nameSet.set(name, UsedValueState.Started);
+                let c = valueCode(name);
+                if (c) {
+                    const def = this.opts.es5 ? exports.varKinds.var : exports.varKinds.const;
+                    code = (0, code_1._) `${code}${def} ${name} = ${c};${this.opts._n}`;
+                }
+                else if ((c = getCode === null || getCode === void 0 ? void 0 : getCode(name))) {
+                    code = (0, code_1._) `${code}${c}${this.opts._n}`;
+                }
+                else {
+                    throw new ValueError(name);
+                }
+                nameSet.set(name, UsedValueState.Completed);
+            });
+        }
+        return code;
+    }
+}
+exports.ValueScope = ValueScope;
+//# sourceMappingURL=scope.js.map
+
+/***/ }),
+
+/***/ 6150:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.extendErrors = exports.resetErrorsCount = exports.reportExtraError = exports.reportError = exports.keyword$DataError = exports.keywordError = void 0;
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+const names_1 = __nccwpck_require__(50);
+exports.keywordError = {
+    message: ({ keyword }) => (0, codegen_1.str) `must pass "${keyword}" keyword validation`,
+};
+exports.keyword$DataError = {
+    message: ({ keyword, schemaType }) => schemaType
+        ? (0, codegen_1.str) `"${keyword}" keyword must be ${schemaType} ($data)`
+        : (0, codegen_1.str) `"${keyword}" keyword is invalid ($data)`,
+};
+function reportError(cxt, error = exports.keywordError, errorPaths, overrideAllErrors) {
+    const { it } = cxt;
+    const { gen, compositeRule, allErrors } = it;
+    const errObj = errorObjectCode(cxt, error, errorPaths);
+    if (overrideAllErrors !== null && overrideAllErrors !== void 0 ? overrideAllErrors : (compositeRule || allErrors)) {
+        addError(gen, errObj);
+    }
+    else {
+        returnErrors(it, (0, codegen_1._) `[${errObj}]`);
+    }
+}
+exports.reportError = reportError;
+function reportExtraError(cxt, error = exports.keywordError, errorPaths) {
+    const { it } = cxt;
+    const { gen, compositeRule, allErrors } = it;
+    const errObj = errorObjectCode(cxt, error, errorPaths);
+    addError(gen, errObj);
+    if (!(compositeRule || allErrors)) {
+        returnErrors(it, names_1.default.vErrors);
+    }
+}
+exports.reportExtraError = reportExtraError;
+function resetErrorsCount(gen, errsCount) {
+    gen.assign(names_1.default.errors, errsCount);
+    gen.if((0, codegen_1._) `${names_1.default.vErrors} !== null`, () => gen.if(errsCount, () => gen.assign((0, codegen_1._) `${names_1.default.vErrors}.length`, errsCount), () => gen.assign(names_1.default.vErrors, null)));
+}
+exports.resetErrorsCount = resetErrorsCount;
+function extendErrors({ gen, keyword, schemaValue, data, errsCount, it, }) {
+    /* istanbul ignore if */
+    if (errsCount === undefined)
+        throw new Error("ajv implementation error");
+    const err = gen.name("err");
+    gen.forRange("i", errsCount, names_1.default.errors, (i) => {
+        gen.const(err, (0, codegen_1._) `${names_1.default.vErrors}[${i}]`);
+        gen.if((0, codegen_1._) `${err}.instancePath === undefined`, () => gen.assign((0, codegen_1._) `${err}.instancePath`, (0, codegen_1.strConcat)(names_1.default.instancePath, it.errorPath)));
+        gen.assign((0, codegen_1._) `${err}.schemaPath`, (0, codegen_1.str) `${it.errSchemaPath}/${keyword}`);
+        if (it.opts.verbose) {
+            gen.assign((0, codegen_1._) `${err}.schema`, schemaValue);
+            gen.assign((0, codegen_1._) `${err}.data`, data);
+        }
     });
-    return v;
-  }
 }
-
-
-function _getSchemaObj(self, keyRef) {
-  keyRef = resolve.normalizeId(keyRef);
-  return self._schemas[keyRef] || self._refs[keyRef] || self._fragments[keyRef];
+exports.extendErrors = extendErrors;
+function addError(gen, errObj) {
+    const err = gen.const("err", errObj);
+    gen.if((0, codegen_1._) `${names_1.default.vErrors} === null`, () => gen.assign(names_1.default.vErrors, (0, codegen_1._) `[${err}]`), (0, codegen_1._) `${names_1.default.vErrors}.push(${err})`);
+    gen.code((0, codegen_1._) `${names_1.default.errors}++`);
 }
-
-
-/**
- * Remove cached schema(s).
- * If no parameter is passed all schemas but meta-schemas are removed.
- * If RegExp is passed all schemas with key/id matching pattern but meta-schemas are removed.
- * Even if schema is referenced by other schemas it still can be removed as other schemas have local references.
- * @this   Ajv
- * @param  {String|Object|RegExp} schemaKeyRef key, ref, pattern to match key/ref or schema object
- * @return {Ajv} this for method chaining
- */
-function removeSchema(schemaKeyRef) {
-  if (schemaKeyRef instanceof RegExp) {
-    _removeAllSchemas(this, this._schemas, schemaKeyRef);
-    _removeAllSchemas(this, this._refs, schemaKeyRef);
-    return this;
-  }
-  switch (typeof schemaKeyRef) {
-    case 'undefined':
-      _removeAllSchemas(this, this._schemas);
-      _removeAllSchemas(this, this._refs);
-      this._cache.clear();
-      return this;
-    case 'string':
-      var schemaObj = _getSchemaObj(this, schemaKeyRef);
-      if (schemaObj) this._cache.del(schemaObj.cacheKey);
-      delete this._schemas[schemaKeyRef];
-      delete this._refs[schemaKeyRef];
-      return this;
-    case 'object':
-      var serialize = this._opts.serialize;
-      var cacheKey = serialize ? serialize(schemaKeyRef) : schemaKeyRef;
-      this._cache.del(cacheKey);
-      var id = this._getId(schemaKeyRef);
-      if (id) {
-        id = resolve.normalizeId(id);
-        delete this._schemas[id];
-        delete this._refs[id];
-      }
-  }
-  return this;
-}
-
-
-function _removeAllSchemas(self, schemas, regex) {
-  for (var keyRef in schemas) {
-    var schemaObj = schemas[keyRef];
-    if (!schemaObj.meta && (!regex || regex.test(keyRef))) {
-      self._cache.del(schemaObj.cacheKey);
-      delete schemas[keyRef];
+function returnErrors(it, errs) {
+    const { gen, validateName, schemaEnv } = it;
+    if (schemaEnv.$async) {
+        gen.throw((0, codegen_1._) `new ${it.ValidationError}(${errs})`);
     }
-  }
+    else {
+        gen.assign((0, codegen_1._) `${validateName}.errors`, errs);
+        gen.return(false);
+    }
 }
-
-
-/* @this   Ajv */
-function _addSchema(schema, skipValidation, meta, shouldAddSchema) {
-  if (typeof schema != 'object' && typeof schema != 'boolean')
-    throw new Error('schema should be object or boolean');
-  var serialize = this._opts.serialize;
-  var cacheKey = serialize ? serialize(schema) : schema;
-  var cached = this._cache.get(cacheKey);
-  if (cached) return cached;
-
-  shouldAddSchema = shouldAddSchema || this._opts.addUsedSchema !== false;
-
-  var id = resolve.normalizeId(this._getId(schema));
-  if (id && shouldAddSchema) checkUnique(this, id);
-
-  var willValidate = this._opts.validateSchema !== false && !skipValidation;
-  var recursiveMeta;
-  if (willValidate && !(recursiveMeta = id && id == resolve.normalizeId(schema.$schema)))
-    this.validateSchema(schema, true);
-
-  var localRefs = resolve.ids.call(this, schema);
-
-  var schemaObj = new SchemaObject({
-    id: id,
-    schema: schema,
-    localRefs: localRefs,
-    cacheKey: cacheKey,
-    meta: meta
-  });
-
-  if (id[0] != '#' && shouldAddSchema) this._refs[id] = schemaObj;
-  this._cache.put(cacheKey, schemaObj);
-
-  if (willValidate && recursiveMeta) this.validateSchema(schema, true);
-
-  return schemaObj;
+const E = {
+    keyword: new codegen_1.Name("keyword"),
+    schemaPath: new codegen_1.Name("schemaPath"),
+    params: new codegen_1.Name("params"),
+    propertyName: new codegen_1.Name("propertyName"),
+    message: new codegen_1.Name("message"),
+    schema: new codegen_1.Name("schema"),
+    parentSchema: new codegen_1.Name("parentSchema"),
+};
+function errorObjectCode(cxt, error, errorPaths) {
+    const { createErrors } = cxt.it;
+    if (createErrors === false)
+        return (0, codegen_1._) `{}`;
+    return errorObject(cxt, error, errorPaths);
 }
-
-
-/* @this   Ajv */
-function _compile(schemaObj, root) {
-  if (schemaObj.compiling) {
-    schemaObj.validate = callValidate;
-    callValidate.schema = schemaObj.schema;
-    callValidate.errors = null;
-    callValidate.root = root ? root : callValidate;
-    if (schemaObj.schema.$async === true)
-      callValidate.$async = true;
-    return callValidate;
-  }
-  schemaObj.compiling = true;
-
-  var currentOpts;
-  if (schemaObj.meta) {
-    currentOpts = this._opts;
-    this._opts = this._metaOpts;
-  }
-
-  var v;
-  try { v = compileSchema.call(this, schemaObj.schema, root, schemaObj.localRefs); }
-  catch(e) {
-    delete schemaObj.validate;
-    throw e;
-  }
-  finally {
-    schemaObj.compiling = false;
-    if (schemaObj.meta) this._opts = currentOpts;
-  }
-
-  schemaObj.validate = v;
-  schemaObj.refs = v.refs;
-  schemaObj.refVal = v.refVal;
-  schemaObj.root = v.root;
-  return v;
-
-
-  /* @this   {*} - custom context, see passContext option */
-  function callValidate() {
-    /* jshint validthis: true */
-    var _validate = schemaObj.validate;
-    var result = _validate.apply(this, arguments);
-    callValidate.errors = _validate.errors;
-    return result;
-  }
+function errorObject(cxt, error, errorPaths = {}) {
+    const { gen, it } = cxt;
+    const keyValues = [
+        errorInstancePath(it, errorPaths),
+        errorSchemaPath(cxt, errorPaths),
+    ];
+    extraErrorProps(cxt, error, keyValues);
+    return gen.object(...keyValues);
 }
-
-
-function chooseGetId(opts) {
-  switch (opts.schemaId) {
-    case 'auto': return _get$IdOrId;
-    case 'id': return _getId;
-    default: return _get$Id;
-  }
+function errorInstancePath({ errorPath }, { instancePath }) {
+    const instPath = instancePath
+        ? (0, codegen_1.str) `${errorPath}${(0, util_1.getErrorPath)(instancePath, util_1.Type.Str)}`
+        : errorPath;
+    return [names_1.default.instancePath, (0, codegen_1.strConcat)(names_1.default.instancePath, instPath)];
 }
-
-/* @this   Ajv */
-function _getId(schema) {
-  if (schema.$id) this.logger.warn('schema $id ignored', schema.$id);
-  return schema.id;
+function errorSchemaPath({ keyword, it: { errSchemaPath } }, { schemaPath, parentSchema }) {
+    let schPath = parentSchema ? errSchemaPath : (0, codegen_1.str) `${errSchemaPath}/${keyword}`;
+    if (schemaPath) {
+        schPath = (0, codegen_1.str) `${schPath}${(0, util_1.getErrorPath)(schemaPath, util_1.Type.Str)}`;
+    }
+    return [E.schemaPath, schPath];
 }
-
-/* @this   Ajv */
-function _get$Id(schema) {
-  if (schema.id) this.logger.warn('schema id ignored', schema.id);
-  return schema.$id;
+function extraErrorProps(cxt, { params, message }, keyValues) {
+    const { keyword, data, schemaValue, it } = cxt;
+    const { opts, propertyName, topSchemaRef, schemaPath } = it;
+    keyValues.push([E.keyword, keyword], [E.params, typeof params == "function" ? params(cxt) : params || (0, codegen_1._) `{}`]);
+    if (opts.messages) {
+        keyValues.push([E.message, typeof message == "function" ? message(cxt) : message]);
+    }
+    if (opts.verbose) {
+        keyValues.push([E.schema, schemaValue], [E.parentSchema, (0, codegen_1._) `${topSchemaRef}${schemaPath}`], [names_1.default.data, data]);
+    }
+    if (propertyName)
+        keyValues.push([E.propertyName, propertyName]);
 }
-
-
-function _get$IdOrId(schema) {
-  if (schema.$id && schema.id && schema.$id != schema.id)
-    throw new Error('schema $id is different from id');
-  return schema.$id || schema.id;
-}
-
-
-/**
- * Convert array of error message objects to string
- * @this   Ajv
- * @param  {Array<Object>} errors optional array of validation errors, if not passed errors from the instance are used.
- * @param  {Object} options optional options with properties `separator` and `dataVar`.
- * @return {String} human readable string with all errors descriptions
- */
-function errorsText(errors, options) {
-  errors = errors || this.errors;
-  if (!errors) return 'No errors';
-  options = options || {};
-  var separator = options.separator === undefined ? ', ' : options.separator;
-  var dataVar = options.dataVar === undefined ? 'data' : options.dataVar;
-
-  var text = '';
-  for (var i=0; i<errors.length; i++) {
-    var e = errors[i];
-    if (e) text += dataVar + e.dataPath + ' ' + e.message + separator;
-  }
-  return text.slice(0, -separator.length);
-}
-
-
-/**
- * Add custom format
- * @this   Ajv
- * @param {String} name format name
- * @param {String|RegExp|Function} format string is converted to RegExp; function should return boolean (true when valid)
- * @return {Ajv} this for method chaining
- */
-function addFormat(name, format) {
-  if (typeof format == 'string') format = new RegExp(format);
-  this._formats[name] = format;
-  return this;
-}
-
-
-function addDefaultMetaSchema(self) {
-  var $dataSchema;
-  if (self._opts.$data) {
-    $dataSchema = __nccwpck_require__(6835);
-    self.addMetaSchema($dataSchema, $dataSchema.$id, true);
-  }
-  if (self._opts.meta === false) return;
-  var metaSchema = __nccwpck_require__(38);
-  if (self._opts.$data) metaSchema = $dataMetaSchema(metaSchema, META_SUPPORT_DATA);
-  self.addMetaSchema(metaSchema, META_SCHEMA_ID, true);
-  self._refs['http://json-schema.org/schema'] = META_SCHEMA_ID;
-}
-
-
-function addInitialSchemas(self) {
-  var optsSchemas = self._opts.schemas;
-  if (!optsSchemas) return;
-  if (Array.isArray(optsSchemas)) self.addSchema(optsSchemas);
-  else for (var key in optsSchemas) self.addSchema(optsSchemas[key], key);
-}
-
-
-function addInitialFormats(self) {
-  for (var name in self._opts.formats) {
-    var format = self._opts.formats[name];
-    self.addFormat(name, format);
-  }
-}
-
-
-function addInitialKeywords(self) {
-  for (var name in self._opts.keywords) {
-    var keyword = self._opts.keywords[name];
-    self.addKeyword(name, keyword);
-  }
-}
-
-
-function checkUnique(self, id) {
-  if (self._schemas[id] || self._refs[id])
-    throw new Error('schema with key or id "' + id + '" already exists');
-}
-
-
-function getMetaSchemaOptions(self) {
-  var metaOpts = util.copy(self._opts);
-  for (var i=0; i<META_IGNORE_OPTIONS.length; i++)
-    delete metaOpts[META_IGNORE_OPTIONS[i]];
-  return metaOpts;
-}
-
-
-function setLogger(self) {
-  var logger = self._opts.logger;
-  if (logger === false) {
-    self.logger = {log: noop, warn: noop, error: noop};
-  } else {
-    if (logger === undefined) logger = console;
-    if (!(typeof logger == 'object' && logger.log && logger.warn && logger.error))
-      throw new Error('logger must implement log, warn and error methods');
-    self.logger = logger;
-  }
-}
-
-
-function noop() {}
-
+//# sourceMappingURL=errors.js.map
 
 /***/ }),
 
-/***/ 3679:
-/***/ ((module) => {
+/***/ 813:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
-
-
-var Cache = module.exports = function Cache() {
-  this._cache = {};
-};
-
-
-Cache.prototype.put = function Cache_put(key, value) {
-  this._cache[key] = value;
-};
-
-
-Cache.prototype.get = function Cache_get(key) {
-  return this._cache[key];
-};
-
-
-Cache.prototype.del = function Cache_del(key) {
-  delete this._cache[key];
-};
-
-
-Cache.prototype.clear = function Cache_clear() {
-  this._cache = {};
-};
-
-
-/***/ }),
-
-/***/ 890:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-var MissingRefError = __nccwpck_require__(5726).MissingRef;
-
-module.exports = compileAsync;
-
-
-/**
- * Creates validating function for passed schema with asynchronous loading of missing schemas.
- * `loadSchema` option should be a function that accepts schema uri and returns promise that resolves with the schema.
- * @this  Ajv
- * @param {Object}   schema schema object
- * @param {Boolean}  meta optional true to compile meta-schema; this parameter can be skipped
- * @param {Function} callback an optional node-style callback, it is called with 2 parameters: error (or null) and validating function.
- * @return {Promise} promise that resolves with a validating function.
- */
-function compileAsync(schema, meta, callback) {
-  /* eslint no-shadow: 0 */
-  /* global Promise */
-  /* jshint validthis: true */
-  var self = this;
-  if (typeof this._opts.loadSchema != 'function')
-    throw new Error('options.loadSchema should be a function');
-
-  if (typeof meta == 'function') {
-    callback = meta;
-    meta = undefined;
-  }
-
-  var p = loadMetaSchemaOf(schema).then(function () {
-    var schemaObj = self._addSchema(schema, undefined, meta);
-    return schemaObj.validate || _compileAsync(schemaObj);
-  });
-
-  if (callback) {
-    p.then(
-      function(v) { callback(null, v); },
-      callback
-    );
-  }
-
-  return p;
-
-
-  function loadMetaSchemaOf(sch) {
-    var $schema = sch.$schema;
-    return $schema && !self.getSchema($schema)
-            ? compileAsync.call(self, { $ref: $schema }, true)
-            : Promise.resolve();
-  }
-
-
-  function _compileAsync(schemaObj) {
-    try { return self._compile(schemaObj); }
-    catch(e) {
-      if (e instanceof MissingRefError) return loadMissingSchema(e);
-      throw e;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.resolveSchema = exports.getCompilingSchema = exports.resolveRef = exports.compileSchema = exports.SchemaEnv = void 0;
+const codegen_1 = __nccwpck_require__(9179);
+const validation_error_1 = __nccwpck_require__(7616);
+const names_1 = __nccwpck_require__(50);
+const resolve_1 = __nccwpck_require__(6646);
+const util_1 = __nccwpck_require__(3439);
+const validate_1 = __nccwpck_require__(8955);
+const URI = __nccwpck_require__(20);
+class SchemaEnv {
+    constructor(env) {
+        var _a;
+        this.refs = {};
+        this.dynamicAnchors = {};
+        let schema;
+        if (typeof env.schema == "object")
+            schema = env.schema;
+        this.schema = env.schema;
+        this.schemaId = env.schemaId;
+        this.root = env.root || this;
+        this.baseId = (_a = env.baseId) !== null && _a !== void 0 ? _a : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env.schemaId || "$id"]);
+        this.schemaPath = env.schemaPath;
+        this.localRefs = env.localRefs;
+        this.meta = env.meta;
+        this.$async = schema === null || schema === void 0 ? void 0 : schema.$async;
+        this.refs = {};
     }
-
-
-    function loadMissingSchema(e) {
-      var ref = e.missingSchema;
-      if (added(ref)) throw new Error('Schema ' + ref + ' is loaded but ' + e.missingRef + ' cannot be resolved');
-
-      var schemaPromise = self._loadingSchemas[ref];
-      if (!schemaPromise) {
-        schemaPromise = self._loadingSchemas[ref] = self._opts.loadSchema(ref);
-        schemaPromise.then(removePromise, removePromise);
-      }
-
-      return schemaPromise.then(function (sch) {
-        if (!added(ref)) {
-          return loadMetaSchemaOf(sch).then(function () {
-            if (!added(ref)) self.addSchema(sch, ref, undefined, meta);
-          });
-        }
-      }).then(function() {
-        return _compileAsync(schemaObj);
-      });
-
-      function removePromise() {
-        delete self._loadingSchemas[ref];
-      }
-
-      function added(ref) {
-        return self._refs[ref] || self._schemas[ref];
-      }
-    }
-  }
 }
-
-
-/***/ }),
-
-/***/ 5726:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-var resolve = __nccwpck_require__(3896);
-
-module.exports = {
-  Validation: errorSubclass(ValidationError),
-  MissingRef: errorSubclass(MissingRefError)
-};
-
-
-function ValidationError(errors) {
-  this.message = 'validation failed';
-  this.errors = errors;
-  this.ajv = this.validation = true;
-}
-
-
-MissingRefError.message = function (baseId, ref) {
-  return 'can\'t resolve reference ' + ref + ' from id ' + baseId;
-};
-
-
-function MissingRefError(baseId, ref, message) {
-  this.message = message || MissingRefError.message(baseId, ref);
-  this.missingRef = resolve.url(baseId, ref);
-  this.missingSchema = resolve.normalizeId(resolve.fullPath(this.missingRef));
-}
-
-
-function errorSubclass(Subclass) {
-  Subclass.prototype = Object.create(Error.prototype);
-  Subclass.prototype.constructor = Subclass;
-  return Subclass;
-}
-
-
-/***/ }),
-
-/***/ 6627:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-var util = __nccwpck_require__(6578);
-
-var DATE = /^(\d\d\d\d)-(\d\d)-(\d\d)$/;
-var DAYS = [0,31,28,31,30,31,30,31,31,30,31,30,31];
-var TIME = /^(\d\d):(\d\d):(\d\d)(\.\d+)?(z|[+-]\d\d(?::?\d\d)?)?$/i;
-var HOSTNAME = /^(?=.{1,253}\.?$)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[-0-9a-z]{0,61}[0-9a-z])?)*\.?$/i;
-var URI = /^(?:[a-z][a-z0-9+\-.]*:)(?:\/?\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:]|%[0-9a-f]{2})*@)?(?:\[(?:(?:(?:(?:[0-9a-f]{1,4}:){6}|::(?:[0-9a-f]{1,4}:){5}|(?:[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){4}|(?:(?:[0-9a-f]{1,4}:){0,1}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){3}|(?:(?:[0-9a-f]{1,4}:){0,2}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){2}|(?:(?:[0-9a-f]{1,4}:){0,3}[0-9a-f]{1,4})?::[0-9a-f]{1,4}:|(?:(?:[0-9a-f]{1,4}:){0,4}[0-9a-f]{1,4})?::)(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?))|(?:(?:[0-9a-f]{1,4}:){0,5}[0-9a-f]{1,4})?::[0-9a-f]{1,4}|(?:(?:[0-9a-f]{1,4}:){0,6}[0-9a-f]{1,4})?::)|[Vv][0-9a-f]+\.[a-z0-9\-._~!$&'()*+,;=:]+)\]|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)|(?:[a-z0-9\-._~!$&'()*+,;=]|%[0-9a-f]{2})*)(?::\d*)?(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*|\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)?|(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)(?:\?(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?(?:#(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?$/i;
-var URIREF = /^(?:[a-z][a-z0-9+\-.]*:)?(?:\/?\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:]|%[0-9a-f]{2})*@)?(?:\[(?:(?:(?:(?:[0-9a-f]{1,4}:){6}|::(?:[0-9a-f]{1,4}:){5}|(?:[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){4}|(?:(?:[0-9a-f]{1,4}:){0,1}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){3}|(?:(?:[0-9a-f]{1,4}:){0,2}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){2}|(?:(?:[0-9a-f]{1,4}:){0,3}[0-9a-f]{1,4})?::[0-9a-f]{1,4}:|(?:(?:[0-9a-f]{1,4}:){0,4}[0-9a-f]{1,4})?::)(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?))|(?:(?:[0-9a-f]{1,4}:){0,5}[0-9a-f]{1,4})?::[0-9a-f]{1,4}|(?:(?:[0-9a-f]{1,4}:){0,6}[0-9a-f]{1,4})?::)|[Vv][0-9a-f]+\.[a-z0-9\-._~!$&'()*+,;=:]+)\]|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)|(?:[a-z0-9\-._~!$&'"()*+,;=]|%[0-9a-f]{2})*)(?::\d*)?(?:\/(?:[a-z0-9\-._~!$&'"()*+,;=:@]|%[0-9a-f]{2})*)*|\/(?:(?:[a-z0-9\-._~!$&'"()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'"()*+,;=:@]|%[0-9a-f]{2})*)*)?|(?:[a-z0-9\-._~!$&'"()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'"()*+,;=:@]|%[0-9a-f]{2})*)*)?(?:\?(?:[a-z0-9\-._~!$&'"()*+,;=:@/?]|%[0-9a-f]{2})*)?(?:#(?:[a-z0-9\-._~!$&'"()*+,;=:@/?]|%[0-9a-f]{2})*)?$/i;
-// uri-template: https://tools.ietf.org/html/rfc6570
-var URITEMPLATE = /^(?:(?:[^\x00-\x20"'<>%\\^`{|}]|%[0-9a-f]{2})|\{[+#./;?&=,!@|]?(?:[a-z0-9_]|%[0-9a-f]{2})+(?::[1-9][0-9]{0,3}|\*)?(?:,(?:[a-z0-9_]|%[0-9a-f]{2})+(?::[1-9][0-9]{0,3}|\*)?)*\})*$/i;
-// For the source: https://gist.github.com/dperini/729294
-// For test cases: https://mathiasbynens.be/demo/url-regex
-// @todo Delete current URL in favour of the commented out URL rule when this issue is fixed https://github.com/eslint/eslint/issues/7983.
-// var URL = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u{00a1}-\u{ffff}0-9]+-)*[a-z\u{00a1}-\u{ffff}0-9]+)(?:\.(?:[a-z\u{00a1}-\u{ffff}0-9]+-)*[a-z\u{00a1}-\u{ffff}0-9]+)*(?:\.(?:[a-z\u{00a1}-\u{ffff}]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/iu;
-var URL = /^(?:(?:http[s\u017F]?|ftp):\/\/)(?:(?:[\0-\x08\x0E-\x1F!-\x9F\xA1-\u167F\u1681-\u1FFF\u200B-\u2027\u202A-\u202E\u2030-\u205E\u2060-\u2FFF\u3001-\uD7FF\uE000-\uFEFE\uFF00-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])+(?::(?:[\0-\x08\x0E-\x1F!-\x9F\xA1-\u167F\u1681-\u1FFF\u200B-\u2027\u202A-\u202E\u2030-\u205E\u2060-\u2FFF\u3001-\uD7FF\uE000-\uFEFE\uFF00-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])*)?@)?(?:(?!10(?:\.[0-9]{1,3}){3})(?!127(?:\.[0-9]{1,3}){3})(?!169\.254(?:\.[0-9]{1,3}){2})(?!192\.168(?:\.[0-9]{1,3}){2})(?!172\.(?:1[6-9]|2[0-9]|3[01])(?:\.[0-9]{1,3}){2})(?:[1-9][0-9]?|1[0-9][0-9]|2[01][0-9]|22[0-3])(?:\.(?:1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])){2}(?:\.(?:[1-9][0-9]?|1[0-9][0-9]|2[0-4][0-9]|25[0-4]))|(?:(?:(?:[0-9a-z\xA1-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])+-)*(?:[0-9a-z\xA1-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])+)(?:\.(?:(?:[0-9a-z\xA1-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])+-)*(?:[0-9a-z\xA1-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])+)*(?:\.(?:(?:[a-z\xA1-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]){2,})))(?::[0-9]{2,5})?(?:\/(?:[\0-\x08\x0E-\x1F!-\x9F\xA1-\u167F\u1681-\u1FFF\u200B-\u2027\u202A-\u202E\u2030-\u205E\u2060-\u2FFF\u3001-\uD7FF\uE000-\uFEFE\uFF00-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])*)?$/i;
-var UUID = /^(?:urn:uuid:)?[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i;
-var JSON_POINTER = /^(?:\/(?:[^~/]|~0|~1)*)*$/;
-var JSON_POINTER_URI_FRAGMENT = /^#(?:\/(?:[a-z0-9_\-.!$&'()*+,;:=@]|%[0-9a-f]{2}|~0|~1)*)*$/i;
-var RELATIVE_JSON_POINTER = /^(?:0|[1-9][0-9]*)(?:#|(?:\/(?:[^~/]|~0|~1)*)*)$/;
-
-
-module.exports = formats;
-
-function formats(mode) {
-  mode = mode == 'full' ? 'full' : 'fast';
-  return util.copy(formats[mode]);
-}
-
-
-formats.fast = {
-  // date: http://tools.ietf.org/html/rfc3339#section-5.6
-  date: /^\d\d\d\d-[0-1]\d-[0-3]\d$/,
-  // date-time: http://tools.ietf.org/html/rfc3339#section-5.6
-  time: /^(?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)(?:\.\d+)?(?:z|[+-]\d\d(?::?\d\d)?)?$/i,
-  'date-time': /^\d\d\d\d-[0-1]\d-[0-3]\d[t\s](?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)(?:\.\d+)?(?:z|[+-]\d\d(?::?\d\d)?)$/i,
-  // uri: https://github.com/mafintosh/is-my-json-valid/blob/master/formats.js
-  uri: /^(?:[a-z][a-z0-9+\-.]*:)(?:\/?\/)?[^\s]*$/i,
-  'uri-reference': /^(?:(?:[a-z][a-z0-9+\-.]*:)?\/?\/)?(?:[^\\\s#][^\s#]*)?(?:#[^\\\s]*)?$/i,
-  'uri-template': URITEMPLATE,
-  url: URL,
-  // email (sources from jsen validator):
-  // http://stackoverflow.com/questions/201323/using-a-regular-expression-to-validate-an-email-address#answer-8829363
-  // http://www.w3.org/TR/html5/forms.html#valid-e-mail-address (search for 'willful violation')
-  email: /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$/i,
-  hostname: HOSTNAME,
-  // optimized https://www.safaribooksonline.com/library/view/regular-expressions-cookbook/9780596802837/ch07s16.html
-  ipv4: /^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)$/,
-  // optimized http://stackoverflow.com/questions/53497/regular-expression-that-matches-valid-ipv6-addresses
-  ipv6: /^\s*(?:(?:(?:[0-9a-f]{1,4}:){7}(?:[0-9a-f]{1,4}|:))|(?:(?:[0-9a-f]{1,4}:){6}(?::[0-9a-f]{1,4}|(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(?:(?:[0-9a-f]{1,4}:){5}(?:(?:(?::[0-9a-f]{1,4}){1,2})|:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(?:(?:[0-9a-f]{1,4}:){4}(?:(?:(?::[0-9a-f]{1,4}){1,3})|(?:(?::[0-9a-f]{1,4})?:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9a-f]{1,4}:){3}(?:(?:(?::[0-9a-f]{1,4}){1,4})|(?:(?::[0-9a-f]{1,4}){0,2}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9a-f]{1,4}:){2}(?:(?:(?::[0-9a-f]{1,4}){1,5})|(?:(?::[0-9a-f]{1,4}){0,3}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9a-f]{1,4}:){1}(?:(?:(?::[0-9a-f]{1,4}){1,6})|(?:(?::[0-9a-f]{1,4}){0,4}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?::(?:(?:(?::[0-9a-f]{1,4}){1,7})|(?:(?::[0-9a-f]{1,4}){0,5}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(?:%.+)?\s*$/i,
-  regex: regex,
-  // uuid: http://tools.ietf.org/html/rfc4122
-  uuid: UUID,
-  // JSON-pointer: https://tools.ietf.org/html/rfc6901
-  // uri fragment: https://tools.ietf.org/html/rfc3986#appendix-A
-  'json-pointer': JSON_POINTER,
-  'json-pointer-uri-fragment': JSON_POINTER_URI_FRAGMENT,
-  // relative JSON-pointer: http://tools.ietf.org/html/draft-luff-relative-json-pointer-00
-  'relative-json-pointer': RELATIVE_JSON_POINTER
-};
-
-
-formats.full = {
-  date: date,
-  time: time,
-  'date-time': date_time,
-  uri: uri,
-  'uri-reference': URIREF,
-  'uri-template': URITEMPLATE,
-  url: URL,
-  email: /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i,
-  hostname: HOSTNAME,
-  ipv4: /^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)$/,
-  ipv6: /^\s*(?:(?:(?:[0-9a-f]{1,4}:){7}(?:[0-9a-f]{1,4}|:))|(?:(?:[0-9a-f]{1,4}:){6}(?::[0-9a-f]{1,4}|(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(?:(?:[0-9a-f]{1,4}:){5}(?:(?:(?::[0-9a-f]{1,4}){1,2})|:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(?:(?:[0-9a-f]{1,4}:){4}(?:(?:(?::[0-9a-f]{1,4}){1,3})|(?:(?::[0-9a-f]{1,4})?:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9a-f]{1,4}:){3}(?:(?:(?::[0-9a-f]{1,4}){1,4})|(?:(?::[0-9a-f]{1,4}){0,2}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9a-f]{1,4}:){2}(?:(?:(?::[0-9a-f]{1,4}){1,5})|(?:(?::[0-9a-f]{1,4}){0,3}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?:(?:[0-9a-f]{1,4}:){1}(?:(?:(?::[0-9a-f]{1,4}){1,6})|(?:(?::[0-9a-f]{1,4}){0,4}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(?::(?:(?:(?::[0-9a-f]{1,4}){1,7})|(?:(?::[0-9a-f]{1,4}){0,5}:(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(?:%.+)?\s*$/i,
-  regex: regex,
-  uuid: UUID,
-  'json-pointer': JSON_POINTER,
-  'json-pointer-uri-fragment': JSON_POINTER_URI_FRAGMENT,
-  'relative-json-pointer': RELATIVE_JSON_POINTER
-};
-
-
-function isLeapYear(year) {
-  // https://tools.ietf.org/html/rfc3339#appendix-C
-  return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
-}
-
-
-function date(str) {
-  // full-date from http://tools.ietf.org/html/rfc3339#section-5.6
-  var matches = str.match(DATE);
-  if (!matches) return false;
-
-  var year = +matches[1];
-  var month = +matches[2];
-  var day = +matches[3];
-
-  return month >= 1 && month <= 12 && day >= 1 &&
-          day <= (month == 2 && isLeapYear(year) ? 29 : DAYS[month]);
-}
-
-
-function time(str, full) {
-  var matches = str.match(TIME);
-  if (!matches) return false;
-
-  var hour = matches[1];
-  var minute = matches[2];
-  var second = matches[3];
-  var timeZone = matches[5];
-  return ((hour <= 23 && minute <= 59 && second <= 59) ||
-          (hour == 23 && minute == 59 && second == 60)) &&
-         (!full || timeZone);
-}
-
-
-var DATE_TIME_SEPARATOR = /t|\s/i;
-function date_time(str) {
-  // http://tools.ietf.org/html/rfc3339#section-5.6
-  var dateTime = str.split(DATE_TIME_SEPARATOR);
-  return dateTime.length == 2 && date(dateTime[0]) && time(dateTime[1], true);
-}
-
-
-var NOT_URI_FRAGMENT = /\/|:/;
-function uri(str) {
-  // http://jmrware.com/articles/2009/uri_regexp/URI_regex.html + optional protocol + required "."
-  return NOT_URI_FRAGMENT.test(str) && URI.test(str);
-}
-
-
-var Z_ANCHOR = /[^\\]\\Z/;
-function regex(str) {
-  if (Z_ANCHOR.test(str)) return false;
-  try {
-    new RegExp(str);
-    return true;
-  } catch(e) {
-    return false;
-  }
-}
-
-
-/***/ }),
-
-/***/ 875:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-var resolve = __nccwpck_require__(3896)
-  , util = __nccwpck_require__(6578)
-  , errorClasses = __nccwpck_require__(5726)
-  , stableStringify = __nccwpck_require__(969);
-
-var validateGenerator = __nccwpck_require__(9585);
-
-/**
- * Functions below are used inside compiled validations function
- */
-
-var ucs2length = util.ucs2length;
-var equal = __nccwpck_require__(8206);
-
-// this error is thrown by async schemas to return validation errors via exception
-var ValidationError = errorClasses.Validation;
-
-module.exports = compile;
-
-
-/**
- * Compiles schema to validation function
- * @this   Ajv
- * @param  {Object} schema schema object
- * @param  {Object} root object with information about the root schema for this schema
- * @param  {Object} localRefs the hash of local references inside the schema (created by resolve.id), used for inline resolution
- * @param  {String} baseId base ID for IDs in the schema
- * @return {Function} validation function
- */
-function compile(schema, root, localRefs, baseId) {
-  /* jshint validthis: true, evil: true */
-  /* eslint no-shadow: 0 */
-  var self = this
-    , opts = this._opts
-    , refVal = [ undefined ]
-    , refs = {}
-    , patterns = []
-    , patternsHash = {}
-    , defaults = []
-    , defaultsHash = {}
-    , customRules = [];
-
-  root = root || { schema: schema, refVal: refVal, refs: refs };
-
-  var c = checkCompiling.call(this, schema, root, baseId);
-  var compilation = this._compilations[c.index];
-  if (c.compiling) return (compilation.callValidate = callValidate);
-
-  var formats = this._formats;
-  var RULES = this.RULES;
-
-  try {
-    var v = localCompile(schema, root, localRefs, baseId);
-    compilation.validate = v;
-    var cv = compilation.callValidate;
-    if (cv) {
-      cv.schema = v.schema;
-      cv.errors = null;
-      cv.refs = v.refs;
-      cv.refVal = v.refVal;
-      cv.root = v.root;
-      cv.$async = v.$async;
-      if (opts.sourceCode) cv.source = v.source;
+exports.SchemaEnv = SchemaEnv;
+// let codeSize = 0
+// let nodeCount = 0
+// Compiles schema in SchemaEnv
+function compileSchema(sch) {
+    // TODO refactor - remove compilations
+    const _sch = getCompilingSchema.call(this, sch);
+    if (_sch)
+        return _sch;
+    const rootId = (0, resolve_1.getFullPath)(sch.root.baseId); // TODO if getFullPath removed 1 tests fails
+    const { es5, lines } = this.opts.code;
+    const { ownProperties } = this.opts;
+    const gen = new codegen_1.CodeGen(this.scope, { es5, lines, ownProperties });
+    let _ValidationError;
+    if (sch.$async) {
+        _ValidationError = gen.scopeValue("Error", {
+            ref: validation_error_1.default,
+            code: (0, codegen_1._) `require("ajv/dist/runtime/validation_error").default`,
+        });
     }
-    return v;
-  } finally {
-    endCompiling.call(this, schema, root, baseId);
-  }
-
-  /* @this   {*} - custom context, see passContext option */
-  function callValidate() {
-    /* jshint validthis: true */
-    var validate = compilation.validate;
-    var result = validate.apply(this, arguments);
-    callValidate.errors = validate.errors;
-    return result;
-  }
-
-  function localCompile(_schema, _root, localRefs, baseId) {
-    var isRoot = !_root || (_root && _root.schema == _schema);
-    if (_root.schema != root.schema)
-      return compile.call(self, _schema, _root, localRefs, baseId);
-
-    var $async = _schema.$async === true;
-
-    var sourceCode = validateGenerator({
-      isTop: true,
-      schema: _schema,
-      isRoot: isRoot,
-      baseId: baseId,
-      root: _root,
-      schemaPath: '',
-      errSchemaPath: '#',
-      errorPath: '""',
-      MissingRefError: errorClasses.MissingRef,
-      RULES: RULES,
-      validate: validateGenerator,
-      util: util,
-      resolve: resolve,
-      resolveRef: resolveRef,
-      usePattern: usePattern,
-      useDefault: useDefault,
-      useCustomRule: useCustomRule,
-      opts: opts,
-      formats: formats,
-      logger: self.logger,
-      self: self
-    });
-
-    sourceCode = vars(refVal, refValCode) + vars(patterns, patternCode)
-                   + vars(defaults, defaultCode) + vars(customRules, customRuleCode)
-                   + sourceCode;
-
-    if (opts.processCode) sourceCode = opts.processCode(sourceCode, _schema);
-    // console.log('\n\n\n *** \n', JSON.stringify(sourceCode));
-    var validate;
-    try {
-      var makeValidate = new Function(
-        'self',
-        'RULES',
-        'formats',
-        'root',
-        'refVal',
-        'defaults',
-        'customRules',
-        'equal',
-        'ucs2length',
-        'ValidationError',
-        sourceCode
-      );
-
-      validate = makeValidate(
-        self,
-        RULES,
-        formats,
-        root,
-        refVal,
-        defaults,
-        customRules,
-        equal,
-        ucs2length,
-        ValidationError
-      );
-
-      refVal[0] = validate;
-    } catch(e) {
-      self.logger.error('Error compiling schema, function code:', sourceCode);
-      throw e;
-    }
-
-    validate.schema = _schema;
-    validate.errors = null;
-    validate.refs = refs;
-    validate.refVal = refVal;
-    validate.root = isRoot ? validate : _root;
-    if ($async) validate.$async = true;
-    if (opts.sourceCode === true) {
-      validate.source = {
-        code: sourceCode,
-        patterns: patterns,
-        defaults: defaults
-      };
-    }
-
-    return validate;
-  }
-
-  function resolveRef(baseId, ref, isRoot) {
-    ref = resolve.url(baseId, ref);
-    var refIndex = refs[ref];
-    var _refVal, refCode;
-    if (refIndex !== undefined) {
-      _refVal = refVal[refIndex];
-      refCode = 'refVal[' + refIndex + ']';
-      return resolvedRef(_refVal, refCode);
-    }
-    if (!isRoot && root.refs) {
-      var rootRefId = root.refs[ref];
-      if (rootRefId !== undefined) {
-        _refVal = root.refVal[rootRefId];
-        refCode = addLocalRef(ref, _refVal);
-        return resolvedRef(_refVal, refCode);
-      }
-    }
-
-    refCode = addLocalRef(ref);
-    var v = resolve.call(self, localCompile, root, ref);
-    if (v === undefined) {
-      var localSchema = localRefs && localRefs[ref];
-      if (localSchema) {
-        v = resolve.inlineRef(localSchema, opts.inlineRefs)
-            ? localSchema
-            : compile.call(self, localSchema, root, localRefs, baseId);
-      }
-    }
-
-    if (v === undefined) {
-      removeLocalRef(ref);
-    } else {
-      replaceLocalRef(ref, v);
-      return resolvedRef(v, refCode);
-    }
-  }
-
-  function addLocalRef(ref, v) {
-    var refId = refVal.length;
-    refVal[refId] = v;
-    refs[ref] = refId;
-    return 'refVal' + refId;
-  }
-
-  function removeLocalRef(ref) {
-    delete refs[ref];
-  }
-
-  function replaceLocalRef(ref, v) {
-    var refId = refs[ref];
-    refVal[refId] = v;
-  }
-
-  function resolvedRef(refVal, code) {
-    return typeof refVal == 'object' || typeof refVal == 'boolean'
-            ? { code: code, schema: refVal, inline: true }
-            : { code: code, $async: refVal && !!refVal.$async };
-  }
-
-  function usePattern(regexStr) {
-    var index = patternsHash[regexStr];
-    if (index === undefined) {
-      index = patternsHash[regexStr] = patterns.length;
-      patterns[index] = regexStr;
-    }
-    return 'pattern' + index;
-  }
-
-  function useDefault(value) {
-    switch (typeof value) {
-      case 'boolean':
-      case 'number':
-        return '' + value;
-      case 'string':
-        return util.toQuotedString(value);
-      case 'object':
-        if (value === null) return 'null';
-        var valueStr = stableStringify(value);
-        var index = defaultsHash[valueStr];
-        if (index === undefined) {
-          index = defaultsHash[valueStr] = defaults.length;
-          defaults[index] = value;
-        }
-        return 'default' + index;
-    }
-  }
-
-  function useCustomRule(rule, schema, parentSchema, it) {
-    if (self._opts.validateSchema !== false) {
-      var deps = rule.definition.dependencies;
-      if (deps && !deps.every(function(keyword) {
-        return Object.prototype.hasOwnProperty.call(parentSchema, keyword);
-      }))
-        throw new Error('parent schema must have all required keywords: ' + deps.join(','));
-
-      var validateSchema = rule.definition.validateSchema;
-      if (validateSchema) {
-        var valid = validateSchema(schema);
-        if (!valid) {
-          var message = 'keyword schema is invalid: ' + self.errorsText(validateSchema.errors);
-          if (self._opts.validateSchema == 'log') self.logger.error(message);
-          else throw new Error(message);
-        }
-      }
-    }
-
-    var compile = rule.definition.compile
-      , inline = rule.definition.inline
-      , macro = rule.definition.macro;
-
-    var validate;
-    if (compile) {
-      validate = compile.call(self, schema, parentSchema, it);
-    } else if (macro) {
-      validate = macro.call(self, schema, parentSchema, it);
-      if (opts.validateSchema !== false) self.validateSchema(validate, true);
-    } else if (inline) {
-      validate = inline.call(self, it, rule.keyword, schema, parentSchema);
-    } else {
-      validate = rule.definition.validate;
-      if (!validate) return;
-    }
-
-    if (validate === undefined)
-      throw new Error('custom keyword "' + rule.keyword + '"failed to compile');
-
-    var index = customRules.length;
-    customRules[index] = validate;
-
-    return {
-      code: 'customRule' + index,
-      validate: validate
+    const validateName = gen.scopeName("validate");
+    sch.validateName = validateName;
+    const schemaCxt = {
+        gen,
+        allErrors: this.opts.allErrors,
+        data: names_1.default.data,
+        parentData: names_1.default.parentData,
+        parentDataProperty: names_1.default.parentDataProperty,
+        dataNames: [names_1.default.data],
+        dataPathArr: [codegen_1.nil],
+        dataLevel: 0,
+        dataTypes: [],
+        definedProperties: new Set(),
+        topSchemaRef: gen.scopeValue("schema", this.opts.code.source === true
+            ? { ref: sch.schema, code: (0, codegen_1.stringify)(sch.schema) }
+            : { ref: sch.schema }),
+        validateName,
+        ValidationError: _ValidationError,
+        schema: sch.schema,
+        schemaEnv: sch,
+        rootId,
+        baseId: sch.baseId || rootId,
+        schemaPath: codegen_1.nil,
+        errSchemaPath: sch.schemaPath || (this.opts.jtd ? "" : "#"),
+        errorPath: (0, codegen_1._) `""`,
+        opts: this.opts,
+        self: this,
     };
-  }
+    let sourceCode;
+    try {
+        this._compilations.add(sch);
+        (0, validate_1.validateFunctionCode)(schemaCxt);
+        gen.optimize(this.opts.code.optimize);
+        // gen.optimize(1)
+        const validateCode = gen.toString();
+        sourceCode = `${gen.scopeRefs(names_1.default.scope)}return ${validateCode}`;
+        // console.log((codeSize += sourceCode.length), (nodeCount += gen.nodeCount))
+        if (this.opts.code.process)
+            sourceCode = this.opts.code.process(sourceCode, sch);
+        // console.log("\n\n\n *** \n", sourceCode)
+        const makeValidate = new Function(`${names_1.default.self}`, `${names_1.default.scope}`, sourceCode);
+        const validate = makeValidate(this, this.scope.get());
+        this.scope.value(validateName, { ref: validate });
+        validate.errors = null;
+        validate.schema = sch.schema;
+        validate.schemaEnv = sch;
+        if (sch.$async)
+            validate.$async = true;
+        if (this.opts.code.source === true) {
+            validate.source = { validateName, validateCode, scopeValues: gen._values };
+        }
+        if (this.opts.unevaluated) {
+            const { props, items } = schemaCxt;
+            validate.evaluated = {
+                props: props instanceof codegen_1.Name ? undefined : props,
+                items: items instanceof codegen_1.Name ? undefined : items,
+                dynamicProps: props instanceof codegen_1.Name,
+                dynamicItems: items instanceof codegen_1.Name,
+            };
+            if (validate.source)
+                validate.source.evaluated = (0, codegen_1.stringify)(validate.evaluated);
+        }
+        sch.validate = validate;
+        return sch;
+    }
+    catch (e) {
+        delete sch.validate;
+        delete sch.validateName;
+        if (sourceCode)
+            this.logger.error("Error compiling schema, function code:", sourceCode);
+        // console.log("\n\n\n *** \n", sourceCode, this.opts)
+        throw e;
+    }
+    finally {
+        this._compilations.delete(sch);
+    }
 }
-
-
-/**
- * Checks if the schema is currently compiled
- * @this   Ajv
- * @param  {Object} schema schema to compile
- * @param  {Object} root root object
- * @param  {String} baseId base schema ID
- * @return {Object} object with properties "index" (compilation index) and "compiling" (boolean)
- */
-function checkCompiling(schema, root, baseId) {
-  /* jshint validthis: true */
-  var index = compIndex.call(this, schema, root, baseId);
-  if (index >= 0) return { index: index, compiling: true };
-  index = this._compilations.length;
-  this._compilations[index] = {
-    schema: schema,
-    root: root,
-    baseId: baseId
-  };
-  return { index: index, compiling: false };
+exports.compileSchema = compileSchema;
+function resolveRef(root, baseId, ref) {
+    var _a;
+    ref = (0, resolve_1.resolveUrl)(baseId, ref);
+    const schOrFunc = root.refs[ref];
+    if (schOrFunc)
+        return schOrFunc;
+    let _sch = resolve.call(this, root, ref);
+    if (_sch === undefined) {
+        const schema = (_a = root.localRefs) === null || _a === void 0 ? void 0 : _a[ref]; // TODO maybe localRefs should hold SchemaEnv
+        const { schemaId } = this.opts;
+        if (schema)
+            _sch = new SchemaEnv({ schema, schemaId, root, baseId });
+    }
+    if (_sch === undefined)
+        return;
+    return (root.refs[ref] = inlineOrCompile.call(this, _sch));
 }
-
-
-/**
- * Removes the schema from the currently compiled list
- * @this   Ajv
- * @param  {Object} schema schema to compile
- * @param  {Object} root root object
- * @param  {String} baseId base schema ID
- */
-function endCompiling(schema, root, baseId) {
-  /* jshint validthis: true */
-  var i = compIndex.call(this, schema, root, baseId);
-  if (i >= 0) this._compilations.splice(i, 1);
+exports.resolveRef = resolveRef;
+function inlineOrCompile(sch) {
+    if ((0, resolve_1.inlineRef)(sch.schema, this.opts.inlineRefs))
+        return sch.schema;
+    return sch.validate ? sch : compileSchema.call(this, sch);
 }
-
-
-/**
- * Index of schema compilation in the currently compiled list
- * @this   Ajv
- * @param  {Object} schema schema to compile
- * @param  {Object} root root object
- * @param  {String} baseId base schema ID
- * @return {Integer} compilation index
- */
-function compIndex(schema, root, baseId) {
-  /* jshint validthis: true */
-  for (var i=0; i<this._compilations.length; i++) {
-    var c = this._compilations[i];
-    if (c.schema == schema && c.root == root && c.baseId == baseId) return i;
-  }
-  return -1;
+// Index of schema compilation in the currently compiled list
+function getCompilingSchema(schEnv) {
+    for (const sch of this._compilations) {
+        if (sameSchemaEnv(sch, schEnv))
+            return sch;
+    }
 }
-
-
-function patternCode(i, patterns) {
-  return 'var pattern' + i + ' = new RegExp(' + util.toQuotedString(patterns[i]) + ');';
+exports.getCompilingSchema = getCompilingSchema;
+function sameSchemaEnv(s1, s2) {
+    return s1.schema === s2.schema && s1.root === s2.root && s1.baseId === s2.baseId;
 }
-
-
-function defaultCode(i) {
-  return 'var default' + i + ' = defaults[' + i + '];';
+// resolve and compile the references ($ref)
+// TODO returns AnySchemaObject (if the schema can be inlined) or validation function
+function resolve(root, // information about the root schema for the current schema
+ref // reference to resolve
+) {
+    let sch;
+    while (typeof (sch = this.refs[ref]) == "string")
+        ref = sch;
+    return sch || this.schemas[ref] || resolveSchema.call(this, root, ref);
 }
-
-
-function refValCode(i, refVal) {
-  return refVal[i] === undefined ? '' : 'var refVal' + i + ' = refVal[' + i + '];';
+// Resolve schema, its root and baseId
+function resolveSchema(root, // root object with properties schema, refs TODO below SchemaEnv is assigned to it
+ref // reference to resolve
+) {
+    const p = URI.parse(ref);
+    const refPath = (0, resolve_1._getFullPath)(p);
+    let baseId = (0, resolve_1.getFullPath)(root.baseId);
+    // TODO `Object.keys(root.schema).length > 0` should not be needed - but removing breaks 2 tests
+    if (Object.keys(root.schema).length > 0 && refPath === baseId) {
+        return getJsonPointer.call(this, p, root);
+    }
+    const id = (0, resolve_1.normalizeId)(refPath);
+    const schOrRef = this.refs[id] || this.schemas[id];
+    if (typeof schOrRef == "string") {
+        const sch = resolveSchema.call(this, root, schOrRef);
+        if (typeof (sch === null || sch === void 0 ? void 0 : sch.schema) !== "object")
+            return;
+        return getJsonPointer.call(this, p, sch);
+    }
+    if (typeof (schOrRef === null || schOrRef === void 0 ? void 0 : schOrRef.schema) !== "object")
+        return;
+    if (!schOrRef.validate)
+        compileSchema.call(this, schOrRef);
+    if (id === (0, resolve_1.normalizeId)(ref)) {
+        const { schema } = schOrRef;
+        const { schemaId } = this.opts;
+        const schId = schema[schemaId];
+        if (schId)
+            baseId = (0, resolve_1.resolveUrl)(baseId, schId);
+        return new SchemaEnv({ schema, schemaId, root, baseId });
+    }
+    return getJsonPointer.call(this, p, schOrRef);
 }
-
-
-function customRuleCode(i) {
-  return 'var customRule' + i + ' = customRules[' + i + '];';
+exports.resolveSchema = resolveSchema;
+const PREVENT_SCOPE_CHANGE = new Set([
+    "properties",
+    "patternProperties",
+    "enum",
+    "dependencies",
+    "definitions",
+]);
+function getJsonPointer(parsedRef, { baseId, schema, root }) {
+    var _a;
+    if (((_a = parsedRef.fragment) === null || _a === void 0 ? void 0 : _a[0]) !== "/")
+        return;
+    for (const part of parsedRef.fragment.slice(1).split("/")) {
+        if (typeof schema === "boolean")
+            return;
+        const partSchema = schema[(0, util_1.unescapeFragment)(part)];
+        if (partSchema === undefined)
+            return;
+        schema = partSchema;
+        // TODO PREVENT_SCOPE_CHANGE could be defined in keyword def?
+        const schId = typeof schema === "object" && schema[this.opts.schemaId];
+        if (!PREVENT_SCOPE_CHANGE.has(part) && schId) {
+            baseId = (0, resolve_1.resolveUrl)(baseId, schId);
+        }
+    }
+    let env;
+    if (typeof schema != "boolean" && schema.$ref && !(0, util_1.schemaHasRulesButRef)(schema, this.RULES)) {
+        const $ref = (0, resolve_1.resolveUrl)(baseId, schema.$ref);
+        env = resolveSchema.call(this, root, $ref);
+    }
+    // even though resolution failed we need to return SchemaEnv to throw exception
+    // so that compileAsync loads missing schema.
+    const { schemaId } = this.opts;
+    env = env || new SchemaEnv({ schema, schemaId, root, baseId });
+    if (env.schema !== env.root.schema)
+        return env;
+    return undefined;
 }
+//# sourceMappingURL=index.js.map
 
+/***/ }),
 
-function vars(arr, statement) {
-  if (!arr.length) return '';
-  var code = '';
-  for (var i=0; i<arr.length; i++)
-    code += statement(i, arr);
-  return code;
+/***/ 50:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const codegen_1 = __nccwpck_require__(9179);
+const names = {
+    // validation function arguments
+    data: new codegen_1.Name("data"),
+    // args passed from referencing schema
+    valCxt: new codegen_1.Name("valCxt"),
+    instancePath: new codegen_1.Name("instancePath"),
+    parentData: new codegen_1.Name("parentData"),
+    parentDataProperty: new codegen_1.Name("parentDataProperty"),
+    rootData: new codegen_1.Name("rootData"),
+    dynamicAnchors: new codegen_1.Name("dynamicAnchors"),
+    // function scoped variables
+    vErrors: new codegen_1.Name("vErrors"),
+    errors: new codegen_1.Name("errors"),
+    this: new codegen_1.Name("this"),
+    // "globals"
+    self: new codegen_1.Name("self"),
+    scope: new codegen_1.Name("scope"),
+    // JTD serialize/parse name for JSON string and position
+    json: new codegen_1.Name("json"),
+    jsonPos: new codegen_1.Name("jsonPos"),
+    jsonLen: new codegen_1.Name("jsonLen"),
+    jsonPart: new codegen_1.Name("jsonPart"),
+};
+exports["default"] = names;
+//# sourceMappingURL=names.js.map
+
+/***/ }),
+
+/***/ 8190:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const resolve_1 = __nccwpck_require__(6646);
+class MissingRefError extends Error {
+    constructor(baseId, ref, msg) {
+        super(msg || `can't resolve reference ${ref} from id ${baseId}`);
+        this.missingRef = (0, resolve_1.resolveUrl)(baseId, ref);
+        this.missingSchema = (0, resolve_1.normalizeId)((0, resolve_1.getFullPath)(this.missingRef));
+    }
 }
+exports["default"] = MissingRefError;
+//# sourceMappingURL=ref_error.js.map
 
+/***/ }),
+
+/***/ 6646:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getSchemaRefs = exports.resolveUrl = exports.normalizeId = exports._getFullPath = exports.getFullPath = exports.inlineRef = void 0;
+const util_1 = __nccwpck_require__(3439);
+const equal = __nccwpck_require__(8206);
+const traverse = __nccwpck_require__(2533);
+const URI = __nccwpck_require__(20);
+// TODO refactor to use keyword definitions
+const SIMPLE_INLINED = new Set([
+    "type",
+    "format",
+    "pattern",
+    "maxLength",
+    "minLength",
+    "maxProperties",
+    "minProperties",
+    "maxItems",
+    "minItems",
+    "maximum",
+    "minimum",
+    "uniqueItems",
+    "multipleOf",
+    "required",
+    "enum",
+    "const",
+]);
+function inlineRef(schema, limit = true) {
+    if (typeof schema == "boolean")
+        return true;
+    if (limit === true)
+        return !hasRef(schema);
+    if (!limit)
+        return false;
+    return countKeys(schema) <= limit;
+}
+exports.inlineRef = inlineRef;
+const REF_KEYWORDS = new Set([
+    "$ref",
+    "$recursiveRef",
+    "$recursiveAnchor",
+    "$dynamicRef",
+    "$dynamicAnchor",
+]);
+function hasRef(schema) {
+    for (const key in schema) {
+        if (REF_KEYWORDS.has(key))
+            return true;
+        const sch = schema[key];
+        if (Array.isArray(sch) && sch.some(hasRef))
+            return true;
+        if (typeof sch == "object" && hasRef(sch))
+            return true;
+    }
+    return false;
+}
+function countKeys(schema) {
+    let count = 0;
+    for (const key in schema) {
+        if (key === "$ref")
+            return Infinity;
+        count++;
+        if (SIMPLE_INLINED.has(key))
+            continue;
+        if (typeof schema[key] == "object") {
+            (0, util_1.eachItem)(schema[key], (sch) => (count += countKeys(sch)));
+        }
+        if (count === Infinity)
+            return Infinity;
+    }
+    return count;
+}
+function getFullPath(id = "", normalize) {
+    if (normalize !== false)
+        id = normalizeId(id);
+    const p = URI.parse(id);
+    return _getFullPath(p);
+}
+exports.getFullPath = getFullPath;
+function _getFullPath(p) {
+    return URI.serialize(p).split("#")[0] + "#";
+}
+exports._getFullPath = _getFullPath;
+const TRAILING_SLASH_HASH = /#\/?$/;
+function normalizeId(id) {
+    return id ? id.replace(TRAILING_SLASH_HASH, "") : "";
+}
+exports.normalizeId = normalizeId;
+function resolveUrl(baseId, id) {
+    id = normalizeId(id);
+    return URI.resolve(baseId, id);
+}
+exports.resolveUrl = resolveUrl;
+const ANCHOR = /^[a-z_][-a-z0-9._]*$/i;
+function getSchemaRefs(schema, baseId) {
+    if (typeof schema == "boolean")
+        return {};
+    const { schemaId } = this.opts;
+    const schId = normalizeId(schema[schemaId] || baseId);
+    const baseIds = { "": schId };
+    const pathPrefix = getFullPath(schId, false);
+    const localRefs = {};
+    const schemaRefs = new Set();
+    traverse(schema, { allKeys: true }, (sch, jsonPtr, _, parentJsonPtr) => {
+        if (parentJsonPtr === undefined)
+            return;
+        const fullPath = pathPrefix + jsonPtr;
+        let baseId = baseIds[parentJsonPtr];
+        if (typeof sch[schemaId] == "string")
+            baseId = addRef.call(this, sch[schemaId]);
+        addAnchor.call(this, sch.$anchor);
+        addAnchor.call(this, sch.$dynamicAnchor);
+        baseIds[jsonPtr] = baseId;
+        function addRef(ref) {
+            ref = normalizeId(baseId ? URI.resolve(baseId, ref) : ref);
+            if (schemaRefs.has(ref))
+                throw ambiguos(ref);
+            schemaRefs.add(ref);
+            let schOrRef = this.refs[ref];
+            if (typeof schOrRef == "string")
+                schOrRef = this.refs[schOrRef];
+            if (typeof schOrRef == "object") {
+                checkAmbiguosRef(sch, schOrRef.schema, ref);
+            }
+            else if (ref !== normalizeId(fullPath)) {
+                if (ref[0] === "#") {
+                    checkAmbiguosRef(sch, localRefs[ref], ref);
+                    localRefs[ref] = sch;
+                }
+                else {
+                    this.refs[ref] = fullPath;
+                }
+            }
+            return ref;
+        }
+        function addAnchor(anchor) {
+            if (typeof anchor == "string") {
+                if (!ANCHOR.test(anchor))
+                    throw new Error(`invalid anchor "${anchor}"`);
+                addRef.call(this, `#${anchor}`);
+            }
+        }
+    });
+    return localRefs;
+    function checkAmbiguosRef(sch1, sch2, ref) {
+        if (sch2 !== undefined && !equal(sch1, sch2))
+            throw ambiguos(ref);
+    }
+    function ambiguos(ref) {
+        return new Error(`reference "${ref}" resolves to more than one schema`);
+    }
+}
+exports.getSchemaRefs = getSchemaRefs;
+//# sourceMappingURL=resolve.js.map
+
+/***/ }),
+
+/***/ 1785:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getRules = exports.isJSONType = void 0;
+const _jsonTypes = ["string", "number", "integer", "boolean", "null", "object", "array"];
+const jsonTypes = new Set(_jsonTypes);
+function isJSONType(x) {
+    return typeof x == "string" && jsonTypes.has(x);
+}
+exports.isJSONType = isJSONType;
+function getRules() {
+    const groups = {
+        number: { type: "number", rules: [] },
+        string: { type: "string", rules: [] },
+        array: { type: "array", rules: [] },
+        object: { type: "object", rules: [] },
+    };
+    return {
+        types: { ...groups, integer: true, boolean: true, null: true },
+        rules: [{ rules: [] }, groups.number, groups.string, groups.array, groups.object],
+        post: { rules: [] },
+        all: {},
+        keywords: {},
+    };
+}
+exports.getRules = getRules;
+//# sourceMappingURL=rules.js.map
+
+/***/ }),
+
+/***/ 3439:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.checkStrictMode = exports.getErrorPath = exports.Type = exports.useFunc = exports.setEvaluated = exports.evaluatedPropsToName = exports.mergeEvaluated = exports.eachItem = exports.unescapeJsonPointer = exports.escapeJsonPointer = exports.escapeFragment = exports.unescapeFragment = exports.schemaRefOrVal = exports.schemaHasRulesButRef = exports.schemaHasRules = exports.checkUnknownRules = exports.alwaysValidSchema = exports.toHash = void 0;
+const codegen_1 = __nccwpck_require__(9179);
+const code_1 = __nccwpck_require__(8358);
+// TODO refactor to use Set
+function toHash(arr) {
+    const hash = {};
+    for (const item of arr)
+        hash[item] = true;
+    return hash;
+}
+exports.toHash = toHash;
+function alwaysValidSchema(it, schema) {
+    if (typeof schema == "boolean")
+        return schema;
+    if (Object.keys(schema).length === 0)
+        return true;
+    checkUnknownRules(it, schema);
+    return !schemaHasRules(schema, it.self.RULES.all);
+}
+exports.alwaysValidSchema = alwaysValidSchema;
+function checkUnknownRules(it, schema = it.schema) {
+    const { opts, self } = it;
+    if (!opts.strictSchema)
+        return;
+    if (typeof schema === "boolean")
+        return;
+    const rules = self.RULES.keywords;
+    for (const key in schema) {
+        if (!rules[key])
+            checkStrictMode(it, `unknown keyword: "${key}"`);
+    }
+}
+exports.checkUnknownRules = checkUnknownRules;
+function schemaHasRules(schema, rules) {
+    if (typeof schema == "boolean")
+        return !schema;
+    for (const key in schema)
+        if (rules[key])
+            return true;
+    return false;
+}
+exports.schemaHasRules = schemaHasRules;
+function schemaHasRulesButRef(schema, RULES) {
+    if (typeof schema == "boolean")
+        return !schema;
+    for (const key in schema)
+        if (key !== "$ref" && RULES.all[key])
+            return true;
+    return false;
+}
+exports.schemaHasRulesButRef = schemaHasRulesButRef;
+function schemaRefOrVal({ topSchemaRef, schemaPath }, schema, keyword, $data) {
+    if (!$data) {
+        if (typeof schema == "number" || typeof schema == "boolean")
+            return schema;
+        if (typeof schema == "string")
+            return (0, codegen_1._) `${schema}`;
+    }
+    return (0, codegen_1._) `${topSchemaRef}${schemaPath}${(0, codegen_1.getProperty)(keyword)}`;
+}
+exports.schemaRefOrVal = schemaRefOrVal;
+function unescapeFragment(str) {
+    return unescapeJsonPointer(decodeURIComponent(str));
+}
+exports.unescapeFragment = unescapeFragment;
+function escapeFragment(str) {
+    return encodeURIComponent(escapeJsonPointer(str));
+}
+exports.escapeFragment = escapeFragment;
+function escapeJsonPointer(str) {
+    if (typeof str == "number")
+        return `${str}`;
+    return str.replace(/~/g, "~0").replace(/\//g, "~1");
+}
+exports.escapeJsonPointer = escapeJsonPointer;
+function unescapeJsonPointer(str) {
+    return str.replace(/~1/g, "/").replace(/~0/g, "~");
+}
+exports.unescapeJsonPointer = unescapeJsonPointer;
+function eachItem(xs, f) {
+    if (Array.isArray(xs)) {
+        for (const x of xs)
+            f(x);
+    }
+    else {
+        f(xs);
+    }
+}
+exports.eachItem = eachItem;
+function makeMergeEvaluated({ mergeNames, mergeToName, mergeValues, resultToName, }) {
+    return (gen, from, to, toName) => {
+        const res = to === undefined
+            ? from
+            : to instanceof codegen_1.Name
+                ? (from instanceof codegen_1.Name ? mergeNames(gen, from, to) : mergeToName(gen, from, to), to)
+                : from instanceof codegen_1.Name
+                    ? (mergeToName(gen, to, from), from)
+                    : mergeValues(from, to);
+        return toName === codegen_1.Name && !(res instanceof codegen_1.Name) ? resultToName(gen, res) : res;
+    };
+}
+exports.mergeEvaluated = {
+    props: makeMergeEvaluated({
+        mergeNames: (gen, from, to) => gen.if((0, codegen_1._) `${to} !== true && ${from} !== undefined`, () => {
+            gen.if((0, codegen_1._) `${from} === true`, () => gen.assign(to, true), () => gen.assign(to, (0, codegen_1._) `${to} || {}`).code((0, codegen_1._) `Object.assign(${to}, ${from})`));
+        }),
+        mergeToName: (gen, from, to) => gen.if((0, codegen_1._) `${to} !== true`, () => {
+            if (from === true) {
+                gen.assign(to, true);
+            }
+            else {
+                gen.assign(to, (0, codegen_1._) `${to} || {}`);
+                setEvaluated(gen, to, from);
+            }
+        }),
+        mergeValues: (from, to) => (from === true ? true : { ...from, ...to }),
+        resultToName: evaluatedPropsToName,
+    }),
+    items: makeMergeEvaluated({
+        mergeNames: (gen, from, to) => gen.if((0, codegen_1._) `${to} !== true && ${from} !== undefined`, () => gen.assign(to, (0, codegen_1._) `${from} === true ? true : ${to} > ${from} ? ${to} : ${from}`)),
+        mergeToName: (gen, from, to) => gen.if((0, codegen_1._) `${to} !== true`, () => gen.assign(to, from === true ? true : (0, codegen_1._) `${to} > ${from} ? ${to} : ${from}`)),
+        mergeValues: (from, to) => (from === true ? true : Math.max(from, to)),
+        resultToName: (gen, items) => gen.var("items", items),
+    }),
+};
+function evaluatedPropsToName(gen, ps) {
+    if (ps === true)
+        return gen.var("props", true);
+    const props = gen.var("props", (0, codegen_1._) `{}`);
+    if (ps !== undefined)
+        setEvaluated(gen, props, ps);
+    return props;
+}
+exports.evaluatedPropsToName = evaluatedPropsToName;
+function setEvaluated(gen, props, ps) {
+    Object.keys(ps).forEach((p) => gen.assign((0, codegen_1._) `${props}${(0, codegen_1.getProperty)(p)}`, true));
+}
+exports.setEvaluated = setEvaluated;
+const snippets = {};
+function useFunc(gen, f) {
+    return gen.scopeValue("func", {
+        ref: f,
+        code: snippets[f.code] || (snippets[f.code] = new code_1._Code(f.code)),
+    });
+}
+exports.useFunc = useFunc;
+var Type;
+(function (Type) {
+    Type[Type["Num"] = 0] = "Num";
+    Type[Type["Str"] = 1] = "Str";
+})(Type = exports.Type || (exports.Type = {}));
+function getErrorPath(dataProp, dataPropType, jsPropertySyntax) {
+    // let path
+    if (dataProp instanceof codegen_1.Name) {
+        const isNumber = dataPropType === Type.Num;
+        return jsPropertySyntax
+            ? isNumber
+                ? (0, codegen_1._) `"[" + ${dataProp} + "]"`
+                : (0, codegen_1._) `"['" + ${dataProp} + "']"`
+            : isNumber
+                ? (0, codegen_1._) `"/" + ${dataProp}`
+                : (0, codegen_1._) `"/" + ${dataProp}.replace(/~/g, "~0").replace(/\\//g, "~1")`; // TODO maybe use global escapePointer
+    }
+    return jsPropertySyntax ? (0, codegen_1.getProperty)(dataProp).toString() : "/" + escapeJsonPointer(dataProp);
+}
+exports.getErrorPath = getErrorPath;
+function checkStrictMode(it, msg, mode = it.opts.strictSchema) {
+    if (!mode)
+        return;
+    msg = `strict mode: ${msg}`;
+    if (mode === true)
+        throw new Error(msg);
+    it.self.logger.warn(msg);
+}
+exports.checkStrictMode = checkStrictMode;
+//# sourceMappingURL=util.js.map
+
+/***/ }),
+
+/***/ 3627:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.shouldUseRule = exports.shouldUseGroup = exports.schemaHasRulesForType = void 0;
+function schemaHasRulesForType({ schema, self }, type) {
+    const group = self.RULES.types[type];
+    return group && group !== true && shouldUseGroup(schema, group);
+}
+exports.schemaHasRulesForType = schemaHasRulesForType;
+function shouldUseGroup(schema, group) {
+    return group.rules.some((rule) => shouldUseRule(schema, rule));
+}
+exports.shouldUseGroup = shouldUseGroup;
+function shouldUseRule(schema, rule) {
+    var _a;
+    return (schema[rule.keyword] !== undefined ||
+        ((_a = rule.definition.implements) === null || _a === void 0 ? void 0 : _a.some((kwd) => schema[kwd] !== undefined)));
+}
+exports.shouldUseRule = shouldUseRule;
+//# sourceMappingURL=applicability.js.map
+
+/***/ }),
+
+/***/ 6214:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.boolOrEmptySchema = exports.topBoolOrEmptySchema = void 0;
+const errors_1 = __nccwpck_require__(6150);
+const codegen_1 = __nccwpck_require__(9179);
+const names_1 = __nccwpck_require__(50);
+const boolError = {
+    message: "boolean schema is false",
+};
+function topBoolOrEmptySchema(it) {
+    const { gen, schema, validateName } = it;
+    if (schema === false) {
+        falseSchemaError(it, false);
+    }
+    else if (typeof schema == "object" && schema.$async === true) {
+        gen.return(names_1.default.data);
+    }
+    else {
+        gen.assign((0, codegen_1._) `${validateName}.errors`, null);
+        gen.return(true);
+    }
+}
+exports.topBoolOrEmptySchema = topBoolOrEmptySchema;
+function boolOrEmptySchema(it, valid) {
+    const { gen, schema } = it;
+    if (schema === false) {
+        gen.var(valid, false); // TODO var
+        falseSchemaError(it);
+    }
+    else {
+        gen.var(valid, true); // TODO var
+    }
+}
+exports.boolOrEmptySchema = boolOrEmptySchema;
+function falseSchemaError(it, overrideAllErrors) {
+    const { gen, data } = it;
+    // TODO maybe some other interface should be used for non-keyword validation errors...
+    const cxt = {
+        gen,
+        keyword: "false schema",
+        data,
+        schema: false,
+        schemaCode: false,
+        schemaValue: false,
+        params: {},
+        it,
+    };
+    (0, errors_1.reportError)(cxt, boolError, undefined, overrideAllErrors);
+}
+//# sourceMappingURL=boolSchema.js.map
+
+/***/ }),
+
+/***/ 7725:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.reportTypeError = exports.checkDataTypes = exports.checkDataType = exports.coerceAndCheckDataType = exports.getJSONTypes = exports.getSchemaTypes = exports.DataType = void 0;
+const rules_1 = __nccwpck_require__(1785);
+const applicability_1 = __nccwpck_require__(3627);
+const errors_1 = __nccwpck_require__(6150);
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+var DataType;
+(function (DataType) {
+    DataType[DataType["Correct"] = 0] = "Correct";
+    DataType[DataType["Wrong"] = 1] = "Wrong";
+})(DataType = exports.DataType || (exports.DataType = {}));
+function getSchemaTypes(schema) {
+    const types = getJSONTypes(schema.type);
+    const hasNull = types.includes("null");
+    if (hasNull) {
+        if (schema.nullable === false)
+            throw new Error("type: null contradicts nullable: false");
+    }
+    else {
+        if (!types.length && schema.nullable !== undefined) {
+            throw new Error('"nullable" cannot be used without "type"');
+        }
+        if (schema.nullable === true)
+            types.push("null");
+    }
+    return types;
+}
+exports.getSchemaTypes = getSchemaTypes;
+function getJSONTypes(ts) {
+    const types = Array.isArray(ts) ? ts : ts ? [ts] : [];
+    if (types.every(rules_1.isJSONType))
+        return types;
+    throw new Error("type must be JSONType or JSONType[]: " + types.join(","));
+}
+exports.getJSONTypes = getJSONTypes;
+function coerceAndCheckDataType(it, types) {
+    const { gen, data, opts } = it;
+    const coerceTo = coerceToTypes(types, opts.coerceTypes);
+    const checkTypes = types.length > 0 &&
+        !(coerceTo.length === 0 && types.length === 1 && (0, applicability_1.schemaHasRulesForType)(it, types[0]));
+    if (checkTypes) {
+        const wrongType = checkDataTypes(types, data, opts.strictNumbers, DataType.Wrong);
+        gen.if(wrongType, () => {
+            if (coerceTo.length)
+                coerceData(it, types, coerceTo);
+            else
+                reportTypeError(it);
+        });
+    }
+    return checkTypes;
+}
+exports.coerceAndCheckDataType = coerceAndCheckDataType;
+const COERCIBLE = new Set(["string", "number", "integer", "boolean", "null"]);
+function coerceToTypes(types, coerceTypes) {
+    return coerceTypes
+        ? types.filter((t) => COERCIBLE.has(t) || (coerceTypes === "array" && t === "array"))
+        : [];
+}
+function coerceData(it, types, coerceTo) {
+    const { gen, data, opts } = it;
+    const dataType = gen.let("dataType", (0, codegen_1._) `typeof ${data}`);
+    const coerced = gen.let("coerced", (0, codegen_1._) `undefined`);
+    if (opts.coerceTypes === "array") {
+        gen.if((0, codegen_1._) `${dataType} == 'object' && Array.isArray(${data}) && ${data}.length == 1`, () => gen
+            .assign(data, (0, codegen_1._) `${data}[0]`)
+            .assign(dataType, (0, codegen_1._) `typeof ${data}`)
+            .if(checkDataTypes(types, data, opts.strictNumbers), () => gen.assign(coerced, data)));
+    }
+    gen.if((0, codegen_1._) `${coerced} !== undefined`);
+    for (const t of coerceTo) {
+        if (COERCIBLE.has(t) || (t === "array" && opts.coerceTypes === "array")) {
+            coerceSpecificType(t);
+        }
+    }
+    gen.else();
+    reportTypeError(it);
+    gen.endIf();
+    gen.if((0, codegen_1._) `${coerced} !== undefined`, () => {
+        gen.assign(data, coerced);
+        assignParentData(it, coerced);
+    });
+    function coerceSpecificType(t) {
+        switch (t) {
+            case "string":
+                gen
+                    .elseIf((0, codegen_1._) `${dataType} == "number" || ${dataType} == "boolean"`)
+                    .assign(coerced, (0, codegen_1._) `"" + ${data}`)
+                    .elseIf((0, codegen_1._) `${data} === null`)
+                    .assign(coerced, (0, codegen_1._) `""`);
+                return;
+            case "number":
+                gen
+                    .elseIf((0, codegen_1._) `${dataType} == "boolean" || ${data} === null
+              || (${dataType} == "string" && ${data} && ${data} == +${data})`)
+                    .assign(coerced, (0, codegen_1._) `+${data}`);
+                return;
+            case "integer":
+                gen
+                    .elseIf((0, codegen_1._) `${dataType} === "boolean" || ${data} === null
+              || (${dataType} === "string" && ${data} && ${data} == +${data} && !(${data} % 1))`)
+                    .assign(coerced, (0, codegen_1._) `+${data}`);
+                return;
+            case "boolean":
+                gen
+                    .elseIf((0, codegen_1._) `${data} === "false" || ${data} === 0 || ${data} === null`)
+                    .assign(coerced, false)
+                    .elseIf((0, codegen_1._) `${data} === "true" || ${data} === 1`)
+                    .assign(coerced, true);
+                return;
+            case "null":
+                gen.elseIf((0, codegen_1._) `${data} === "" || ${data} === 0 || ${data} === false`);
+                gen.assign(coerced, null);
+                return;
+            case "array":
+                gen
+                    .elseIf((0, codegen_1._) `${dataType} === "string" || ${dataType} === "number"
+              || ${dataType} === "boolean" || ${data} === null`)
+                    .assign(coerced, (0, codegen_1._) `[${data}]`);
+        }
+    }
+}
+function assignParentData({ gen, parentData, parentDataProperty }, expr) {
+    // TODO use gen.property
+    gen.if((0, codegen_1._) `${parentData} !== undefined`, () => gen.assign((0, codegen_1._) `${parentData}[${parentDataProperty}]`, expr));
+}
+function checkDataType(dataType, data, strictNums, correct = DataType.Correct) {
+    const EQ = correct === DataType.Correct ? codegen_1.operators.EQ : codegen_1.operators.NEQ;
+    let cond;
+    switch (dataType) {
+        case "null":
+            return (0, codegen_1._) `${data} ${EQ} null`;
+        case "array":
+            cond = (0, codegen_1._) `Array.isArray(${data})`;
+            break;
+        case "object":
+            cond = (0, codegen_1._) `${data} && typeof ${data} == "object" && !Array.isArray(${data})`;
+            break;
+        case "integer":
+            cond = numCond((0, codegen_1._) `!(${data} % 1) && !isNaN(${data})`);
+            break;
+        case "number":
+            cond = numCond();
+            break;
+        default:
+            return (0, codegen_1._) `typeof ${data} ${EQ} ${dataType}`;
+    }
+    return correct === DataType.Correct ? cond : (0, codegen_1.not)(cond);
+    function numCond(_cond = codegen_1.nil) {
+        return (0, codegen_1.and)((0, codegen_1._) `typeof ${data} == "number"`, _cond, strictNums ? (0, codegen_1._) `isFinite(${data})` : codegen_1.nil);
+    }
+}
+exports.checkDataType = checkDataType;
+function checkDataTypes(dataTypes, data, strictNums, correct) {
+    if (dataTypes.length === 1) {
+        return checkDataType(dataTypes[0], data, strictNums, correct);
+    }
+    let cond;
+    const types = (0, util_1.toHash)(dataTypes);
+    if (types.array && types.object) {
+        const notObj = (0, codegen_1._) `typeof ${data} != "object"`;
+        cond = types.null ? notObj : (0, codegen_1._) `!${data} || ${notObj}`;
+        delete types.null;
+        delete types.array;
+        delete types.object;
+    }
+    else {
+        cond = codegen_1.nil;
+    }
+    if (types.number)
+        delete types.integer;
+    for (const t in types)
+        cond = (0, codegen_1.and)(cond, checkDataType(t, data, strictNums, correct));
+    return cond;
+}
+exports.checkDataTypes = checkDataTypes;
+const typeError = {
+    message: ({ schema }) => `must be ${schema}`,
+    params: ({ schema, schemaValue }) => typeof schema == "string" ? (0, codegen_1._) `{type: ${schema}}` : (0, codegen_1._) `{type: ${schemaValue}}`,
+};
+function reportTypeError(it) {
+    const cxt = getTypeErrorContext(it);
+    (0, errors_1.reportError)(cxt, typeError);
+}
+exports.reportTypeError = reportTypeError;
+function getTypeErrorContext(it) {
+    const { gen, data, schema } = it;
+    const schemaCode = (0, util_1.schemaRefOrVal)(it, schema, "type");
+    return {
+        gen,
+        keyword: "type",
+        data,
+        schema: schema.type,
+        schemaCode,
+        schemaValue: schemaCode,
+        parentSchema: schema,
+        params: {},
+        it,
+    };
+}
+//# sourceMappingURL=dataType.js.map
+
+/***/ }),
+
+/***/ 9593:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.assignDefaults = void 0;
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+function assignDefaults(it, ty) {
+    const { properties, items } = it.schema;
+    if (ty === "object" && properties) {
+        for (const key in properties) {
+            assignDefault(it, key, properties[key].default);
+        }
+    }
+    else if (ty === "array" && Array.isArray(items)) {
+        items.forEach((sch, i) => assignDefault(it, i, sch.default));
+    }
+}
+exports.assignDefaults = assignDefaults;
+function assignDefault(it, prop, defaultValue) {
+    const { gen, compositeRule, data, opts } = it;
+    if (defaultValue === undefined)
+        return;
+    const childData = (0, codegen_1._) `${data}${(0, codegen_1.getProperty)(prop)}`;
+    if (compositeRule) {
+        (0, util_1.checkStrictMode)(it, `default is ignored for: ${childData}`);
+        return;
+    }
+    let condition = (0, codegen_1._) `${childData} === undefined`;
+    if (opts.useDefaults === "empty") {
+        condition = (0, codegen_1._) `${condition} || ${childData} === null || ${childData} === ""`;
+    }
+    // `${childData} === undefined` +
+    // (opts.useDefaults === "empty" ? ` || ${childData} === null || ${childData} === ""` : "")
+    gen.if(condition, (0, codegen_1._) `${childData} = ${(0, codegen_1.stringify)(defaultValue)}`);
+}
+//# sourceMappingURL=defaults.js.map
+
+/***/ }),
+
+/***/ 8955:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getData = exports.KeywordCxt = exports.validateFunctionCode = void 0;
+const boolSchema_1 = __nccwpck_require__(6214);
+const dataType_1 = __nccwpck_require__(7725);
+const applicability_1 = __nccwpck_require__(3627);
+const dataType_2 = __nccwpck_require__(7725);
+const defaults_1 = __nccwpck_require__(9593);
+const keyword_1 = __nccwpck_require__(8732);
+const subschema_1 = __nccwpck_require__(3896);
+const codegen_1 = __nccwpck_require__(9179);
+const names_1 = __nccwpck_require__(50);
+const resolve_1 = __nccwpck_require__(6646);
+const util_1 = __nccwpck_require__(3439);
+const errors_1 = __nccwpck_require__(6150);
+// schema compilation - generates validation function, subschemaCode (below) is used for subschemas
+function validateFunctionCode(it) {
+    if (isSchemaObj(it)) {
+        checkKeywords(it);
+        if (schemaCxtHasRules(it)) {
+            topSchemaObjCode(it);
+            return;
+        }
+    }
+    validateFunction(it, () => (0, boolSchema_1.topBoolOrEmptySchema)(it));
+}
+exports.validateFunctionCode = validateFunctionCode;
+function validateFunction({ gen, validateName, schema, schemaEnv, opts }, body) {
+    if (opts.code.es5) {
+        gen.func(validateName, (0, codegen_1._) `${names_1.default.data}, ${names_1.default.valCxt}`, schemaEnv.$async, () => {
+            gen.code((0, codegen_1._) `"use strict"; ${funcSourceUrl(schema, opts)}`);
+            destructureValCxtES5(gen, opts);
+            gen.code(body);
+        });
+    }
+    else {
+        gen.func(validateName, (0, codegen_1._) `${names_1.default.data}, ${destructureValCxt(opts)}`, schemaEnv.$async, () => gen.code(funcSourceUrl(schema, opts)).code(body));
+    }
+}
+function destructureValCxt(opts) {
+    return (0, codegen_1._) `{${names_1.default.instancePath}="", ${names_1.default.parentData}, ${names_1.default.parentDataProperty}, ${names_1.default.rootData}=${names_1.default.data}${opts.dynamicRef ? (0, codegen_1._) `, ${names_1.default.dynamicAnchors}={}` : codegen_1.nil}}={}`;
+}
+function destructureValCxtES5(gen, opts) {
+    gen.if(names_1.default.valCxt, () => {
+        gen.var(names_1.default.instancePath, (0, codegen_1._) `${names_1.default.valCxt}.${names_1.default.instancePath}`);
+        gen.var(names_1.default.parentData, (0, codegen_1._) `${names_1.default.valCxt}.${names_1.default.parentData}`);
+        gen.var(names_1.default.parentDataProperty, (0, codegen_1._) `${names_1.default.valCxt}.${names_1.default.parentDataProperty}`);
+        gen.var(names_1.default.rootData, (0, codegen_1._) `${names_1.default.valCxt}.${names_1.default.rootData}`);
+        if (opts.dynamicRef)
+            gen.var(names_1.default.dynamicAnchors, (0, codegen_1._) `${names_1.default.valCxt}.${names_1.default.dynamicAnchors}`);
+    }, () => {
+        gen.var(names_1.default.instancePath, (0, codegen_1._) `""`);
+        gen.var(names_1.default.parentData, (0, codegen_1._) `undefined`);
+        gen.var(names_1.default.parentDataProperty, (0, codegen_1._) `undefined`);
+        gen.var(names_1.default.rootData, names_1.default.data);
+        if (opts.dynamicRef)
+            gen.var(names_1.default.dynamicAnchors, (0, codegen_1._) `{}`);
+    });
+}
+function topSchemaObjCode(it) {
+    const { schema, opts, gen } = it;
+    validateFunction(it, () => {
+        if (opts.$comment && schema.$comment)
+            commentKeyword(it);
+        checkNoDefault(it);
+        gen.let(names_1.default.vErrors, null);
+        gen.let(names_1.default.errors, 0);
+        if (opts.unevaluated)
+            resetEvaluated(it);
+        typeAndKeywords(it);
+        returnResults(it);
+    });
+    return;
+}
+function resetEvaluated(it) {
+    // TODO maybe some hook to execute it in the end to check whether props/items are Name, as in assignEvaluated
+    const { gen, validateName } = it;
+    it.evaluated = gen.const("evaluated", (0, codegen_1._) `${validateName}.evaluated`);
+    gen.if((0, codegen_1._) `${it.evaluated}.dynamicProps`, () => gen.assign((0, codegen_1._) `${it.evaluated}.props`, (0, codegen_1._) `undefined`));
+    gen.if((0, codegen_1._) `${it.evaluated}.dynamicItems`, () => gen.assign((0, codegen_1._) `${it.evaluated}.items`, (0, codegen_1._) `undefined`));
+}
+function funcSourceUrl(schema, opts) {
+    const schId = typeof schema == "object" && schema[opts.schemaId];
+    return schId && (opts.code.source || opts.code.process) ? (0, codegen_1._) `/*# sourceURL=${schId} */` : codegen_1.nil;
+}
+// schema compilation - this function is used recursively to generate code for sub-schemas
+function subschemaCode(it, valid) {
+    if (isSchemaObj(it)) {
+        checkKeywords(it);
+        if (schemaCxtHasRules(it)) {
+            subSchemaObjCode(it, valid);
+            return;
+        }
+    }
+    (0, boolSchema_1.boolOrEmptySchema)(it, valid);
+}
+function schemaCxtHasRules({ schema, self }) {
+    if (typeof schema == "boolean")
+        return !schema;
+    for (const key in schema)
+        if (self.RULES.all[key])
+            return true;
+    return false;
+}
+function isSchemaObj(it) {
+    return typeof it.schema != "boolean";
+}
+function subSchemaObjCode(it, valid) {
+    const { schema, gen, opts } = it;
+    if (opts.$comment && schema.$comment)
+        commentKeyword(it);
+    updateContext(it);
+    checkAsyncSchema(it);
+    const errsCount = gen.const("_errs", names_1.default.errors);
+    typeAndKeywords(it, errsCount);
+    // TODO var
+    gen.var(valid, (0, codegen_1._) `${errsCount} === ${names_1.default.errors}`);
+}
+function checkKeywords(it) {
+    (0, util_1.checkUnknownRules)(it);
+    checkRefsAndKeywords(it);
+}
+function typeAndKeywords(it, errsCount) {
+    if (it.opts.jtd)
+        return schemaKeywords(it, [], false, errsCount);
+    const types = (0, dataType_1.getSchemaTypes)(it.schema);
+    const checkedTypes = (0, dataType_1.coerceAndCheckDataType)(it, types);
+    schemaKeywords(it, types, !checkedTypes, errsCount);
+}
+function checkRefsAndKeywords(it) {
+    const { schema, errSchemaPath, opts, self } = it;
+    if (schema.$ref && opts.ignoreKeywordsWithRef && (0, util_1.schemaHasRulesButRef)(schema, self.RULES)) {
+        self.logger.warn(`$ref: keywords ignored in schema at path "${errSchemaPath}"`);
+    }
+}
+function checkNoDefault(it) {
+    const { schema, opts } = it;
+    if (schema.default !== undefined && opts.useDefaults && opts.strictSchema) {
+        (0, util_1.checkStrictMode)(it, "default is ignored in the schema root");
+    }
+}
+function updateContext(it) {
+    const schId = it.schema[it.opts.schemaId];
+    if (schId)
+        it.baseId = (0, resolve_1.resolveUrl)(it.baseId, schId);
+}
+function checkAsyncSchema(it) {
+    if (it.schema.$async && !it.schemaEnv.$async)
+        throw new Error("async schema in sync schema");
+}
+function commentKeyword({ gen, schemaEnv, schema, errSchemaPath, opts }) {
+    const msg = schema.$comment;
+    if (opts.$comment === true) {
+        gen.code((0, codegen_1._) `${names_1.default.self}.logger.log(${msg})`);
+    }
+    else if (typeof opts.$comment == "function") {
+        const schemaPath = (0, codegen_1.str) `${errSchemaPath}/$comment`;
+        const rootName = gen.scopeValue("root", { ref: schemaEnv.root });
+        gen.code((0, codegen_1._) `${names_1.default.self}.opts.$comment(${msg}, ${schemaPath}, ${rootName}.schema)`);
+    }
+}
+function returnResults(it) {
+    const { gen, schemaEnv, validateName, ValidationError, opts } = it;
+    if (schemaEnv.$async) {
+        // TODO assign unevaluated
+        gen.if((0, codegen_1._) `${names_1.default.errors} === 0`, () => gen.return(names_1.default.data), () => gen.throw((0, codegen_1._) `new ${ValidationError}(${names_1.default.vErrors})`));
+    }
+    else {
+        gen.assign((0, codegen_1._) `${validateName}.errors`, names_1.default.vErrors);
+        if (opts.unevaluated)
+            assignEvaluated(it);
+        gen.return((0, codegen_1._) `${names_1.default.errors} === 0`);
+    }
+}
+function assignEvaluated({ gen, evaluated, props, items }) {
+    if (props instanceof codegen_1.Name)
+        gen.assign((0, codegen_1._) `${evaluated}.props`, props);
+    if (items instanceof codegen_1.Name)
+        gen.assign((0, codegen_1._) `${evaluated}.items`, items);
+}
+function schemaKeywords(it, types, typeErrors, errsCount) {
+    const { gen, schema, data, allErrors, opts, self } = it;
+    const { RULES } = self;
+    if (schema.$ref && (opts.ignoreKeywordsWithRef || !(0, util_1.schemaHasRulesButRef)(schema, RULES))) {
+        gen.block(() => keywordCode(it, "$ref", RULES.all.$ref.definition)); // TODO typecast
+        return;
+    }
+    if (!opts.jtd)
+        checkStrictTypes(it, types);
+    gen.block(() => {
+        for (const group of RULES.rules)
+            groupKeywords(group);
+        groupKeywords(RULES.post);
+    });
+    function groupKeywords(group) {
+        if (!(0, applicability_1.shouldUseGroup)(schema, group))
+            return;
+        if (group.type) {
+            gen.if((0, dataType_2.checkDataType)(group.type, data, opts.strictNumbers));
+            iterateKeywords(it, group);
+            if (types.length === 1 && types[0] === group.type && typeErrors) {
+                gen.else();
+                (0, dataType_2.reportTypeError)(it);
+            }
+            gen.endIf();
+        }
+        else {
+            iterateKeywords(it, group);
+        }
+        // TODO make it "ok" call?
+        if (!allErrors)
+            gen.if((0, codegen_1._) `${names_1.default.errors} === ${errsCount || 0}`);
+    }
+}
+function iterateKeywords(it, group) {
+    const { gen, schema, opts: { useDefaults }, } = it;
+    if (useDefaults)
+        (0, defaults_1.assignDefaults)(it, group.type);
+    gen.block(() => {
+        for (const rule of group.rules) {
+            if ((0, applicability_1.shouldUseRule)(schema, rule)) {
+                keywordCode(it, rule.keyword, rule.definition, group.type);
+            }
+        }
+    });
+}
+function checkStrictTypes(it, types) {
+    if (it.schemaEnv.meta || !it.opts.strictTypes)
+        return;
+    checkContextTypes(it, types);
+    if (!it.opts.allowUnionTypes)
+        checkMultipleTypes(it, types);
+    checkKeywordTypes(it, it.dataTypes);
+}
+function checkContextTypes(it, types) {
+    if (!types.length)
+        return;
+    if (!it.dataTypes.length) {
+        it.dataTypes = types;
+        return;
+    }
+    types.forEach((t) => {
+        if (!includesType(it.dataTypes, t)) {
+            strictTypesError(it, `type "${t}" not allowed by context "${it.dataTypes.join(",")}"`);
+        }
+    });
+    it.dataTypes = it.dataTypes.filter((t) => includesType(types, t));
+}
+function checkMultipleTypes(it, ts) {
+    if (ts.length > 1 && !(ts.length === 2 && ts.includes("null"))) {
+        strictTypesError(it, "use allowUnionTypes to allow union type keyword");
+    }
+}
+function checkKeywordTypes(it, ts) {
+    const rules = it.self.RULES.all;
+    for (const keyword in rules) {
+        const rule = rules[keyword];
+        if (typeof rule == "object" && (0, applicability_1.shouldUseRule)(it.schema, rule)) {
+            const { type } = rule.definition;
+            if (type.length && !type.some((t) => hasApplicableType(ts, t))) {
+                strictTypesError(it, `missing type "${type.join(",")}" for keyword "${keyword}"`);
+            }
+        }
+    }
+}
+function hasApplicableType(schTs, kwdT) {
+    return schTs.includes(kwdT) || (kwdT === "number" && schTs.includes("integer"));
+}
+function includesType(ts, t) {
+    return ts.includes(t) || (t === "integer" && ts.includes("number"));
+}
+function strictTypesError(it, msg) {
+    const schemaPath = it.schemaEnv.baseId + it.errSchemaPath;
+    msg += ` at "${schemaPath}" (strictTypes)`;
+    (0, util_1.checkStrictMode)(it, msg, it.opts.strictTypes);
+}
+class KeywordCxt {
+    constructor(it, def, keyword) {
+        (0, keyword_1.validateKeywordUsage)(it, def, keyword);
+        this.gen = it.gen;
+        this.allErrors = it.allErrors;
+        this.keyword = keyword;
+        this.data = it.data;
+        this.schema = it.schema[keyword];
+        this.$data = def.$data && it.opts.$data && this.schema && this.schema.$data;
+        this.schemaValue = (0, util_1.schemaRefOrVal)(it, this.schema, keyword, this.$data);
+        this.schemaType = def.schemaType;
+        this.parentSchema = it.schema;
+        this.params = {};
+        this.it = it;
+        this.def = def;
+        if (this.$data) {
+            this.schemaCode = it.gen.const("vSchema", getData(this.$data, it));
+        }
+        else {
+            this.schemaCode = this.schemaValue;
+            if (!(0, keyword_1.validSchemaType)(this.schema, def.schemaType, def.allowUndefined)) {
+                throw new Error(`${keyword} value must be ${JSON.stringify(def.schemaType)}`);
+            }
+        }
+        if ("code" in def ? def.trackErrors : def.errors !== false) {
+            this.errsCount = it.gen.const("_errs", names_1.default.errors);
+        }
+    }
+    result(condition, successAction, failAction) {
+        this.failResult((0, codegen_1.not)(condition), successAction, failAction);
+    }
+    failResult(condition, successAction, failAction) {
+        this.gen.if(condition);
+        if (failAction)
+            failAction();
+        else
+            this.error();
+        if (successAction) {
+            this.gen.else();
+            successAction();
+            if (this.allErrors)
+                this.gen.endIf();
+        }
+        else {
+            if (this.allErrors)
+                this.gen.endIf();
+            else
+                this.gen.else();
+        }
+    }
+    pass(condition, failAction) {
+        this.failResult((0, codegen_1.not)(condition), undefined, failAction);
+    }
+    fail(condition) {
+        if (condition === undefined) {
+            this.error();
+            if (!this.allErrors)
+                this.gen.if(false); // this branch will be removed by gen.optimize
+            return;
+        }
+        this.gen.if(condition);
+        this.error();
+        if (this.allErrors)
+            this.gen.endIf();
+        else
+            this.gen.else();
+    }
+    fail$data(condition) {
+        if (!this.$data)
+            return this.fail(condition);
+        const { schemaCode } = this;
+        this.fail((0, codegen_1._) `${schemaCode} !== undefined && (${(0, codegen_1.or)(this.invalid$data(), condition)})`);
+    }
+    error(append, errorParams, errorPaths) {
+        if (errorParams) {
+            this.setParams(errorParams);
+            this._error(append, errorPaths);
+            this.setParams({});
+            return;
+        }
+        this._error(append, errorPaths);
+    }
+    _error(append, errorPaths) {
+        ;
+        (append ? errors_1.reportExtraError : errors_1.reportError)(this, this.def.error, errorPaths);
+    }
+    $dataError() {
+        (0, errors_1.reportError)(this, this.def.$dataError || errors_1.keyword$DataError);
+    }
+    reset() {
+        if (this.errsCount === undefined)
+            throw new Error('add "trackErrors" to keyword definition');
+        (0, errors_1.resetErrorsCount)(this.gen, this.errsCount);
+    }
+    ok(cond) {
+        if (!this.allErrors)
+            this.gen.if(cond);
+    }
+    setParams(obj, assign) {
+        if (assign)
+            Object.assign(this.params, obj);
+        else
+            this.params = obj;
+    }
+    block$data(valid, codeBlock, $dataValid = codegen_1.nil) {
+        this.gen.block(() => {
+            this.check$data(valid, $dataValid);
+            codeBlock();
+        });
+    }
+    check$data(valid = codegen_1.nil, $dataValid = codegen_1.nil) {
+        if (!this.$data)
+            return;
+        const { gen, schemaCode, schemaType, def } = this;
+        gen.if((0, codegen_1.or)((0, codegen_1._) `${schemaCode} === undefined`, $dataValid));
+        if (valid !== codegen_1.nil)
+            gen.assign(valid, true);
+        if (schemaType.length || def.validateSchema) {
+            gen.elseIf(this.invalid$data());
+            this.$dataError();
+            if (valid !== codegen_1.nil)
+                gen.assign(valid, false);
+        }
+        gen.else();
+    }
+    invalid$data() {
+        const { gen, schemaCode, schemaType, def, it } = this;
+        return (0, codegen_1.or)(wrong$DataType(), invalid$DataSchema());
+        function wrong$DataType() {
+            if (schemaType.length) {
+                /* istanbul ignore if */
+                if (!(schemaCode instanceof codegen_1.Name))
+                    throw new Error("ajv implementation error");
+                const st = Array.isArray(schemaType) ? schemaType : [schemaType];
+                return (0, codegen_1._) `${(0, dataType_2.checkDataTypes)(st, schemaCode, it.opts.strictNumbers, dataType_2.DataType.Wrong)}`;
+            }
+            return codegen_1.nil;
+        }
+        function invalid$DataSchema() {
+            if (def.validateSchema) {
+                const validateSchemaRef = gen.scopeValue("validate$data", { ref: def.validateSchema }); // TODO value.code for standalone
+                return (0, codegen_1._) `!${validateSchemaRef}(${schemaCode})`;
+            }
+            return codegen_1.nil;
+        }
+    }
+    subschema(appl, valid) {
+        const subschema = (0, subschema_1.getSubschema)(this.it, appl);
+        (0, subschema_1.extendSubschemaData)(subschema, this.it, appl);
+        (0, subschema_1.extendSubschemaMode)(subschema, appl);
+        const nextContext = { ...this.it, ...subschema, items: undefined, props: undefined };
+        subschemaCode(nextContext, valid);
+        return nextContext;
+    }
+    mergeEvaluated(schemaCxt, toName) {
+        const { it, gen } = this;
+        if (!it.opts.unevaluated)
+            return;
+        if (it.props !== true && schemaCxt.props !== undefined) {
+            it.props = util_1.mergeEvaluated.props(gen, schemaCxt.props, it.props, toName);
+        }
+        if (it.items !== true && schemaCxt.items !== undefined) {
+            it.items = util_1.mergeEvaluated.items(gen, schemaCxt.items, it.items, toName);
+        }
+    }
+    mergeValidEvaluated(schemaCxt, valid) {
+        const { it, gen } = this;
+        if (it.opts.unevaluated && (it.props !== true || it.items !== true)) {
+            gen.if(valid, () => this.mergeEvaluated(schemaCxt, codegen_1.Name));
+            return true;
+        }
+    }
+}
+exports.KeywordCxt = KeywordCxt;
+function keywordCode(it, keyword, def, ruleType) {
+    const cxt = new KeywordCxt(it, def, keyword);
+    if ("code" in def) {
+        def.code(cxt, ruleType);
+    }
+    else if (cxt.$data && def.validate) {
+        (0, keyword_1.funcKeywordCode)(cxt, def);
+    }
+    else if ("macro" in def) {
+        (0, keyword_1.macroKeywordCode)(cxt, def);
+    }
+    else if (def.compile || def.validate) {
+        (0, keyword_1.funcKeywordCode)(cxt, def);
+    }
+}
+const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/;
+const RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/;
+function getData($data, { dataLevel, dataNames, dataPathArr }) {
+    let jsonPointer;
+    let data;
+    if ($data === "")
+        return names_1.default.rootData;
+    if ($data[0] === "/") {
+        if (!JSON_POINTER.test($data))
+            throw new Error(`Invalid JSON-pointer: ${$data}`);
+        jsonPointer = $data;
+        data = names_1.default.rootData;
+    }
+    else {
+        const matches = RELATIVE_JSON_POINTER.exec($data);
+        if (!matches)
+            throw new Error(`Invalid JSON-pointer: ${$data}`);
+        const up = +matches[1];
+        jsonPointer = matches[2];
+        if (jsonPointer === "#") {
+            if (up >= dataLevel)
+                throw new Error(errorMsg("property/index", up));
+            return dataPathArr[dataLevel - up];
+        }
+        if (up > dataLevel)
+            throw new Error(errorMsg("data", up));
+        data = dataNames[dataLevel - up];
+        if (!jsonPointer)
+            return data;
+    }
+    let expr = data;
+    const segments = jsonPointer.split("/");
+    for (const segment of segments) {
+        if (segment) {
+            data = (0, codegen_1._) `${data}${(0, codegen_1.getProperty)((0, util_1.unescapeJsonPointer)(segment))}`;
+            expr = (0, codegen_1._) `${expr} && ${data}`;
+        }
+    }
+    return expr;
+    function errorMsg(pointerType, up) {
+        return `Cannot access ${pointerType} ${up} levels up, current level is ${dataLevel}`;
+    }
+}
+exports.getData = getData;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 8732:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.validateKeywordUsage = exports.validSchemaType = exports.funcKeywordCode = exports.macroKeywordCode = void 0;
+const codegen_1 = __nccwpck_require__(9179);
+const names_1 = __nccwpck_require__(50);
+const code_1 = __nccwpck_require__(4205);
+const errors_1 = __nccwpck_require__(6150);
+function macroKeywordCode(cxt, def) {
+    const { gen, keyword, schema, parentSchema, it } = cxt;
+    const macroSchema = def.macro.call(it.self, schema, parentSchema, it);
+    const schemaRef = useKeyword(gen, keyword, macroSchema);
+    if (it.opts.validateSchema !== false)
+        it.self.validateSchema(macroSchema, true);
+    const valid = gen.name("valid");
+    cxt.subschema({
+        schema: macroSchema,
+        schemaPath: codegen_1.nil,
+        errSchemaPath: `${it.errSchemaPath}/${keyword}`,
+        topSchemaRef: schemaRef,
+        compositeRule: true,
+    }, valid);
+    cxt.pass(valid, () => cxt.error(true));
+}
+exports.macroKeywordCode = macroKeywordCode;
+function funcKeywordCode(cxt, def) {
+    var _a;
+    const { gen, keyword, schema, parentSchema, $data, it } = cxt;
+    checkAsyncKeyword(it, def);
+    const validate = !$data && def.compile ? def.compile.call(it.self, schema, parentSchema, it) : def.validate;
+    const validateRef = useKeyword(gen, keyword, validate);
+    const valid = gen.let("valid");
+    cxt.block$data(valid, validateKeyword);
+    cxt.ok((_a = def.valid) !== null && _a !== void 0 ? _a : valid);
+    function validateKeyword() {
+        if (def.errors === false) {
+            assignValid();
+            if (def.modifying)
+                modifyData(cxt);
+            reportErrs(() => cxt.error());
+        }
+        else {
+            const ruleErrs = def.async ? validateAsync() : validateSync();
+            if (def.modifying)
+                modifyData(cxt);
+            reportErrs(() => addErrs(cxt, ruleErrs));
+        }
+    }
+    function validateAsync() {
+        const ruleErrs = gen.let("ruleErrs", null);
+        gen.try(() => assignValid((0, codegen_1._) `await `), (e) => gen.assign(valid, false).if((0, codegen_1._) `${e} instanceof ${it.ValidationError}`, () => gen.assign(ruleErrs, (0, codegen_1._) `${e}.errors`), () => gen.throw(e)));
+        return ruleErrs;
+    }
+    function validateSync() {
+        const validateErrs = (0, codegen_1._) `${validateRef}.errors`;
+        gen.assign(validateErrs, null);
+        assignValid(codegen_1.nil);
+        return validateErrs;
+    }
+    function assignValid(_await = def.async ? (0, codegen_1._) `await ` : codegen_1.nil) {
+        const passCxt = it.opts.passContext ? names_1.default.this : names_1.default.self;
+        const passSchema = !(("compile" in def && !$data) || def.schema === false);
+        gen.assign(valid, (0, codegen_1._) `${_await}${(0, code_1.callValidateCode)(cxt, validateRef, passCxt, passSchema)}`, def.modifying);
+    }
+    function reportErrs(errors) {
+        var _a;
+        gen.if((0, codegen_1.not)((_a = def.valid) !== null && _a !== void 0 ? _a : valid), errors);
+    }
+}
+exports.funcKeywordCode = funcKeywordCode;
+function modifyData(cxt) {
+    const { gen, data, it } = cxt;
+    gen.if(it.parentData, () => gen.assign(data, (0, codegen_1._) `${it.parentData}[${it.parentDataProperty}]`));
+}
+function addErrs(cxt, errs) {
+    const { gen } = cxt;
+    gen.if((0, codegen_1._) `Array.isArray(${errs})`, () => {
+        gen
+            .assign(names_1.default.vErrors, (0, codegen_1._) `${names_1.default.vErrors} === null ? ${errs} : ${names_1.default.vErrors}.concat(${errs})`)
+            .assign(names_1.default.errors, (0, codegen_1._) `${names_1.default.vErrors}.length`);
+        (0, errors_1.extendErrors)(cxt);
+    }, () => cxt.error());
+}
+function checkAsyncKeyword({ schemaEnv }, def) {
+    if (def.async && !schemaEnv.$async)
+        throw new Error("async keyword in sync schema");
+}
+function useKeyword(gen, keyword, result) {
+    if (result === undefined)
+        throw new Error(`keyword "${keyword}" failed to compile`);
+    return gen.scopeValue("keyword", typeof result == "function" ? { ref: result } : { ref: result, code: (0, codegen_1.stringify)(result) });
+}
+function validSchemaType(schema, schemaType, allowUndefined = false) {
+    // TODO add tests
+    return (!schemaType.length ||
+        schemaType.some((st) => st === "array"
+            ? Array.isArray(schema)
+            : st === "object"
+                ? schema && typeof schema == "object" && !Array.isArray(schema)
+                : typeof schema == st || (allowUndefined && typeof schema == "undefined")));
+}
+exports.validSchemaType = validSchemaType;
+function validateKeywordUsage({ schema, opts, self, errSchemaPath }, def, keyword) {
+    /* istanbul ignore if */
+    if (Array.isArray(def.keyword) ? !def.keyword.includes(keyword) : def.keyword !== keyword) {
+        throw new Error("ajv implementation error");
+    }
+    const deps = def.dependencies;
+    if (deps === null || deps === void 0 ? void 0 : deps.some((kwd) => !Object.prototype.hasOwnProperty.call(schema, kwd))) {
+        throw new Error(`parent schema must have dependencies of ${keyword}: ${deps.join(",")}`);
+    }
+    if (def.validateSchema) {
+        const valid = def.validateSchema(schema[keyword]);
+        if (!valid) {
+            const msg = `keyword "${keyword}" value is invalid at path "${errSchemaPath}": ` +
+                self.errorsText(def.validateSchema.errors);
+            if (opts.validateSchema === "log")
+                self.logger.error(msg);
+            else
+                throw new Error(msg);
+        }
+    }
+}
+exports.validateKeywordUsage = validateKeywordUsage;
+//# sourceMappingURL=keyword.js.map
 
 /***/ }),
 
 /***/ 3896:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
-
-var URI = __nccwpck_require__(20)
-  , equal = __nccwpck_require__(8206)
-  , util = __nccwpck_require__(6578)
-  , SchemaObject = __nccwpck_require__(7605)
-  , traverse = __nccwpck_require__(2533);
-
-module.exports = resolve;
-
-resolve.normalizeId = normalizeId;
-resolve.fullPath = getFullPath;
-resolve.url = resolveUrl;
-resolve.ids = resolveIds;
-resolve.inlineRef = inlineRef;
-resolve.schema = resolveSchema;
-
-/**
- * [resolve and compile the references ($ref)]
- * @this   Ajv
- * @param  {Function} compile reference to schema compilation funciton (localCompile)
- * @param  {Object} root object with information about the root schema for the current schema
- * @param  {String} ref reference to resolve
- * @return {Object|Function} schema object (if the schema can be inlined) or validation function
- */
-function resolve(compile, root, ref) {
-  /* jshint validthis: true */
-  var refVal = this._refs[ref];
-  if (typeof refVal == 'string') {
-    if (this._refs[refVal]) refVal = this._refs[refVal];
-    else return resolve.call(this, compile, root, refVal);
-  }
-
-  refVal = refVal || this._schemas[ref];
-  if (refVal instanceof SchemaObject) {
-    return inlineRef(refVal.schema, this._opts.inlineRefs)
-            ? refVal.schema
-            : refVal.validate || this._compile(refVal);
-  }
-
-  var res = resolveSchema.call(this, root, ref);
-  var schema, v, baseId;
-  if (res) {
-    schema = res.schema;
-    root = res.root;
-    baseId = res.baseId;
-  }
-
-  if (schema instanceof SchemaObject) {
-    v = schema.validate || compile.call(this, schema.schema, root, undefined, baseId);
-  } else if (schema !== undefined) {
-    v = inlineRef(schema, this._opts.inlineRefs)
-        ? schema
-        : compile.call(this, schema, root, undefined, baseId);
-  }
-
-  return v;
-}
-
-
-/**
- * Resolve schema, its root and baseId
- * @this Ajv
- * @param  {Object} root root object with properties schema, refVal, refs
- * @param  {String} ref  reference to resolve
- * @return {Object} object with properties schema, root, baseId
- */
-function resolveSchema(root, ref) {
-  /* jshint validthis: true */
-  var p = URI.parse(ref)
-    , refPath = _getFullPath(p)
-    , baseId = getFullPath(this._getId(root.schema));
-  if (Object.keys(root.schema).length === 0 || refPath !== baseId) {
-    var id = normalizeId(refPath);
-    var refVal = this._refs[id];
-    if (typeof refVal == 'string') {
-      return resolveRecursive.call(this, root, refVal, p);
-    } else if (refVal instanceof SchemaObject) {
-      if (!refVal.validate) this._compile(refVal);
-      root = refVal;
-    } else {
-      refVal = this._schemas[id];
-      if (refVal instanceof SchemaObject) {
-        if (!refVal.validate) this._compile(refVal);
-        if (id == normalizeId(ref))
-          return { schema: refVal, root: root, baseId: baseId };
-        root = refVal;
-      } else {
-        return;
-      }
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.extendSubschemaMode = exports.extendSubschemaData = exports.getSubschema = void 0;
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+function getSubschema(it, { keyword, schemaProp, schema, schemaPath, errSchemaPath, topSchemaRef }) {
+    if (keyword !== undefined && schema !== undefined) {
+        throw new Error('both "keyword" and "schema" passed, only one allowed');
     }
-    if (!root.schema) return;
-    baseId = getFullPath(this._getId(root.schema));
-  }
-  return getJsonPointer.call(this, p, baseId, root.schema, root);
-}
-
-
-/* @this Ajv */
-function resolveRecursive(root, ref, parsedRef) {
-  /* jshint validthis: true */
-  var res = resolveSchema.call(this, root, ref);
-  if (res) {
-    var schema = res.schema;
-    var baseId = res.baseId;
-    root = res.root;
-    var id = this._getId(schema);
-    if (id) baseId = resolveUrl(baseId, id);
-    return getJsonPointer.call(this, parsedRef, baseId, schema, root);
-  }
-}
-
-
-var PREVENT_SCOPE_CHANGE = util.toHash(['properties', 'patternProperties', 'enum', 'dependencies', 'definitions']);
-/* @this Ajv */
-function getJsonPointer(parsedRef, baseId, schema, root) {
-  /* jshint validthis: true */
-  parsedRef.fragment = parsedRef.fragment || '';
-  if (parsedRef.fragment.slice(0,1) != '/') return;
-  var parts = parsedRef.fragment.split('/');
-
-  for (var i = 1; i < parts.length; i++) {
-    var part = parts[i];
-    if (part) {
-      part = util.unescapeFragment(part);
-      schema = schema[part];
-      if (schema === undefined) break;
-      var id;
-      if (!PREVENT_SCOPE_CHANGE[part]) {
-        id = this._getId(schema);
-        if (id) baseId = resolveUrl(baseId, id);
-        if (schema.$ref) {
-          var $ref = resolveUrl(baseId, schema.$ref);
-          var res = resolveSchema.call(this, root, $ref);
-          if (res) {
-            schema = res.schema;
-            root = res.root;
-            baseId = res.baseId;
-          }
+    if (keyword !== undefined) {
+        const sch = it.schema[keyword];
+        return schemaProp === undefined
+            ? {
+                schema: sch,
+                schemaPath: (0, codegen_1._) `${it.schemaPath}${(0, codegen_1.getProperty)(keyword)}`,
+                errSchemaPath: `${it.errSchemaPath}/${keyword}`,
+            }
+            : {
+                schema: sch[schemaProp],
+                schemaPath: (0, codegen_1._) `${it.schemaPath}${(0, codegen_1.getProperty)(keyword)}${(0, codegen_1.getProperty)(schemaProp)}`,
+                errSchemaPath: `${it.errSchemaPath}/${keyword}/${(0, util_1.escapeFragment)(schemaProp)}`,
+            };
+    }
+    if (schema !== undefined) {
+        if (schemaPath === undefined || errSchemaPath === undefined || topSchemaRef === undefined) {
+            throw new Error('"schemaPath", "errSchemaPath" and "topSchemaRef" are required with "schema"');
         }
-      }
+        return {
+            schema,
+            schemaPath,
+            topSchemaRef,
+            errSchemaPath,
+        };
     }
-  }
-  if (schema !== undefined && schema !== root.schema)
-    return { schema: schema, root: root, baseId: baseId };
+    throw new Error('either "keyword" or "schema" must be passed');
 }
+exports.getSubschema = getSubschema;
+function extendSubschemaData(subschema, it, { dataProp, dataPropType: dpType, data, dataTypes, propertyName }) {
+    if (data !== undefined && dataProp !== undefined) {
+        throw new Error('both "data" and "dataProp" passed, only one allowed');
+    }
+    const { gen } = it;
+    if (dataProp !== undefined) {
+        const { errorPath, dataPathArr, opts } = it;
+        const nextData = gen.let("data", (0, codegen_1._) `${it.data}${(0, codegen_1.getProperty)(dataProp)}`, true);
+        dataContextProps(nextData);
+        subschema.errorPath = (0, codegen_1.str) `${errorPath}${(0, util_1.getErrorPath)(dataProp, dpType, opts.jsPropertySyntax)}`;
+        subschema.parentDataProperty = (0, codegen_1._) `${dataProp}`;
+        subschema.dataPathArr = [...dataPathArr, subschema.parentDataProperty];
+    }
+    if (data !== undefined) {
+        const nextData = data instanceof codegen_1.Name ? data : gen.let("data", data, true); // replaceable if used once?
+        dataContextProps(nextData);
+        if (propertyName !== undefined)
+            subschema.propertyName = propertyName;
+        // TODO something is possibly wrong here with not changing parentDataProperty and not appending dataPathArr
+    }
+    if (dataTypes)
+        subschema.dataTypes = dataTypes;
+    function dataContextProps(_nextData) {
+        subschema.data = _nextData;
+        subschema.dataLevel = it.dataLevel + 1;
+        subschema.dataTypes = [];
+        it.definedProperties = new Set();
+        subschema.parentData = it.data;
+        subschema.dataNames = [...it.dataNames, _nextData];
+    }
+}
+exports.extendSubschemaData = extendSubschemaData;
+function extendSubschemaMode(subschema, { jtdDiscriminator, jtdMetadata, compositeRule, createErrors, allErrors }) {
+    if (compositeRule !== undefined)
+        subschema.compositeRule = compositeRule;
+    if (createErrors !== undefined)
+        subschema.createErrors = createErrors;
+    if (allErrors !== undefined)
+        subschema.allErrors = allErrors;
+    subschema.jtdDiscriminator = jtdDiscriminator; // not inherited
+    subschema.jtdMetadata = jtdMetadata; // not inherited
+}
+exports.extendSubschemaMode = extendSubschemaMode;
+//# sourceMappingURL=subschema.js.map
 
+/***/ }),
 
-var SIMPLE_INLINED = util.toHash([
-  'type', 'format', 'pattern',
-  'maxLength', 'minLength',
-  'maxProperties', 'minProperties',
-  'maxItems', 'minItems',
-  'maximum', 'minimum',
-  'uniqueItems', 'multipleOf',
-  'required', 'enum'
+/***/ 2685:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = void 0;
+var validate_1 = __nccwpck_require__(8955);
+Object.defineProperty(exports, "KeywordCxt", ({ enumerable: true, get: function () { return validate_1.KeywordCxt; } }));
+var codegen_1 = __nccwpck_require__(9179);
+Object.defineProperty(exports, "_", ({ enumerable: true, get: function () { return codegen_1._; } }));
+Object.defineProperty(exports, "str", ({ enumerable: true, get: function () { return codegen_1.str; } }));
+Object.defineProperty(exports, "stringify", ({ enumerable: true, get: function () { return codegen_1.stringify; } }));
+Object.defineProperty(exports, "nil", ({ enumerable: true, get: function () { return codegen_1.nil; } }));
+Object.defineProperty(exports, "Name", ({ enumerable: true, get: function () { return codegen_1.Name; } }));
+Object.defineProperty(exports, "CodeGen", ({ enumerable: true, get: function () { return codegen_1.CodeGen; } }));
+const validation_error_1 = __nccwpck_require__(7616);
+const ref_error_1 = __nccwpck_require__(8190);
+const rules_1 = __nccwpck_require__(1785);
+const compile_1 = __nccwpck_require__(813);
+const codegen_2 = __nccwpck_require__(9179);
+const resolve_1 = __nccwpck_require__(6646);
+const dataType_1 = __nccwpck_require__(7725);
+const util_1 = __nccwpck_require__(3439);
+const $dataRefSchema = __nccwpck_require__(4775);
+const defaultRegExp = (str, flags) => new RegExp(str, flags);
+defaultRegExp.code = "new RegExp";
+const META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"];
+const EXT_SCOPE_NAMES = new Set([
+    "validate",
+    "serialize",
+    "parse",
+    "wrapper",
+    "root",
+    "schema",
+    "keyword",
+    "pattern",
+    "formats",
+    "validate$data",
+    "func",
+    "obj",
+    "Error",
 ]);
-function inlineRef(schema, limit) {
-  if (limit === false) return false;
-  if (limit === undefined || limit === true) return checkNoRef(schema);
-  else if (limit) return countKeys(schema) <= limit;
-}
-
-
-function checkNoRef(schema) {
-  var item;
-  if (Array.isArray(schema)) {
-    for (var i=0; i<schema.length; i++) {
-      item = schema[i];
-      if (typeof item == 'object' && !checkNoRef(item)) return false;
-    }
-  } else {
-    for (var key in schema) {
-      if (key == '$ref') return false;
-      item = schema[key];
-      if (typeof item == 'object' && !checkNoRef(item)) return false;
-    }
-  }
-  return true;
-}
-
-
-function countKeys(schema) {
-  var count = 0, item;
-  if (Array.isArray(schema)) {
-    for (var i=0; i<schema.length; i++) {
-      item = schema[i];
-      if (typeof item == 'object') count += countKeys(item);
-      if (count == Infinity) return Infinity;
-    }
-  } else {
-    for (var key in schema) {
-      if (key == '$ref') return Infinity;
-      if (SIMPLE_INLINED[key]) {
-        count++;
-      } else {
-        item = schema[key];
-        if (typeof item == 'object') count += countKeys(item) + 1;
-        if (count == Infinity) return Infinity;
-      }
-    }
-  }
-  return count;
-}
-
-
-function getFullPath(id, normalize) {
-  if (normalize !== false) id = normalizeId(id);
-  var p = URI.parse(id);
-  return _getFullPath(p);
-}
-
-
-function _getFullPath(p) {
-  return URI.serialize(p).split('#')[0] + '#';
-}
-
-
-var TRAILING_SLASH_HASH = /#\/?$/;
-function normalizeId(id) {
-  return id ? id.replace(TRAILING_SLASH_HASH, '') : '';
-}
-
-
-function resolveUrl(baseId, id) {
-  id = normalizeId(id);
-  return URI.resolve(baseId, id);
-}
-
-
-/* @this Ajv */
-function resolveIds(schema) {
-  var schemaId = normalizeId(this._getId(schema));
-  var baseIds = {'': schemaId};
-  var fullPaths = {'': getFullPath(schemaId, false)};
-  var localRefs = {};
-  var self = this;
-
-  traverse(schema, {allKeys: true}, function(sch, jsonPtr, rootSchema, parentJsonPtr, parentKeyword, parentSchema, keyIndex) {
-    if (jsonPtr === '') return;
-    var id = self._getId(sch);
-    var baseId = baseIds[parentJsonPtr];
-    var fullPath = fullPaths[parentJsonPtr] + '/' + parentKeyword;
-    if (keyIndex !== undefined)
-      fullPath += '/' + (typeof keyIndex == 'number' ? keyIndex : util.escapeFragment(keyIndex));
-
-    if (typeof id == 'string') {
-      id = baseId = normalizeId(baseId ? URI.resolve(baseId, id) : id);
-
-      var refVal = self._refs[id];
-      if (typeof refVal == 'string') refVal = self._refs[refVal];
-      if (refVal && refVal.schema) {
-        if (!equal(sch, refVal.schema))
-          throw new Error('id "' + id + '" resolves to more than one schema');
-      } else if (id != normalizeId(fullPath)) {
-        if (id[0] == '#') {
-          if (localRefs[id] && !equal(sch, localRefs[id]))
-            throw new Error('id "' + id + '" resolves to more than one schema');
-          localRefs[id] = sch;
-        } else {
-          self._refs[id] = fullPath;
-        }
-      }
-    }
-    baseIds[jsonPtr] = baseId;
-    fullPaths[jsonPtr] = fullPath;
-  });
-
-  return localRefs;
-}
-
-
-/***/ }),
-
-/***/ 8561:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-var ruleModules = __nccwpck_require__(5810)
-  , toHash = __nccwpck_require__(6578).toHash;
-
-module.exports = function rules() {
-  var RULES = [
-    { type: 'number',
-      rules: [ { 'maximum': ['exclusiveMaximum'] },
-               { 'minimum': ['exclusiveMinimum'] }, 'multipleOf', 'format'] },
-    { type: 'string',
-      rules: [ 'maxLength', 'minLength', 'pattern', 'format' ] },
-    { type: 'array',
-      rules: [ 'maxItems', 'minItems', 'items', 'contains', 'uniqueItems' ] },
-    { type: 'object',
-      rules: [ 'maxProperties', 'minProperties', 'required', 'dependencies', 'propertyNames',
-               { 'properties': ['additionalProperties', 'patternProperties'] } ] },
-    { rules: [ '$ref', 'const', 'enum', 'not', 'anyOf', 'oneOf', 'allOf', 'if' ] }
-  ];
-
-  var ALL = [ 'type', '$comment' ];
-  var KEYWORDS = [
-    '$schema', '$id', 'id', '$data', '$async', 'title',
-    'description', 'default', 'definitions',
-    'examples', 'readOnly', 'writeOnly',
-    'contentMediaType', 'contentEncoding',
-    'additionalItems', 'then', 'else'
-  ];
-  var TYPES = [ 'number', 'integer', 'string', 'array', 'object', 'boolean', 'null' ];
-  RULES.all = toHash(ALL);
-  RULES.types = toHash(TYPES);
-
-  RULES.forEach(function (group) {
-    group.rules = group.rules.map(function (keyword) {
-      var implKeywords;
-      if (typeof keyword == 'object') {
-        var key = Object.keys(keyword)[0];
-        implKeywords = keyword[key];
-        keyword = key;
-        implKeywords.forEach(function (k) {
-          ALL.push(k);
-          RULES.all[k] = true;
-        });
-      }
-      ALL.push(keyword);
-      var rule = RULES.all[keyword] = {
-        keyword: keyword,
-        code: ruleModules[keyword],
-        implements: implKeywords
-      };
-      return rule;
-    });
-
-    RULES.all.$comment = {
-      keyword: '$comment',
-      code: ruleModules.$comment
-    };
-
-    if (group.type) RULES.types[group.type] = group;
-  });
-
-  RULES.keywords = toHash(ALL.concat(KEYWORDS));
-  RULES.custom = {};
-
-  return RULES;
+const removedOptions = {
+    errorDataPath: "",
+    format: "`validateFormats: false` can be used instead.",
+    nullable: '"nullable" keyword is supported by default.',
+    jsonPointers: "Deprecated jsPropertySyntax can be used instead.",
+    extendRefs: "Deprecated ignoreKeywordsWithRef can be used instead.",
+    missingRefs: "Pass empty schema with $id that should be ignored to ajv.addSchema.",
+    processCode: "Use option `code: {process: (code, schemaEnv: object) => string}`",
+    sourceCode: "Use option `code: {source: true}`",
+    strictDefaults: "It is default now, see option `strict`.",
+    strictKeywords: "It is default now, see option `strict`.",
+    uniqueItems: '"uniqueItems" keyword is always validated.',
+    unknownFormats: "Disable strict mode or pass `true` to `ajv.addFormat` (or `formats` option).",
+    cache: "Map is used as cache, schema object as key.",
+    serialize: "Map is used as cache, schema object as key.",
+    ajvErrors: "It is default now.",
 };
-
-
-/***/ }),
-
-/***/ 7605:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-var util = __nccwpck_require__(6578);
-
-module.exports = SchemaObject;
-
-function SchemaObject(obj) {
-  util.copy(obj, this);
+const deprecatedOptions = {
+    ignoreKeywordsWithRef: "",
+    jsPropertySyntax: "",
+    unicode: '"minLength"/"maxLength" account for unicode characters by default.',
+};
+const MAX_EXPRESSION = 200;
+// eslint-disable-next-line complexity
+function requiredOptions(o) {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z;
+    const s = o.strict;
+    const _optz = (_a = o.code) === null || _a === void 0 ? void 0 : _a.optimize;
+    const optimize = _optz === true || _optz === undefined ? 1 : _optz || 0;
+    const regExp = (_c = (_b = o.code) === null || _b === void 0 ? void 0 : _b.regExp) !== null && _c !== void 0 ? _c : defaultRegExp;
+    return {
+        strictSchema: (_e = (_d = o.strictSchema) !== null && _d !== void 0 ? _d : s) !== null && _e !== void 0 ? _e : true,
+        strictNumbers: (_g = (_f = o.strictNumbers) !== null && _f !== void 0 ? _f : s) !== null && _g !== void 0 ? _g : true,
+        strictTypes: (_j = (_h = o.strictTypes) !== null && _h !== void 0 ? _h : s) !== null && _j !== void 0 ? _j : "log",
+        strictTuples: (_l = (_k = o.strictTuples) !== null && _k !== void 0 ? _k : s) !== null && _l !== void 0 ? _l : "log",
+        strictRequired: (_o = (_m = o.strictRequired) !== null && _m !== void 0 ? _m : s) !== null && _o !== void 0 ? _o : false,
+        code: o.code ? { ...o.code, optimize, regExp } : { optimize, regExp },
+        loopRequired: (_p = o.loopRequired) !== null && _p !== void 0 ? _p : MAX_EXPRESSION,
+        loopEnum: (_q = o.loopEnum) !== null && _q !== void 0 ? _q : MAX_EXPRESSION,
+        meta: (_r = o.meta) !== null && _r !== void 0 ? _r : true,
+        messages: (_s = o.messages) !== null && _s !== void 0 ? _s : true,
+        inlineRefs: (_t = o.inlineRefs) !== null && _t !== void 0 ? _t : true,
+        schemaId: (_u = o.schemaId) !== null && _u !== void 0 ? _u : "$id",
+        addUsedSchema: (_v = o.addUsedSchema) !== null && _v !== void 0 ? _v : true,
+        validateSchema: (_w = o.validateSchema) !== null && _w !== void 0 ? _w : true,
+        validateFormats: (_x = o.validateFormats) !== null && _x !== void 0 ? _x : true,
+        unicodeRegExp: (_y = o.unicodeRegExp) !== null && _y !== void 0 ? _y : true,
+        int32range: (_z = o.int32range) !== null && _z !== void 0 ? _z : true,
+    };
 }
-
+class Ajv {
+    constructor(opts = {}) {
+        this.schemas = {};
+        this.refs = {};
+        this.formats = {};
+        this._compilations = new Set();
+        this._loading = {};
+        this._cache = new Map();
+        opts = this.opts = { ...opts, ...requiredOptions(opts) };
+        const { es5, lines } = this.opts.code;
+        this.scope = new codegen_2.ValueScope({ scope: {}, prefixes: EXT_SCOPE_NAMES, es5, lines });
+        this.logger = getLogger(opts.logger);
+        const formatOpt = opts.validateFormats;
+        opts.validateFormats = false;
+        this.RULES = (0, rules_1.getRules)();
+        checkOptions.call(this, removedOptions, opts, "NOT SUPPORTED");
+        checkOptions.call(this, deprecatedOptions, opts, "DEPRECATED", "warn");
+        this._metaOpts = getMetaSchemaOptions.call(this);
+        if (opts.formats)
+            addInitialFormats.call(this);
+        this._addVocabularies();
+        this._addDefaultMetaSchema();
+        if (opts.keywords)
+            addInitialKeywords.call(this, opts.keywords);
+        if (typeof opts.meta == "object")
+            this.addMetaSchema(opts.meta);
+        addInitialSchemas.call(this);
+        opts.validateFormats = formatOpt;
+    }
+    _addVocabularies() {
+        this.addKeyword("$async");
+    }
+    _addDefaultMetaSchema() {
+        const { $data, meta, schemaId } = this.opts;
+        let _dataRefSchema = $dataRefSchema;
+        if (schemaId === "id") {
+            _dataRefSchema = { ...$dataRefSchema };
+            _dataRefSchema.id = _dataRefSchema.$id;
+            delete _dataRefSchema.$id;
+        }
+        if (meta && $data)
+            this.addMetaSchema(_dataRefSchema, _dataRefSchema[schemaId], false);
+    }
+    defaultMeta() {
+        const { meta, schemaId } = this.opts;
+        return (this.opts.defaultMeta = typeof meta == "object" ? meta[schemaId] || meta : undefined);
+    }
+    validate(schemaKeyRef, // key, ref or schema object
+    data // to be validated
+    ) {
+        let v;
+        if (typeof schemaKeyRef == "string") {
+            v = this.getSchema(schemaKeyRef);
+            if (!v)
+                throw new Error(`no schema with key or ref "${schemaKeyRef}"`);
+        }
+        else {
+            v = this.compile(schemaKeyRef);
+        }
+        const valid = v(data);
+        if (!("$async" in v))
+            this.errors = v.errors;
+        return valid;
+    }
+    compile(schema, _meta) {
+        const sch = this._addSchema(schema, _meta);
+        return (sch.validate || this._compileSchemaEnv(sch));
+    }
+    compileAsync(schema, meta) {
+        if (typeof this.opts.loadSchema != "function") {
+            throw new Error("options.loadSchema should be a function");
+        }
+        const { loadSchema } = this.opts;
+        return runCompileAsync.call(this, schema, meta);
+        async function runCompileAsync(_schema, _meta) {
+            await loadMetaSchema.call(this, _schema.$schema);
+            const sch = this._addSchema(_schema, _meta);
+            return sch.validate || _compileAsync.call(this, sch);
+        }
+        async function loadMetaSchema($ref) {
+            if ($ref && !this.getSchema($ref)) {
+                await runCompileAsync.call(this, { $ref }, true);
+            }
+        }
+        async function _compileAsync(sch) {
+            try {
+                return this._compileSchemaEnv(sch);
+            }
+            catch (e) {
+                if (!(e instanceof ref_error_1.default))
+                    throw e;
+                checkLoaded.call(this, e);
+                await loadMissingSchema.call(this, e.missingSchema);
+                return _compileAsync.call(this, sch);
+            }
+        }
+        function checkLoaded({ missingSchema: ref, missingRef }) {
+            if (this.refs[ref]) {
+                throw new Error(`AnySchema ${ref} is loaded but ${missingRef} cannot be resolved`);
+            }
+        }
+        async function loadMissingSchema(ref) {
+            const _schema = await _loadSchema.call(this, ref);
+            if (!this.refs[ref])
+                await loadMetaSchema.call(this, _schema.$schema);
+            if (!this.refs[ref])
+                this.addSchema(_schema, ref, meta);
+        }
+        async function _loadSchema(ref) {
+            const p = this._loading[ref];
+            if (p)
+                return p;
+            try {
+                return await (this._loading[ref] = loadSchema(ref));
+            }
+            finally {
+                delete this._loading[ref];
+            }
+        }
+    }
+    // Adds schema to the instance
+    addSchema(schema, // If array is passed, `key` will be ignored
+    key, // Optional schema key. Can be passed to `validate` method instead of schema object or id/ref. One schema per instance can have empty `id` and `key`.
+    _meta, // true if schema is a meta-schema. Used internally, addMetaSchema should be used instead.
+    _validateSchema = this.opts.validateSchema // false to skip schema validation. Used internally, option validateSchema should be used instead.
+    ) {
+        if (Array.isArray(schema)) {
+            for (const sch of schema)
+                this.addSchema(sch, undefined, _meta, _validateSchema);
+            return this;
+        }
+        let id;
+        if (typeof schema === "object") {
+            const { schemaId } = this.opts;
+            id = schema[schemaId];
+            if (id !== undefined && typeof id != "string") {
+                throw new Error(`schema ${schemaId} must be string`);
+            }
+        }
+        key = (0, resolve_1.normalizeId)(key || id);
+        this._checkUnique(key);
+        this.schemas[key] = this._addSchema(schema, _meta, key, _validateSchema, true);
+        return this;
+    }
+    // Add schema that will be used to validate other schemas
+    // options in META_IGNORE_OPTIONS are alway set to false
+    addMetaSchema(schema, key, // schema key
+    _validateSchema = this.opts.validateSchema // false to skip schema validation, can be used to override validateSchema option for meta-schema
+    ) {
+        this.addSchema(schema, key, true, _validateSchema);
+        return this;
+    }
+    //  Validate schema against its meta-schema
+    validateSchema(schema, throwOrLogError) {
+        if (typeof schema == "boolean")
+            return true;
+        let $schema;
+        $schema = schema.$schema;
+        if ($schema !== undefined && typeof $schema != "string") {
+            throw new Error("$schema must be a string");
+        }
+        $schema = $schema || this.opts.defaultMeta || this.defaultMeta();
+        if (!$schema) {
+            this.logger.warn("meta-schema not available");
+            this.errors = null;
+            return true;
+        }
+        const valid = this.validate($schema, schema);
+        if (!valid && throwOrLogError) {
+            const message = "schema is invalid: " + this.errorsText();
+            if (this.opts.validateSchema === "log")
+                this.logger.error(message);
+            else
+                throw new Error(message);
+        }
+        return valid;
+    }
+    // Get compiled schema by `key` or `ref`.
+    // (`key` that was passed to `addSchema` or full schema reference - `schema.$id` or resolved id)
+    getSchema(keyRef) {
+        let sch;
+        while (typeof (sch = getSchEnv.call(this, keyRef)) == "string")
+            keyRef = sch;
+        if (sch === undefined) {
+            const { schemaId } = this.opts;
+            const root = new compile_1.SchemaEnv({ schema: {}, schemaId });
+            sch = compile_1.resolveSchema.call(this, root, keyRef);
+            if (!sch)
+                return;
+            this.refs[keyRef] = sch;
+        }
+        return (sch.validate || this._compileSchemaEnv(sch));
+    }
+    // Remove cached schema(s).
+    // If no parameter is passed all schemas but meta-schemas are removed.
+    // If RegExp is passed all schemas with key/id matching pattern but meta-schemas are removed.
+    // Even if schema is referenced by other schemas it still can be removed as other schemas have local references.
+    removeSchema(schemaKeyRef) {
+        if (schemaKeyRef instanceof RegExp) {
+            this._removeAllSchemas(this.schemas, schemaKeyRef);
+            this._removeAllSchemas(this.refs, schemaKeyRef);
+            return this;
+        }
+        switch (typeof schemaKeyRef) {
+            case "undefined":
+                this._removeAllSchemas(this.schemas);
+                this._removeAllSchemas(this.refs);
+                this._cache.clear();
+                return this;
+            case "string": {
+                const sch = getSchEnv.call(this, schemaKeyRef);
+                if (typeof sch == "object")
+                    this._cache.delete(sch.schema);
+                delete this.schemas[schemaKeyRef];
+                delete this.refs[schemaKeyRef];
+                return this;
+            }
+            case "object": {
+                const cacheKey = schemaKeyRef;
+                this._cache.delete(cacheKey);
+                let id = schemaKeyRef[this.opts.schemaId];
+                if (id) {
+                    id = (0, resolve_1.normalizeId)(id);
+                    delete this.schemas[id];
+                    delete this.refs[id];
+                }
+                return this;
+            }
+            default:
+                throw new Error("ajv.removeSchema: invalid parameter");
+        }
+    }
+    // add "vocabulary" - a collection of keywords
+    addVocabulary(definitions) {
+        for (const def of definitions)
+            this.addKeyword(def);
+        return this;
+    }
+    addKeyword(kwdOrDef, def // deprecated
+    ) {
+        let keyword;
+        if (typeof kwdOrDef == "string") {
+            keyword = kwdOrDef;
+            if (typeof def == "object") {
+                this.logger.warn("these parameters are deprecated, see docs for addKeyword");
+                def.keyword = keyword;
+            }
+        }
+        else if (typeof kwdOrDef == "object" && def === undefined) {
+            def = kwdOrDef;
+            keyword = def.keyword;
+            if (Array.isArray(keyword) && !keyword.length) {
+                throw new Error("addKeywords: keyword must be string or non-empty array");
+            }
+        }
+        else {
+            throw new Error("invalid addKeywords parameters");
+        }
+        checkKeyword.call(this, keyword, def);
+        if (!def) {
+            (0, util_1.eachItem)(keyword, (kwd) => addRule.call(this, kwd));
+            return this;
+        }
+        keywordMetaschema.call(this, def);
+        const definition = {
+            ...def,
+            type: (0, dataType_1.getJSONTypes)(def.type),
+            schemaType: (0, dataType_1.getJSONTypes)(def.schemaType),
+        };
+        (0, util_1.eachItem)(keyword, definition.type.length === 0
+            ? (k) => addRule.call(this, k, definition)
+            : (k) => definition.type.forEach((t) => addRule.call(this, k, definition, t)));
+        return this;
+    }
+    getKeyword(keyword) {
+        const rule = this.RULES.all[keyword];
+        return typeof rule == "object" ? rule.definition : !!rule;
+    }
+    // Remove keyword
+    removeKeyword(keyword) {
+        // TODO return type should be Ajv
+        const { RULES } = this;
+        delete RULES.keywords[keyword];
+        delete RULES.all[keyword];
+        for (const group of RULES.rules) {
+            const i = group.rules.findIndex((rule) => rule.keyword === keyword);
+            if (i >= 0)
+                group.rules.splice(i, 1);
+        }
+        return this;
+    }
+    // Add format
+    addFormat(name, format) {
+        if (typeof format == "string")
+            format = new RegExp(format);
+        this.formats[name] = format;
+        return this;
+    }
+    errorsText(errors = this.errors, // optional array of validation errors
+    { separator = ", ", dataVar = "data" } = {} // optional options with properties `separator` and `dataVar`
+    ) {
+        if (!errors || errors.length === 0)
+            return "No errors";
+        return errors
+            .map((e) => `${dataVar}${e.instancePath} ${e.message}`)
+            .reduce((text, msg) => text + separator + msg);
+    }
+    $dataMetaSchema(metaSchema, keywordsJsonPointers) {
+        const rules = this.RULES.all;
+        metaSchema = JSON.parse(JSON.stringify(metaSchema));
+        for (const jsonPointer of keywordsJsonPointers) {
+            const segments = jsonPointer.split("/").slice(1); // first segment is an empty string
+            let keywords = metaSchema;
+            for (const seg of segments)
+                keywords = keywords[seg];
+            for (const key in rules) {
+                const rule = rules[key];
+                if (typeof rule != "object")
+                    continue;
+                const { $data } = rule.definition;
+                const schema = keywords[key];
+                if ($data && schema)
+                    keywords[key] = schemaOrData(schema);
+            }
+        }
+        return metaSchema;
+    }
+    _removeAllSchemas(schemas, regex) {
+        for (const keyRef in schemas) {
+            const sch = schemas[keyRef];
+            if (!regex || regex.test(keyRef)) {
+                if (typeof sch == "string") {
+                    delete schemas[keyRef];
+                }
+                else if (sch && !sch.meta) {
+                    this._cache.delete(sch.schema);
+                    delete schemas[keyRef];
+                }
+            }
+        }
+    }
+    _addSchema(schema, meta, baseId, validateSchema = this.opts.validateSchema, addSchema = this.opts.addUsedSchema) {
+        let id;
+        const { schemaId } = this.opts;
+        if (typeof schema == "object") {
+            id = schema[schemaId];
+        }
+        else {
+            if (this.opts.jtd)
+                throw new Error("schema must be object");
+            else if (typeof schema != "boolean")
+                throw new Error("schema must be object or boolean");
+        }
+        let sch = this._cache.get(schema);
+        if (sch !== undefined)
+            return sch;
+        baseId = (0, resolve_1.normalizeId)(id || baseId);
+        const localRefs = resolve_1.getSchemaRefs.call(this, schema, baseId);
+        sch = new compile_1.SchemaEnv({ schema, schemaId, meta, baseId, localRefs });
+        this._cache.set(sch.schema, sch);
+        if (addSchema && !baseId.startsWith("#")) {
+            // TODO atm it is allowed to overwrite schemas without id (instead of not adding them)
+            if (baseId)
+                this._checkUnique(baseId);
+            this.refs[baseId] = sch;
+        }
+        if (validateSchema)
+            this.validateSchema(schema, true);
+        return sch;
+    }
+    _checkUnique(id) {
+        if (this.schemas[id] || this.refs[id]) {
+            throw new Error(`schema with key or id "${id}" already exists`);
+        }
+    }
+    _compileSchemaEnv(sch) {
+        if (sch.meta)
+            this._compileMetaSchema(sch);
+        else
+            compile_1.compileSchema.call(this, sch);
+        /* istanbul ignore if */
+        if (!sch.validate)
+            throw new Error("ajv implementation error");
+        return sch.validate;
+    }
+    _compileMetaSchema(sch) {
+        const currentOpts = this.opts;
+        this.opts = this._metaOpts;
+        try {
+            compile_1.compileSchema.call(this, sch);
+        }
+        finally {
+            this.opts = currentOpts;
+        }
+    }
+}
+exports["default"] = Ajv;
+Ajv.ValidationError = validation_error_1.default;
+Ajv.MissingRefError = ref_error_1.default;
+function checkOptions(checkOpts, options, msg, log = "error") {
+    for (const key in checkOpts) {
+        const opt = key;
+        if (opt in options)
+            this.logger[log](`${msg}: option ${key}. ${checkOpts[opt]}`);
+    }
+}
+function getSchEnv(keyRef) {
+    keyRef = (0, resolve_1.normalizeId)(keyRef); // TODO tests fail without this line
+    return this.schemas[keyRef] || this.refs[keyRef];
+}
+function addInitialSchemas() {
+    const optsSchemas = this.opts.schemas;
+    if (!optsSchemas)
+        return;
+    if (Array.isArray(optsSchemas))
+        this.addSchema(optsSchemas);
+    else
+        for (const key in optsSchemas)
+            this.addSchema(optsSchemas[key], key);
+}
+function addInitialFormats() {
+    for (const name in this.opts.formats) {
+        const format = this.opts.formats[name];
+        if (format)
+            this.addFormat(name, format);
+    }
+}
+function addInitialKeywords(defs) {
+    if (Array.isArray(defs)) {
+        this.addVocabulary(defs);
+        return;
+    }
+    this.logger.warn("keywords option as map is deprecated, pass array");
+    for (const keyword in defs) {
+        const def = defs[keyword];
+        if (!def.keyword)
+            def.keyword = keyword;
+        this.addKeyword(def);
+    }
+}
+function getMetaSchemaOptions() {
+    const metaOpts = { ...this.opts };
+    for (const opt of META_IGNORE_OPTIONS)
+        delete metaOpts[opt];
+    return metaOpts;
+}
+const noLogs = { log() { }, warn() { }, error() { } };
+function getLogger(logger) {
+    if (logger === false)
+        return noLogs;
+    if (logger === undefined)
+        return console;
+    if (logger.log && logger.warn && logger.error)
+        return logger;
+    throw new Error("logger must implement log, warn and error methods");
+}
+const KEYWORD_NAME = /^[a-z_$][a-z0-9_$:-]*$/i;
+function checkKeyword(keyword, def) {
+    const { RULES } = this;
+    (0, util_1.eachItem)(keyword, (kwd) => {
+        if (RULES.keywords[kwd])
+            throw new Error(`Keyword ${kwd} is already defined`);
+        if (!KEYWORD_NAME.test(kwd))
+            throw new Error(`Keyword ${kwd} has invalid name`);
+    });
+    if (!def)
+        return;
+    if (def.$data && !("code" in def || "validate" in def)) {
+        throw new Error('$data keyword must have "code" or "validate" function');
+    }
+}
+function addRule(keyword, definition, dataType) {
+    var _a;
+    const post = definition === null || definition === void 0 ? void 0 : definition.post;
+    if (dataType && post)
+        throw new Error('keyword with "post" flag cannot have "type"');
+    const { RULES } = this;
+    let ruleGroup = post ? RULES.post : RULES.rules.find(({ type: t }) => t === dataType);
+    if (!ruleGroup) {
+        ruleGroup = { type: dataType, rules: [] };
+        RULES.rules.push(ruleGroup);
+    }
+    RULES.keywords[keyword] = true;
+    if (!definition)
+        return;
+    const rule = {
+        keyword,
+        definition: {
+            ...definition,
+            type: (0, dataType_1.getJSONTypes)(definition.type),
+            schemaType: (0, dataType_1.getJSONTypes)(definition.schemaType),
+        },
+    };
+    if (definition.before)
+        addBeforeRule.call(this, ruleGroup, rule, definition.before);
+    else
+        ruleGroup.rules.push(rule);
+    RULES.all[keyword] = rule;
+    (_a = definition.implements) === null || _a === void 0 ? void 0 : _a.forEach((kwd) => this.addKeyword(kwd));
+}
+function addBeforeRule(ruleGroup, rule, before) {
+    const i = ruleGroup.rules.findIndex((_rule) => _rule.keyword === before);
+    if (i >= 0) {
+        ruleGroup.rules.splice(i, 0, rule);
+    }
+    else {
+        ruleGroup.rules.push(rule);
+        this.logger.warn(`rule ${before} is not defined`);
+    }
+}
+function keywordMetaschema(def) {
+    let { metaSchema } = def;
+    if (metaSchema === undefined)
+        return;
+    if (def.$data && this.opts.$data)
+        metaSchema = schemaOrData(metaSchema);
+    def.validateSchema = this.compile(metaSchema, true);
+}
+const $dataRef = {
+    $ref: "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#",
+};
+function schemaOrData(schema) {
+    return { anyOf: [schema, $dataRef] };
+}
+//# sourceMappingURL=core.js.map
 
 /***/ }),
 
-/***/ 4580:
-/***/ ((module) => {
+/***/ 3809:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+// https://github.com/ajv-validator/ajv/issues/889
+const equal = __nccwpck_require__(8206);
+equal.code = 'require("ajv/dist/runtime/equal").default';
+exports["default"] = equal;
+//# sourceMappingURL=equal.js.map
 
+/***/ }),
+
+/***/ 2470:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 // https://mathiasbynens.be/notes/javascript-encoding
 // https://github.com/bestiejs/punycode.js - punycode.ucs2.decode
-module.exports = function ucs2length(str) {
-  var length = 0
-    , len = str.length
-    , pos = 0
-    , value;
-  while (pos < len) {
-    length++;
-    value = str.charCodeAt(pos++);
-    if (value >= 0xD800 && value <= 0xDBFF && pos < len) {
-      // high surrogate, and there is a next character
-      value = str.charCodeAt(pos);
-      if ((value & 0xFC00) == 0xDC00) pos++; // low surrogate
+function ucs2length(str) {
+    const len = str.length;
+    let length = 0;
+    let pos = 0;
+    let value;
+    while (pos < len) {
+        length++;
+        value = str.charCodeAt(pos++);
+        if (value >= 0xd800 && value <= 0xdbff && pos < len) {
+            // high surrogate, and there is a next character
+            value = str.charCodeAt(pos);
+            if ((value & 0xfc00) === 0xdc00)
+                pos++; // low surrogate
+        }
     }
-  }
-  return length;
-};
-
+    return length;
+}
+exports["default"] = ucs2length;
+ucs2length.code = 'require("ajv/dist/runtime/ucs2length").default';
+//# sourceMappingURL=ucs2length.js.map
 
 /***/ }),
 
-/***/ 6578:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+/***/ 7616:
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
-
-
-module.exports = {
-  copy: copy,
-  checkDataType: checkDataType,
-  checkDataTypes: checkDataTypes,
-  coerceToTypes: coerceToTypes,
-  toHash: toHash,
-  getProperty: getProperty,
-  escapeQuotes: escapeQuotes,
-  equal: __nccwpck_require__(8206),
-  ucs2length: __nccwpck_require__(4580),
-  varOccurences: varOccurences,
-  varReplace: varReplace,
-  schemaHasRules: schemaHasRules,
-  schemaHasRulesExcept: schemaHasRulesExcept,
-  schemaUnknownRules: schemaUnknownRules,
-  toQuotedString: toQuotedString,
-  getPathExpr: getPathExpr,
-  getPath: getPath,
-  getData: getData,
-  unescapeFragment: unescapeFragment,
-  unescapeJsonPointer: unescapeJsonPointer,
-  escapeFragment: escapeFragment,
-  escapeJsonPointer: escapeJsonPointer
-};
-
-
-function copy(o, to) {
-  to = to || {};
-  for (var key in o) to[key] = o[key];
-  return to;
-}
-
-
-function checkDataType(dataType, data, strictNumbers, negate) {
-  var EQUAL = negate ? ' !== ' : ' === '
-    , AND = negate ? ' || ' : ' && '
-    , OK = negate ? '!' : ''
-    , NOT = negate ? '' : '!';
-  switch (dataType) {
-    case 'null': return data + EQUAL + 'null';
-    case 'array': return OK + 'Array.isArray(' + data + ')';
-    case 'object': return '(' + OK + data + AND +
-                          'typeof ' + data + EQUAL + '"object"' + AND +
-                          NOT + 'Array.isArray(' + data + '))';
-    case 'integer': return '(typeof ' + data + EQUAL + '"number"' + AND +
-                           NOT + '(' + data + ' % 1)' +
-                           AND + data + EQUAL + data +
-                           (strictNumbers ? (AND + OK + 'isFinite(' + data + ')') : '') + ')';
-    case 'number': return '(typeof ' + data + EQUAL + '"' + dataType + '"' +
-                          (strictNumbers ? (AND + OK + 'isFinite(' + data + ')') : '') + ')';
-    default: return 'typeof ' + data + EQUAL + '"' + dataType + '"';
-  }
-}
-
-
-function checkDataTypes(dataTypes, data, strictNumbers) {
-  switch (dataTypes.length) {
-    case 1: return checkDataType(dataTypes[0], data, strictNumbers, true);
-    default:
-      var code = '';
-      var types = toHash(dataTypes);
-      if (types.array && types.object) {
-        code = types.null ? '(': '(!' + data + ' || ';
-        code += 'typeof ' + data + ' !== "object")';
-        delete types.null;
-        delete types.array;
-        delete types.object;
-      }
-      if (types.number) delete types.integer;
-      for (var t in types)
-        code += (code ? ' && ' : '' ) + checkDataType(t, data, strictNumbers, true);
-
-      return code;
-  }
-}
-
-
-var COERCE_TO_TYPES = toHash([ 'string', 'number', 'integer', 'boolean', 'null' ]);
-function coerceToTypes(optionCoerceTypes, dataTypes) {
-  if (Array.isArray(dataTypes)) {
-    var types = [];
-    for (var i=0; i<dataTypes.length; i++) {
-      var t = dataTypes[i];
-      if (COERCE_TO_TYPES[t]) types[types.length] = t;
-      else if (optionCoerceTypes === 'array' && t === 'array') types[types.length] = t;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+class ValidationError extends Error {
+    constructor(errors) {
+        super("validation failed");
+        this.errors = errors;
+        this.ajv = this.validation = true;
     }
-    if (types.length) return types;
-  } else if (COERCE_TO_TYPES[dataTypes]) {
-    return [dataTypes];
-  } else if (optionCoerceTypes === 'array' && dataTypes === 'array') {
-    return ['array'];
-  }
 }
-
-
-function toHash(arr) {
-  var hash = {};
-  for (var i=0; i<arr.length; i++) hash[arr[i]] = true;
-  return hash;
-}
-
-
-var IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i;
-var SINGLE_QUOTE = /'|\\/g;
-function getProperty(key) {
-  return typeof key == 'number'
-          ? '[' + key + ']'
-          : IDENTIFIER.test(key)
-            ? '.' + key
-            : "['" + escapeQuotes(key) + "']";
-}
-
-
-function escapeQuotes(str) {
-  return str.replace(SINGLE_QUOTE, '\\$&')
-            .replace(/\n/g, '\\n')
-            .replace(/\r/g, '\\r')
-            .replace(/\f/g, '\\f')
-            .replace(/\t/g, '\\t');
-}
-
-
-function varOccurences(str, dataVar) {
-  dataVar += '[^0-9]';
-  var matches = str.match(new RegExp(dataVar, 'g'));
-  return matches ? matches.length : 0;
-}
-
-
-function varReplace(str, dataVar, expr) {
-  dataVar += '([^0-9])';
-  expr = expr.replace(/\$/g, '$$$$');
-  return str.replace(new RegExp(dataVar, 'g'), expr + '$1');
-}
-
-
-function schemaHasRules(schema, rules) {
-  if (typeof schema == 'boolean') return !schema;
-  for (var key in schema) if (rules[key]) return true;
-}
-
-
-function schemaHasRulesExcept(schema, rules, exceptKeyword) {
-  if (typeof schema == 'boolean') return !schema && exceptKeyword != 'not';
-  for (var key in schema) if (key != exceptKeyword && rules[key]) return true;
-}
-
-
-function schemaUnknownRules(schema, rules) {
-  if (typeof schema == 'boolean') return;
-  for (var key in schema) if (!rules[key]) return key;
-}
-
-
-function toQuotedString(str) {
-  return '\'' + escapeQuotes(str) + '\'';
-}
-
-
-function getPathExpr(currentPath, expr, jsonPointers, isNumber) {
-  var path = jsonPointers // false by default
-              ? '\'/\' + ' + expr + (isNumber ? '' : '.replace(/~/g, \'~0\').replace(/\\//g, \'~1\')')
-              : (isNumber ? '\'[\' + ' + expr + ' + \']\'' : '\'[\\\'\' + ' + expr + ' + \'\\\']\'');
-  return joinPaths(currentPath, path);
-}
-
-
-function getPath(currentPath, prop, jsonPointers) {
-  var path = jsonPointers // false by default
-              ? toQuotedString('/' + escapeJsonPointer(prop))
-              : toQuotedString(getProperty(prop));
-  return joinPaths(currentPath, path);
-}
-
-
-var JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/;
-var RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/;
-function getData($data, lvl, paths) {
-  var up, jsonPointer, data, matches;
-  if ($data === '') return 'rootData';
-  if ($data[0] == '/') {
-    if (!JSON_POINTER.test($data)) throw new Error('Invalid JSON-pointer: ' + $data);
-    jsonPointer = $data;
-    data = 'rootData';
-  } else {
-    matches = $data.match(RELATIVE_JSON_POINTER);
-    if (!matches) throw new Error('Invalid JSON-pointer: ' + $data);
-    up = +matches[1];
-    jsonPointer = matches[2];
-    if (jsonPointer == '#') {
-      if (up >= lvl) throw new Error('Cannot access property/index ' + up + ' levels up, current level is ' + lvl);
-      return paths[lvl - up];
-    }
-
-    if (up > lvl) throw new Error('Cannot access data ' + up + ' levels up, current level is ' + lvl);
-    data = 'data' + ((lvl - up) || '');
-    if (!jsonPointer) return data;
-  }
-
-  var expr = data;
-  var segments = jsonPointer.split('/');
-  for (var i=0; i<segments.length; i++) {
-    var segment = segments[i];
-    if (segment) {
-      data += getProperty(unescapeJsonPointer(segment));
-      expr += ' && ' + data;
-    }
-  }
-  return expr;
-}
-
-
-function joinPaths (a, b) {
-  if (a == '""') return b;
-  return (a + ' + ' + b).replace(/([^\\])' \+ '/g, '$1');
-}
-
-
-function unescapeFragment(str) {
-  return unescapeJsonPointer(decodeURIComponent(str));
-}
-
-
-function escapeFragment(str) {
-  return encodeURIComponent(escapeJsonPointer(str));
-}
-
-
-function escapeJsonPointer(str) {
-  return str.replace(/~/g, '~0').replace(/\//g, '~1');
-}
-
-
-function unescapeJsonPointer(str) {
-  return str.replace(/~1/g, '/').replace(/~0/g, '~');
-}
-
+exports["default"] = ValidationError;
+//# sourceMappingURL=validation_error.js.map
 
 /***/ }),
 
-/***/ 1412:
-/***/ ((module) => {
+/***/ 4720:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
-
-var KEYWORDS = [
-  'multipleOf',
-  'maximum',
-  'exclusiveMaximum',
-  'minimum',
-  'exclusiveMinimum',
-  'maxLength',
-  'minLength',
-  'pattern',
-  'additionalItems',
-  'maxItems',
-  'minItems',
-  'uniqueItems',
-  'maxProperties',
-  'minProperties',
-  'required',
-  'additionalProperties',
-  'enum',
-  'format',
-  'const'
-];
-
-module.exports = function (metaSchema, keywordsJsonPointers) {
-  for (var i=0; i<keywordsJsonPointers.length; i++) {
-    metaSchema = JSON.parse(JSON.stringify(metaSchema));
-    var segments = keywordsJsonPointers[i].split('/');
-    var keywords = metaSchema;
-    var j;
-    for (j=1; j<segments.length; j++)
-      keywords = keywords[segments[j]];
-
-    for (j=0; j<KEYWORDS.length; j++) {
-      var key = KEYWORDS[j];
-      var schema = keywords[key];
-      if (schema) {
-        keywords[key] = {
-          anyOf: [
-            schema,
-            { $ref: 'https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#' }
-          ]
-        };
-      }
-    }
-  }
-
-  return metaSchema;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.validateAdditionalItems = void 0;
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+const error = {
+    message: ({ params: { len } }) => (0, codegen_1.str) `must NOT have more than ${len} items`,
+    params: ({ params: { len } }) => (0, codegen_1._) `{limit: ${len}}`,
 };
-
-
-/***/ }),
-
-/***/ 458:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-var metaSchema = __nccwpck_require__(38);
-
-module.exports = {
-  $id: 'https://github.com/ajv-validator/ajv/blob/master/lib/definition_schema.js',
-  definitions: {
-    simpleTypes: metaSchema.definitions.simpleTypes
-  },
-  type: 'object',
-  dependencies: {
-    schema: ['validate'],
-    $data: ['validate'],
-    statements: ['inline'],
-    valid: {not: {required: ['macro']}}
-  },
-  properties: {
-    type: metaSchema.properties.type,
-    schema: {type: 'boolean'},
-    statements: {type: 'boolean'},
-    dependencies: {
-      type: 'array',
-      items: {type: 'string'}
+const def = {
+    keyword: "additionalItems",
+    type: "array",
+    schemaType: ["boolean", "object"],
+    before: "uniqueItems",
+    error,
+    code(cxt) {
+        const { parentSchema, it } = cxt;
+        const { items } = parentSchema;
+        if (!Array.isArray(items)) {
+            (0, util_1.checkStrictMode)(it, '"additionalItems" is ignored when "items" is not an array of schemas');
+            return;
+        }
+        validateAdditionalItems(cxt, items);
     },
-    metaSchema: {type: 'object'},
-    modifying: {type: 'boolean'},
-    valid: {type: 'boolean'},
-    $data: {type: 'boolean'},
-    async: {type: 'boolean'},
-    errors: {
-      anyOf: [
-        {type: 'boolean'},
-        {const: 'full'}
-      ]
-    }
-  }
 };
-
-
-/***/ }),
-
-/***/ 7404:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate__limit(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $errorKeyword;
-  var $data = 'data' + ($dataLvl || '');
-  var $isData = it.opts.$data && $schema && $schema.$data,
-    $schemaValue;
-  if ($isData) {
-    out += ' var schema' + ($lvl) + ' = ' + (it.util.getData($schema.$data, $dataLvl, it.dataPathArr)) + '; ';
-    $schemaValue = 'schema' + $lvl;
-  } else {
-    $schemaValue = $schema;
-  }
-  var $isMax = $keyword == 'maximum',
-    $exclusiveKeyword = $isMax ? 'exclusiveMaximum' : 'exclusiveMinimum',
-    $schemaExcl = it.schema[$exclusiveKeyword],
-    $isDataExcl = it.opts.$data && $schemaExcl && $schemaExcl.$data,
-    $op = $isMax ? '<' : '>',
-    $notOp = $isMax ? '>' : '<',
-    $errorKeyword = undefined;
-  if (!($isData || typeof $schema == 'number' || $schema === undefined)) {
-    throw new Error($keyword + ' must be number');
-  }
-  if (!($isDataExcl || $schemaExcl === undefined || typeof $schemaExcl == 'number' || typeof $schemaExcl == 'boolean')) {
-    throw new Error($exclusiveKeyword + ' must be number or boolean');
-  }
-  if ($isDataExcl) {
-    var $schemaValueExcl = it.util.getData($schemaExcl.$data, $dataLvl, it.dataPathArr),
-      $exclusive = 'exclusive' + $lvl,
-      $exclType = 'exclType' + $lvl,
-      $exclIsNumber = 'exclIsNumber' + $lvl,
-      $opExpr = 'op' + $lvl,
-      $opStr = '\' + ' + $opExpr + ' + \'';
-    out += ' var schemaExcl' + ($lvl) + ' = ' + ($schemaValueExcl) + '; ';
-    $schemaValueExcl = 'schemaExcl' + $lvl;
-    out += ' var ' + ($exclusive) + '; var ' + ($exclType) + ' = typeof ' + ($schemaValueExcl) + '; if (' + ($exclType) + ' != \'boolean\' && ' + ($exclType) + ' != \'undefined\' && ' + ($exclType) + ' != \'number\') { ';
-    var $errorKeyword = $exclusiveKeyword;
-    var $$outStack = $$outStack || [];
-    $$outStack.push(out);
-    out = ''; /* istanbul ignore else */
-    if (it.createErrors !== false) {
-      out += ' { keyword: \'' + ($errorKeyword || '_exclusiveLimit') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: {} ';
-      if (it.opts.messages !== false) {
-        out += ' , message: \'' + ($exclusiveKeyword) + ' should be boolean\' ';
-      }
-      if (it.opts.verbose) {
-        out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-      }
-      out += ' } ';
-    } else {
-      out += ' {} ';
+function validateAdditionalItems(cxt, items) {
+    const { gen, schema, data, keyword, it } = cxt;
+    it.items = true;
+    const len = gen.const("len", (0, codegen_1._) `${data}.length`);
+    if (schema === false) {
+        cxt.setParams({ len: items.length });
+        cxt.pass((0, codegen_1._) `${len} <= ${items.length}`);
     }
-    var __err = out;
-    out = $$outStack.pop();
-    if (!it.compositeRule && $breakOnError) {
-      /* istanbul ignore if */
-      if (it.async) {
-        out += ' throw new ValidationError([' + (__err) + ']); ';
-      } else {
-        out += ' validate.errors = [' + (__err) + ']; return false; ';
-      }
-    } else {
-      out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
+    else if (typeof schema == "object" && !(0, util_1.alwaysValidSchema)(it, schema)) {
+        const valid = gen.var("valid", (0, codegen_1._) `${len} <= ${items.length}`); // TODO var
+        gen.if((0, codegen_1.not)(valid), () => validateItems(valid));
+        cxt.ok(valid);
     }
-    out += ' } else if ( ';
-    if ($isData) {
-      out += ' (' + ($schemaValue) + ' !== undefined && typeof ' + ($schemaValue) + ' != \'number\') || ';
+    function validateItems(valid) {
+        gen.forRange("i", items.length, len, (i) => {
+            cxt.subschema({ keyword, dataProp: i, dataPropType: util_1.Type.Num }, valid);
+            if (!it.allErrors)
+                gen.if((0, codegen_1.not)(valid), () => gen.break());
+        });
     }
-    out += ' ' + ($exclType) + ' == \'number\' ? ( (' + ($exclusive) + ' = ' + ($schemaValue) + ' === undefined || ' + ($schemaValueExcl) + ' ' + ($op) + '= ' + ($schemaValue) + ') ? ' + ($data) + ' ' + ($notOp) + '= ' + ($schemaValueExcl) + ' : ' + ($data) + ' ' + ($notOp) + ' ' + ($schemaValue) + ' ) : ( (' + ($exclusive) + ' = ' + ($schemaValueExcl) + ' === true) ? ' + ($data) + ' ' + ($notOp) + '= ' + ($schemaValue) + ' : ' + ($data) + ' ' + ($notOp) + ' ' + ($schemaValue) + ' ) || ' + ($data) + ' !== ' + ($data) + ') { var op' + ($lvl) + ' = ' + ($exclusive) + ' ? \'' + ($op) + '\' : \'' + ($op) + '=\'; ';
-    if ($schema === undefined) {
-      $errorKeyword = $exclusiveKeyword;
-      $errSchemaPath = it.errSchemaPath + '/' + $exclusiveKeyword;
-      $schemaValue = $schemaValueExcl;
-      $isData = $isDataExcl;
-    }
-  } else {
-    var $exclIsNumber = typeof $schemaExcl == 'number',
-      $opStr = $op;
-    if ($exclIsNumber && $isData) {
-      var $opExpr = '\'' + $opStr + '\'';
-      out += ' if ( ';
-      if ($isData) {
-        out += ' (' + ($schemaValue) + ' !== undefined && typeof ' + ($schemaValue) + ' != \'number\') || ';
-      }
-      out += ' ( ' + ($schemaValue) + ' === undefined || ' + ($schemaExcl) + ' ' + ($op) + '= ' + ($schemaValue) + ' ? ' + ($data) + ' ' + ($notOp) + '= ' + ($schemaExcl) + ' : ' + ($data) + ' ' + ($notOp) + ' ' + ($schemaValue) + ' ) || ' + ($data) + ' !== ' + ($data) + ') { ';
-    } else {
-      if ($exclIsNumber && $schema === undefined) {
-        $exclusive = true;
-        $errorKeyword = $exclusiveKeyword;
-        $errSchemaPath = it.errSchemaPath + '/' + $exclusiveKeyword;
-        $schemaValue = $schemaExcl;
-        $notOp += '=';
-      } else {
-        if ($exclIsNumber) $schemaValue = Math[$isMax ? 'min' : 'max']($schemaExcl, $schema);
-        if ($schemaExcl === ($exclIsNumber ? $schemaValue : true)) {
-          $exclusive = true;
-          $errorKeyword = $exclusiveKeyword;
-          $errSchemaPath = it.errSchemaPath + '/' + $exclusiveKeyword;
-          $notOp += '=';
-        } else {
-          $exclusive = false;
-          $opStr += '=';
-        }
-      }
-      var $opExpr = '\'' + $opStr + '\'';
-      out += ' if ( ';
-      if ($isData) {
-        out += ' (' + ($schemaValue) + ' !== undefined && typeof ' + ($schemaValue) + ' != \'number\') || ';
-      }
-      out += ' ' + ($data) + ' ' + ($notOp) + ' ' + ($schemaValue) + ' || ' + ($data) + ' !== ' + ($data) + ') { ';
-    }
-  }
-  $errorKeyword = $errorKeyword || $keyword;
-  var $$outStack = $$outStack || [];
-  $$outStack.push(out);
-  out = ''; /* istanbul ignore else */
-  if (it.createErrors !== false) {
-    out += ' { keyword: \'' + ($errorKeyword || '_limit') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { comparison: ' + ($opExpr) + ', limit: ' + ($schemaValue) + ', exclusive: ' + ($exclusive) + ' } ';
-    if (it.opts.messages !== false) {
-      out += ' , message: \'should be ' + ($opStr) + ' ';
-      if ($isData) {
-        out += '\' + ' + ($schemaValue);
-      } else {
-        out += '' + ($schemaValue) + '\'';
-      }
-    }
-    if (it.opts.verbose) {
-      out += ' , schema:  ';
-      if ($isData) {
-        out += 'validate.schema' + ($schemaPath);
-      } else {
-        out += '' + ($schema);
-      }
-      out += '         , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-    }
-    out += ' } ';
-  } else {
-    out += ' {} ';
-  }
-  var __err = out;
-  out = $$outStack.pop();
-  if (!it.compositeRule && $breakOnError) {
-    /* istanbul ignore if */
-    if (it.async) {
-      out += ' throw new ValidationError([' + (__err) + ']); ';
-    } else {
-      out += ' validate.errors = [' + (__err) + ']; return false; ';
-    }
-  } else {
-    out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-  }
-  out += ' } ';
-  if ($breakOnError) {
-    out += ' else { ';
-  }
-  return out;
 }
-
-
-/***/ }),
-
-/***/ 4683:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate__limitItems(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $errorKeyword;
-  var $data = 'data' + ($dataLvl || '');
-  var $isData = it.opts.$data && $schema && $schema.$data,
-    $schemaValue;
-  if ($isData) {
-    out += ' var schema' + ($lvl) + ' = ' + (it.util.getData($schema.$data, $dataLvl, it.dataPathArr)) + '; ';
-    $schemaValue = 'schema' + $lvl;
-  } else {
-    $schemaValue = $schema;
-  }
-  if (!($isData || typeof $schema == 'number')) {
-    throw new Error($keyword + ' must be number');
-  }
-  var $op = $keyword == 'maxItems' ? '>' : '<';
-  out += 'if ( ';
-  if ($isData) {
-    out += ' (' + ($schemaValue) + ' !== undefined && typeof ' + ($schemaValue) + ' != \'number\') || ';
-  }
-  out += ' ' + ($data) + '.length ' + ($op) + ' ' + ($schemaValue) + ') { ';
-  var $errorKeyword = $keyword;
-  var $$outStack = $$outStack || [];
-  $$outStack.push(out);
-  out = ''; /* istanbul ignore else */
-  if (it.createErrors !== false) {
-    out += ' { keyword: \'' + ($errorKeyword || '_limitItems') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { limit: ' + ($schemaValue) + ' } ';
-    if (it.opts.messages !== false) {
-      out += ' , message: \'should NOT have ';
-      if ($keyword == 'maxItems') {
-        out += 'more';
-      } else {
-        out += 'fewer';
-      }
-      out += ' than ';
-      if ($isData) {
-        out += '\' + ' + ($schemaValue) + ' + \'';
-      } else {
-        out += '' + ($schema);
-      }
-      out += ' items\' ';
-    }
-    if (it.opts.verbose) {
-      out += ' , schema:  ';
-      if ($isData) {
-        out += 'validate.schema' + ($schemaPath);
-      } else {
-        out += '' + ($schema);
-      }
-      out += '         , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-    }
-    out += ' } ';
-  } else {
-    out += ' {} ';
-  }
-  var __err = out;
-  out = $$outStack.pop();
-  if (!it.compositeRule && $breakOnError) {
-    /* istanbul ignore if */
-    if (it.async) {
-      out += ' throw new ValidationError([' + (__err) + ']); ';
-    } else {
-      out += ' validate.errors = [' + (__err) + ']; return false; ';
-    }
-  } else {
-    out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-  }
-  out += '} ';
-  if ($breakOnError) {
-    out += ' else { ';
-  }
-  return out;
-}
-
+exports.validateAdditionalItems = validateAdditionalItems;
+exports["default"] = def;
+//# sourceMappingURL=additionalItems.js.map
 
 /***/ }),
 
-/***/ 2114:
-/***/ ((module) => {
+/***/ 3481:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
-module.exports = function generate__limitLength(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $errorKeyword;
-  var $data = 'data' + ($dataLvl || '');
-  var $isData = it.opts.$data && $schema && $schema.$data,
-    $schemaValue;
-  if ($isData) {
-    out += ' var schema' + ($lvl) + ' = ' + (it.util.getData($schema.$data, $dataLvl, it.dataPathArr)) + '; ';
-    $schemaValue = 'schema' + $lvl;
-  } else {
-    $schemaValue = $schema;
-  }
-  if (!($isData || typeof $schema == 'number')) {
-    throw new Error($keyword + ' must be number');
-  }
-  var $op = $keyword == 'maxLength' ? '>' : '<';
-  out += 'if ( ';
-  if ($isData) {
-    out += ' (' + ($schemaValue) + ' !== undefined && typeof ' + ($schemaValue) + ' != \'number\') || ';
-  }
-  if (it.opts.unicode === false) {
-    out += ' ' + ($data) + '.length ';
-  } else {
-    out += ' ucs2length(' + ($data) + ') ';
-  }
-  out += ' ' + ($op) + ' ' + ($schemaValue) + ') { ';
-  var $errorKeyword = $keyword;
-  var $$outStack = $$outStack || [];
-  $$outStack.push(out);
-  out = ''; /* istanbul ignore else */
-  if (it.createErrors !== false) {
-    out += ' { keyword: \'' + ($errorKeyword || '_limitLength') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { limit: ' + ($schemaValue) + ' } ';
-    if (it.opts.messages !== false) {
-      out += ' , message: \'should NOT be ';
-      if ($keyword == 'maxLength') {
-        out += 'longer';
-      } else {
-        out += 'shorter';
-      }
-      out += ' than ';
-      if ($isData) {
-        out += '\' + ' + ($schemaValue) + ' + \'';
-      } else {
-        out += '' + ($schema);
-      }
-      out += ' characters\' ';
-    }
-    if (it.opts.verbose) {
-      out += ' , schema:  ';
-      if ($isData) {
-        out += 'validate.schema' + ($schemaPath);
-      } else {
-        out += '' + ($schema);
-      }
-      out += '         , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-    }
-    out += ' } ';
-  } else {
-    out += ' {} ';
-  }
-  var __err = out;
-  out = $$outStack.pop();
-  if (!it.compositeRule && $breakOnError) {
-    /* istanbul ignore if */
-    if (it.async) {
-      out += ' throw new ValidationError([' + (__err) + ']); ';
-    } else {
-      out += ' validate.errors = [' + (__err) + ']; return false; ';
-    }
-  } else {
-    out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-  }
-  out += '} ';
-  if ($breakOnError) {
-    out += ' else { ';
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 1142:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate__limitProperties(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $errorKeyword;
-  var $data = 'data' + ($dataLvl || '');
-  var $isData = it.opts.$data && $schema && $schema.$data,
-    $schemaValue;
-  if ($isData) {
-    out += ' var schema' + ($lvl) + ' = ' + (it.util.getData($schema.$data, $dataLvl, it.dataPathArr)) + '; ';
-    $schemaValue = 'schema' + $lvl;
-  } else {
-    $schemaValue = $schema;
-  }
-  if (!($isData || typeof $schema == 'number')) {
-    throw new Error($keyword + ' must be number');
-  }
-  var $op = $keyword == 'maxProperties' ? '>' : '<';
-  out += 'if ( ';
-  if ($isData) {
-    out += ' (' + ($schemaValue) + ' !== undefined && typeof ' + ($schemaValue) + ' != \'number\') || ';
-  }
-  out += ' Object.keys(' + ($data) + ').length ' + ($op) + ' ' + ($schemaValue) + ') { ';
-  var $errorKeyword = $keyword;
-  var $$outStack = $$outStack || [];
-  $$outStack.push(out);
-  out = ''; /* istanbul ignore else */
-  if (it.createErrors !== false) {
-    out += ' { keyword: \'' + ($errorKeyword || '_limitProperties') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { limit: ' + ($schemaValue) + ' } ';
-    if (it.opts.messages !== false) {
-      out += ' , message: \'should NOT have ';
-      if ($keyword == 'maxProperties') {
-        out += 'more';
-      } else {
-        out += 'fewer';
-      }
-      out += ' than ';
-      if ($isData) {
-        out += '\' + ' + ($schemaValue) + ' + \'';
-      } else {
-        out += '' + ($schema);
-      }
-      out += ' properties\' ';
-    }
-    if (it.opts.verbose) {
-      out += ' , schema:  ';
-      if ($isData) {
-        out += 'validate.schema' + ($schemaPath);
-      } else {
-        out += '' + ($schema);
-      }
-      out += '         , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-    }
-    out += ' } ';
-  } else {
-    out += ' {} ';
-  }
-  var __err = out;
-  out = $$outStack.pop();
-  if (!it.compositeRule && $breakOnError) {
-    /* istanbul ignore if */
-    if (it.async) {
-      out += ' throw new ValidationError([' + (__err) + ']); ';
-    } else {
-      out += ' validate.errors = [' + (__err) + ']; return false; ';
-    }
-  } else {
-    out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-  }
-  out += '} ';
-  if ($breakOnError) {
-    out += ' else { ';
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 9443:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_allOf(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $it = it.util.copy(it);
-  var $closingBraces = '';
-  $it.level++;
-  var $nextValid = 'valid' + $it.level;
-  var $currentBaseId = $it.baseId,
-    $allSchemasEmpty = true;
-  var arr1 = $schema;
-  if (arr1) {
-    var $sch, $i = -1,
-      l1 = arr1.length - 1;
-    while ($i < l1) {
-      $sch = arr1[$i += 1];
-      if ((it.opts.strictKeywords ? (typeof $sch == 'object' && Object.keys($sch).length > 0) || $sch === false : it.util.schemaHasRules($sch, it.RULES.all))) {
-        $allSchemasEmpty = false;
-        $it.schema = $sch;
-        $it.schemaPath = $schemaPath + '[' + $i + ']';
-        $it.errSchemaPath = $errSchemaPath + '/' + $i;
-        out += '  ' + (it.validate($it)) + ' ';
-        $it.baseId = $currentBaseId;
-        if ($breakOnError) {
-          out += ' if (' + ($nextValid) + ') { ';
-          $closingBraces += '}';
-        }
-      }
-    }
-  }
-  if ($breakOnError) {
-    if ($allSchemasEmpty) {
-      out += ' if (true) { ';
-    } else {
-      out += ' ' + ($closingBraces.slice(0, -1)) + ' ';
-    }
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 3093:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_anyOf(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $data = 'data' + ($dataLvl || '');
-  var $valid = 'valid' + $lvl;
-  var $errs = 'errs__' + $lvl;
-  var $it = it.util.copy(it);
-  var $closingBraces = '';
-  $it.level++;
-  var $nextValid = 'valid' + $it.level;
-  var $noEmptySchema = $schema.every(function($sch) {
-    return (it.opts.strictKeywords ? (typeof $sch == 'object' && Object.keys($sch).length > 0) || $sch === false : it.util.schemaHasRules($sch, it.RULES.all));
-  });
-  if ($noEmptySchema) {
-    var $currentBaseId = $it.baseId;
-    out += ' var ' + ($errs) + ' = errors; var ' + ($valid) + ' = false;  ';
-    var $wasComposite = it.compositeRule;
-    it.compositeRule = $it.compositeRule = true;
-    var arr1 = $schema;
-    if (arr1) {
-      var $sch, $i = -1,
-        l1 = arr1.length - 1;
-      while ($i < l1) {
-        $sch = arr1[$i += 1];
-        $it.schema = $sch;
-        $it.schemaPath = $schemaPath + '[' + $i + ']';
-        $it.errSchemaPath = $errSchemaPath + '/' + $i;
-        out += '  ' + (it.validate($it)) + ' ';
-        $it.baseId = $currentBaseId;
-        out += ' ' + ($valid) + ' = ' + ($valid) + ' || ' + ($nextValid) + '; if (!' + ($valid) + ') { ';
-        $closingBraces += '}';
-      }
-    }
-    it.compositeRule = $it.compositeRule = $wasComposite;
-    out += ' ' + ($closingBraces) + ' if (!' + ($valid) + ') {   var err =   '; /* istanbul ignore else */
-    if (it.createErrors !== false) {
-      out += ' { keyword: \'' + ('anyOf') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: {} ';
-      if (it.opts.messages !== false) {
-        out += ' , message: \'should match some schema in anyOf\' ';
-      }
-      if (it.opts.verbose) {
-        out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-      }
-      out += ' } ';
-    } else {
-      out += ' {} ';
-    }
-    out += ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-    if (!it.compositeRule && $breakOnError) {
-      /* istanbul ignore if */
-      if (it.async) {
-        out += ' throw new ValidationError(vErrors); ';
-      } else {
-        out += ' validate.errors = vErrors; return false; ';
-      }
-    }
-    out += ' } else {  errors = ' + ($errs) + '; if (vErrors !== null) { if (' + ($errs) + ') vErrors.length = ' + ($errs) + '; else vErrors = null; } ';
-    if (it.opts.allErrors) {
-      out += ' } ';
-    }
-  } else {
-    if ($breakOnError) {
-      out += ' if (true) { ';
-    }
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 134:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_comment(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $schema = it.schema[$keyword];
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $comment = it.util.toQuotedString($schema);
-  if (it.opts.$comment === true) {
-    out += ' console.log(' + ($comment) + ');';
-  } else if (typeof it.opts.$comment == 'function') {
-    out += ' self._opts.$comment(' + ($comment) + ', ' + (it.util.toQuotedString($errSchemaPath)) + ', validate.root.schema);';
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 1661:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_const(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $data = 'data' + ($dataLvl || '');
-  var $valid = 'valid' + $lvl;
-  var $isData = it.opts.$data && $schema && $schema.$data,
-    $schemaValue;
-  if ($isData) {
-    out += ' var schema' + ($lvl) + ' = ' + (it.util.getData($schema.$data, $dataLvl, it.dataPathArr)) + '; ';
-    $schemaValue = 'schema' + $lvl;
-  } else {
-    $schemaValue = $schema;
-  }
-  if (!$isData) {
-    out += ' var schema' + ($lvl) + ' = validate.schema' + ($schemaPath) + ';';
-  }
-  out += 'var ' + ($valid) + ' = equal(' + ($data) + ', schema' + ($lvl) + '); if (!' + ($valid) + ') {   ';
-  var $$outStack = $$outStack || [];
-  $$outStack.push(out);
-  out = ''; /* istanbul ignore else */
-  if (it.createErrors !== false) {
-    out += ' { keyword: \'' + ('const') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { allowedValue: schema' + ($lvl) + ' } ';
-    if (it.opts.messages !== false) {
-      out += ' , message: \'should be equal to constant\' ';
-    }
-    if (it.opts.verbose) {
-      out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-    }
-    out += ' } ';
-  } else {
-    out += ' {} ';
-  }
-  var __err = out;
-  out = $$outStack.pop();
-  if (!it.compositeRule && $breakOnError) {
-    /* istanbul ignore if */
-    if (it.async) {
-      out += ' throw new ValidationError([' + (__err) + ']); ';
-    } else {
-      out += ' validate.errors = [' + (__err) + ']; return false; ';
-    }
-  } else {
-    out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-  }
-  out += ' }';
-  if ($breakOnError) {
-    out += ' else { ';
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 5964:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_contains(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $data = 'data' + ($dataLvl || '');
-  var $valid = 'valid' + $lvl;
-  var $errs = 'errs__' + $lvl;
-  var $it = it.util.copy(it);
-  var $closingBraces = '';
-  $it.level++;
-  var $nextValid = 'valid' + $it.level;
-  var $idx = 'i' + $lvl,
-    $dataNxt = $it.dataLevel = it.dataLevel + 1,
-    $nextData = 'data' + $dataNxt,
-    $currentBaseId = it.baseId,
-    $nonEmptySchema = (it.opts.strictKeywords ? (typeof $schema == 'object' && Object.keys($schema).length > 0) || $schema === false : it.util.schemaHasRules($schema, it.RULES.all));
-  out += 'var ' + ($errs) + ' = errors;var ' + ($valid) + ';';
-  if ($nonEmptySchema) {
-    var $wasComposite = it.compositeRule;
-    it.compositeRule = $it.compositeRule = true;
-    $it.schema = $schema;
-    $it.schemaPath = $schemaPath;
-    $it.errSchemaPath = $errSchemaPath;
-    out += ' var ' + ($nextValid) + ' = false; for (var ' + ($idx) + ' = 0; ' + ($idx) + ' < ' + ($data) + '.length; ' + ($idx) + '++) { ';
-    $it.errorPath = it.util.getPathExpr(it.errorPath, $idx, it.opts.jsonPointers, true);
-    var $passData = $data + '[' + $idx + ']';
-    $it.dataPathArr[$dataNxt] = $idx;
-    var $code = it.validate($it);
-    $it.baseId = $currentBaseId;
-    if (it.util.varOccurences($code, $nextData) < 2) {
-      out += ' ' + (it.util.varReplace($code, $nextData, $passData)) + ' ';
-    } else {
-      out += ' var ' + ($nextData) + ' = ' + ($passData) + '; ' + ($code) + ' ';
-    }
-    out += ' if (' + ($nextValid) + ') break; }  ';
-    it.compositeRule = $it.compositeRule = $wasComposite;
-    out += ' ' + ($closingBraces) + ' if (!' + ($nextValid) + ') {';
-  } else {
-    out += ' if (' + ($data) + '.length == 0) {';
-  }
-  var $$outStack = $$outStack || [];
-  $$outStack.push(out);
-  out = ''; /* istanbul ignore else */
-  if (it.createErrors !== false) {
-    out += ' { keyword: \'' + ('contains') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: {} ';
-    if (it.opts.messages !== false) {
-      out += ' , message: \'should contain a valid item\' ';
-    }
-    if (it.opts.verbose) {
-      out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-    }
-    out += ' } ';
-  } else {
-    out += ' {} ';
-  }
-  var __err = out;
-  out = $$outStack.pop();
-  if (!it.compositeRule && $breakOnError) {
-    /* istanbul ignore if */
-    if (it.async) {
-      out += ' throw new ValidationError([' + (__err) + ']); ';
-    } else {
-      out += ' validate.errors = [' + (__err) + ']; return false; ';
-    }
-  } else {
-    out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-  }
-  out += ' } else { ';
-  if ($nonEmptySchema) {
-    out += '  errors = ' + ($errs) + '; if (vErrors !== null) { if (' + ($errs) + ') vErrors.length = ' + ($errs) + '; else vErrors = null; } ';
-  }
-  if (it.opts.allErrors) {
-    out += ' } ';
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 5912:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_custom(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $errorKeyword;
-  var $data = 'data' + ($dataLvl || '');
-  var $valid = 'valid' + $lvl;
-  var $errs = 'errs__' + $lvl;
-  var $isData = it.opts.$data && $schema && $schema.$data,
-    $schemaValue;
-  if ($isData) {
-    out += ' var schema' + ($lvl) + ' = ' + (it.util.getData($schema.$data, $dataLvl, it.dataPathArr)) + '; ';
-    $schemaValue = 'schema' + $lvl;
-  } else {
-    $schemaValue = $schema;
-  }
-  var $rule = this,
-    $definition = 'definition' + $lvl,
-    $rDef = $rule.definition,
-    $closingBraces = '';
-  var $compile, $inline, $macro, $ruleValidate, $validateCode;
-  if ($isData && $rDef.$data) {
-    $validateCode = 'keywordValidate' + $lvl;
-    var $validateSchema = $rDef.validateSchema;
-    out += ' var ' + ($definition) + ' = RULES.custom[\'' + ($keyword) + '\'].definition; var ' + ($validateCode) + ' = ' + ($definition) + '.validate;';
-  } else {
-    $ruleValidate = it.useCustomRule($rule, $schema, it.schema, it);
-    if (!$ruleValidate) return;
-    $schemaValue = 'validate.schema' + $schemaPath;
-    $validateCode = $ruleValidate.code;
-    $compile = $rDef.compile;
-    $inline = $rDef.inline;
-    $macro = $rDef.macro;
-  }
-  var $ruleErrs = $validateCode + '.errors',
-    $i = 'i' + $lvl,
-    $ruleErr = 'ruleErr' + $lvl,
-    $asyncKeyword = $rDef.async;
-  if ($asyncKeyword && !it.async) throw new Error('async keyword in sync schema');
-  if (!($inline || $macro)) {
-    out += '' + ($ruleErrs) + ' = null;';
-  }
-  out += 'var ' + ($errs) + ' = errors;var ' + ($valid) + ';';
-  if ($isData && $rDef.$data) {
-    $closingBraces += '}';
-    out += ' if (' + ($schemaValue) + ' === undefined) { ' + ($valid) + ' = true; } else { ';
-    if ($validateSchema) {
-      $closingBraces += '}';
-      out += ' ' + ($valid) + ' = ' + ($definition) + '.validateSchema(' + ($schemaValue) + '); if (' + ($valid) + ') { ';
-    }
-  }
-  if ($inline) {
-    if ($rDef.statements) {
-      out += ' ' + ($ruleValidate.validate) + ' ';
-    } else {
-      out += ' ' + ($valid) + ' = ' + ($ruleValidate.validate) + '; ';
-    }
-  } else if ($macro) {
-    var $it = it.util.copy(it);
-    var $closingBraces = '';
-    $it.level++;
-    var $nextValid = 'valid' + $it.level;
-    $it.schema = $ruleValidate.validate;
-    $it.schemaPath = '';
-    var $wasComposite = it.compositeRule;
-    it.compositeRule = $it.compositeRule = true;
-    var $code = it.validate($it).replace(/validate\.schema/g, $validateCode);
-    it.compositeRule = $it.compositeRule = $wasComposite;
-    out += ' ' + ($code);
-  } else {
-    var $$outStack = $$outStack || [];
-    $$outStack.push(out);
-    out = '';
-    out += '  ' + ($validateCode) + '.call( ';
-    if (it.opts.passContext) {
-      out += 'this';
-    } else {
-      out += 'self';
-    }
-    if ($compile || $rDef.schema === false) {
-      out += ' , ' + ($data) + ' ';
-    } else {
-      out += ' , ' + ($schemaValue) + ' , ' + ($data) + ' , validate.schema' + (it.schemaPath) + ' ';
-    }
-    out += ' , (dataPath || \'\')';
-    if (it.errorPath != '""') {
-      out += ' + ' + (it.errorPath);
-    }
-    var $parentData = $dataLvl ? 'data' + (($dataLvl - 1) || '') : 'parentData',
-      $parentDataProperty = $dataLvl ? it.dataPathArr[$dataLvl] : 'parentDataProperty';
-    out += ' , ' + ($parentData) + ' , ' + ($parentDataProperty) + ' , rootData )  ';
-    var def_callRuleValidate = out;
-    out = $$outStack.pop();
-    if ($rDef.errors === false) {
-      out += ' ' + ($valid) + ' = ';
-      if ($asyncKeyword) {
-        out += 'await ';
-      }
-      out += '' + (def_callRuleValidate) + '; ';
-    } else {
-      if ($asyncKeyword) {
-        $ruleErrs = 'customErrors' + $lvl;
-        out += ' var ' + ($ruleErrs) + ' = null; try { ' + ($valid) + ' = await ' + (def_callRuleValidate) + '; } catch (e) { ' + ($valid) + ' = false; if (e instanceof ValidationError) ' + ($ruleErrs) + ' = e.errors; else throw e; } ';
-      } else {
-        out += ' ' + ($ruleErrs) + ' = null; ' + ($valid) + ' = ' + (def_callRuleValidate) + '; ';
-      }
-    }
-  }
-  if ($rDef.modifying) {
-    out += ' if (' + ($parentData) + ') ' + ($data) + ' = ' + ($parentData) + '[' + ($parentDataProperty) + '];';
-  }
-  out += '' + ($closingBraces);
-  if ($rDef.valid) {
-    if ($breakOnError) {
-      out += ' if (true) { ';
-    }
-  } else {
-    out += ' if ( ';
-    if ($rDef.valid === undefined) {
-      out += ' !';
-      if ($macro) {
-        out += '' + ($nextValid);
-      } else {
-        out += '' + ($valid);
-      }
-    } else {
-      out += ' ' + (!$rDef.valid) + ' ';
-    }
-    out += ') { ';
-    $errorKeyword = $rule.keyword;
-    var $$outStack = $$outStack || [];
-    $$outStack.push(out);
-    out = '';
-    var $$outStack = $$outStack || [];
-    $$outStack.push(out);
-    out = ''; /* istanbul ignore else */
-    if (it.createErrors !== false) {
-      out += ' { keyword: \'' + ($errorKeyword || 'custom') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { keyword: \'' + ($rule.keyword) + '\' } ';
-      if (it.opts.messages !== false) {
-        out += ' , message: \'should pass "' + ($rule.keyword) + '" keyword validation\' ';
-      }
-      if (it.opts.verbose) {
-        out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-      }
-      out += ' } ';
-    } else {
-      out += ' {} ';
-    }
-    var __err = out;
-    out = $$outStack.pop();
-    if (!it.compositeRule && $breakOnError) {
-      /* istanbul ignore if */
-      if (it.async) {
-        out += ' throw new ValidationError([' + (__err) + ']); ';
-      } else {
-        out += ' validate.errors = [' + (__err) + ']; return false; ';
-      }
-    } else {
-      out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-    }
-    var def_customError = out;
-    out = $$outStack.pop();
-    if ($inline) {
-      if ($rDef.errors) {
-        if ($rDef.errors != 'full') {
-          out += '  for (var ' + ($i) + '=' + ($errs) + '; ' + ($i) + '<errors; ' + ($i) + '++) { var ' + ($ruleErr) + ' = vErrors[' + ($i) + ']; if (' + ($ruleErr) + '.dataPath === undefined) ' + ($ruleErr) + '.dataPath = (dataPath || \'\') + ' + (it.errorPath) + '; if (' + ($ruleErr) + '.schemaPath === undefined) { ' + ($ruleErr) + '.schemaPath = "' + ($errSchemaPath) + '"; } ';
-          if (it.opts.verbose) {
-            out += ' ' + ($ruleErr) + '.schema = ' + ($schemaValue) + '; ' + ($ruleErr) + '.data = ' + ($data) + '; ';
-          }
-          out += ' } ';
-        }
-      } else {
-        if ($rDef.errors === false) {
-          out += ' ' + (def_customError) + ' ';
-        } else {
-          out += ' if (' + ($errs) + ' == errors) { ' + (def_customError) + ' } else {  for (var ' + ($i) + '=' + ($errs) + '; ' + ($i) + '<errors; ' + ($i) + '++) { var ' + ($ruleErr) + ' = vErrors[' + ($i) + ']; if (' + ($ruleErr) + '.dataPath === undefined) ' + ($ruleErr) + '.dataPath = (dataPath || \'\') + ' + (it.errorPath) + '; if (' + ($ruleErr) + '.schemaPath === undefined) { ' + ($ruleErr) + '.schemaPath = "' + ($errSchemaPath) + '"; } ';
-          if (it.opts.verbose) {
-            out += ' ' + ($ruleErr) + '.schema = ' + ($schemaValue) + '; ' + ($ruleErr) + '.data = ' + ($data) + '; ';
-          }
-          out += ' } } ';
-        }
-      }
-    } else if ($macro) {
-      out += '   var err =   '; /* istanbul ignore else */
-      if (it.createErrors !== false) {
-        out += ' { keyword: \'' + ($errorKeyword || 'custom') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { keyword: \'' + ($rule.keyword) + '\' } ';
-        if (it.opts.messages !== false) {
-          out += ' , message: \'should pass "' + ($rule.keyword) + '" keyword validation\' ';
-        }
-        if (it.opts.verbose) {
-          out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-        }
-        out += ' } ';
-      } else {
-        out += ' {} ';
-      }
-      out += ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-      if (!it.compositeRule && $breakOnError) {
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const code_1 = __nccwpck_require__(4205);
+const codegen_1 = __nccwpck_require__(9179);
+const names_1 = __nccwpck_require__(50);
+const util_1 = __nccwpck_require__(3439);
+const error = {
+    message: "must NOT have additional properties",
+    params: ({ params }) => (0, codegen_1._) `{additionalProperty: ${params.additionalProperty}}`,
+};
+const def = {
+    keyword: "additionalProperties",
+    type: ["object"],
+    schemaType: ["boolean", "object"],
+    allowUndefined: true,
+    trackErrors: true,
+    error,
+    code(cxt) {
+        const { gen, schema, parentSchema, data, errsCount, it } = cxt;
         /* istanbul ignore if */
-        if (it.async) {
-          out += ' throw new ValidationError(vErrors); ';
-        } else {
-          out += ' validate.errors = vErrors; return false; ';
+        if (!errsCount)
+            throw new Error("ajv implementation error");
+        const { allErrors, opts } = it;
+        it.props = true;
+        if (opts.removeAdditional !== "all" && (0, util_1.alwaysValidSchema)(it, schema))
+            return;
+        const props = (0, code_1.allSchemaProperties)(parentSchema.properties);
+        const patProps = (0, code_1.allSchemaProperties)(parentSchema.patternProperties);
+        checkAdditionalProperties();
+        cxt.ok((0, codegen_1._) `${errsCount} === ${names_1.default.errors}`);
+        function checkAdditionalProperties() {
+            gen.forIn("key", data, (key) => {
+                if (!props.length && !patProps.length)
+                    additionalPropertyCode(key);
+                else
+                    gen.if(isAdditional(key), () => additionalPropertyCode(key));
+            });
         }
-      }
-    } else {
-      if ($rDef.errors === false) {
-        out += ' ' + (def_customError) + ' ';
-      } else {
-        out += ' if (Array.isArray(' + ($ruleErrs) + ')) { if (vErrors === null) vErrors = ' + ($ruleErrs) + '; else vErrors = vErrors.concat(' + ($ruleErrs) + '); errors = vErrors.length;  for (var ' + ($i) + '=' + ($errs) + '; ' + ($i) + '<errors; ' + ($i) + '++) { var ' + ($ruleErr) + ' = vErrors[' + ($i) + ']; if (' + ($ruleErr) + '.dataPath === undefined) ' + ($ruleErr) + '.dataPath = (dataPath || \'\') + ' + (it.errorPath) + ';  ' + ($ruleErr) + '.schemaPath = "' + ($errSchemaPath) + '";  ';
-        if (it.opts.verbose) {
-          out += ' ' + ($ruleErr) + '.schema = ' + ($schemaValue) + '; ' + ($ruleErr) + '.data = ' + ($data) + '; ';
-        }
-        out += ' } } else { ' + (def_customError) + ' } ';
-      }
-    }
-    out += ' } ';
-    if ($breakOnError) {
-      out += ' else { ';
-    }
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 2591:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_dependencies(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $data = 'data' + ($dataLvl || '');
-  var $errs = 'errs__' + $lvl;
-  var $it = it.util.copy(it);
-  var $closingBraces = '';
-  $it.level++;
-  var $nextValid = 'valid' + $it.level;
-  var $schemaDeps = {},
-    $propertyDeps = {},
-    $ownProperties = it.opts.ownProperties;
-  for ($property in $schema) {
-    if ($property == '__proto__') continue;
-    var $sch = $schema[$property];
-    var $deps = Array.isArray($sch) ? $propertyDeps : $schemaDeps;
-    $deps[$property] = $sch;
-  }
-  out += 'var ' + ($errs) + ' = errors;';
-  var $currentErrorPath = it.errorPath;
-  out += 'var missing' + ($lvl) + ';';
-  for (var $property in $propertyDeps) {
-    $deps = $propertyDeps[$property];
-    if ($deps.length) {
-      out += ' if ( ' + ($data) + (it.util.getProperty($property)) + ' !== undefined ';
-      if ($ownProperties) {
-        out += ' && Object.prototype.hasOwnProperty.call(' + ($data) + ', \'' + (it.util.escapeQuotes($property)) + '\') ';
-      }
-      if ($breakOnError) {
-        out += ' && ( ';
-        var arr1 = $deps;
-        if (arr1) {
-          var $propertyKey, $i = -1,
-            l1 = arr1.length - 1;
-          while ($i < l1) {
-            $propertyKey = arr1[$i += 1];
-            if ($i) {
-              out += ' || ';
+        function isAdditional(key) {
+            let definedProp;
+            if (props.length > 8) {
+                // TODO maybe an option instead of hard-coded 8?
+                const propsSchema = (0, util_1.schemaRefOrVal)(it, parentSchema.properties, "properties");
+                definedProp = (0, code_1.isOwnProperty)(gen, propsSchema, key);
             }
-            var $prop = it.util.getProperty($propertyKey),
-              $useData = $data + $prop;
-            out += ' ( ( ' + ($useData) + ' === undefined ';
-            if ($ownProperties) {
-              out += ' || ! Object.prototype.hasOwnProperty.call(' + ($data) + ', \'' + (it.util.escapeQuotes($propertyKey)) + '\') ';
+            else if (props.length) {
+                definedProp = (0, codegen_1.or)(...props.map((p) => (0, codegen_1._) `${key} === ${p}`));
             }
-            out += ') && (missing' + ($lvl) + ' = ' + (it.util.toQuotedString(it.opts.jsonPointers ? $propertyKey : $prop)) + ') ) ';
-          }
-        }
-        out += ')) {  ';
-        var $propertyPath = 'missing' + $lvl,
-          $missingProperty = '\' + ' + $propertyPath + ' + \'';
-        if (it.opts._errorDataPathProperty) {
-          it.errorPath = it.opts.jsonPointers ? it.util.getPathExpr($currentErrorPath, $propertyPath, true) : $currentErrorPath + ' + ' + $propertyPath;
-        }
-        var $$outStack = $$outStack || [];
-        $$outStack.push(out);
-        out = ''; /* istanbul ignore else */
-        if (it.createErrors !== false) {
-          out += ' { keyword: \'' + ('dependencies') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { property: \'' + (it.util.escapeQuotes($property)) + '\', missingProperty: \'' + ($missingProperty) + '\', depsCount: ' + ($deps.length) + ', deps: \'' + (it.util.escapeQuotes($deps.length == 1 ? $deps[0] : $deps.join(", "))) + '\' } ';
-          if (it.opts.messages !== false) {
-            out += ' , message: \'should have ';
-            if ($deps.length == 1) {
-              out += 'property ' + (it.util.escapeQuotes($deps[0]));
-            } else {
-              out += 'properties ' + (it.util.escapeQuotes($deps.join(", ")));
+            else {
+                definedProp = codegen_1.nil;
             }
-            out += ' when property ' + (it.util.escapeQuotes($property)) + ' is present\' ';
-          }
-          if (it.opts.verbose) {
-            out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-          }
-          out += ' } ';
-        } else {
-          out += ' {} ';
-        }
-        var __err = out;
-        out = $$outStack.pop();
-        if (!it.compositeRule && $breakOnError) {
-          /* istanbul ignore if */
-          if (it.async) {
-            out += ' throw new ValidationError([' + (__err) + ']); ';
-          } else {
-            out += ' validate.errors = [' + (__err) + ']; return false; ';
-          }
-        } else {
-          out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-        }
-      } else {
-        out += ' ) { ';
-        var arr2 = $deps;
-        if (arr2) {
-          var $propertyKey, i2 = -1,
-            l2 = arr2.length - 1;
-          while (i2 < l2) {
-            $propertyKey = arr2[i2 += 1];
-            var $prop = it.util.getProperty($propertyKey),
-              $missingProperty = it.util.escapeQuotes($propertyKey),
-              $useData = $data + $prop;
-            if (it.opts._errorDataPathProperty) {
-              it.errorPath = it.util.getPath($currentErrorPath, $propertyKey, it.opts.jsonPointers);
+            if (patProps.length) {
+                definedProp = (0, codegen_1.or)(definedProp, ...patProps.map((p) => (0, codegen_1._) `${(0, code_1.usePattern)(cxt, p)}.test(${key})`));
             }
-            out += ' if ( ' + ($useData) + ' === undefined ';
-            if ($ownProperties) {
-              out += ' || ! Object.prototype.hasOwnProperty.call(' + ($data) + ', \'' + (it.util.escapeQuotes($propertyKey)) + '\') ';
+            return (0, codegen_1.not)(definedProp);
+        }
+        function deleteAdditional(key) {
+            gen.code((0, codegen_1._) `delete ${data}[${key}]`);
+        }
+        function additionalPropertyCode(key) {
+            if (opts.removeAdditional === "all" || (opts.removeAdditional && schema === false)) {
+                deleteAdditional(key);
+                return;
             }
-            out += ') {  var err =   '; /* istanbul ignore else */
-            if (it.createErrors !== false) {
-              out += ' { keyword: \'' + ('dependencies') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { property: \'' + (it.util.escapeQuotes($property)) + '\', missingProperty: \'' + ($missingProperty) + '\', depsCount: ' + ($deps.length) + ', deps: \'' + (it.util.escapeQuotes($deps.length == 1 ? $deps[0] : $deps.join(", "))) + '\' } ';
-              if (it.opts.messages !== false) {
-                out += ' , message: \'should have ';
-                if ($deps.length == 1) {
-                  out += 'property ' + (it.util.escapeQuotes($deps[0]));
-                } else {
-                  out += 'properties ' + (it.util.escapeQuotes($deps.join(", ")));
+            if (schema === false) {
+                cxt.setParams({ additionalProperty: key });
+                cxt.error();
+                if (!allErrors)
+                    gen.break();
+                return;
+            }
+            if (typeof schema == "object" && !(0, util_1.alwaysValidSchema)(it, schema)) {
+                const valid = gen.name("valid");
+                if (opts.removeAdditional === "failing") {
+                    applyAdditionalSchema(key, valid, false);
+                    gen.if((0, codegen_1.not)(valid), () => {
+                        cxt.reset();
+                        deleteAdditional(key);
+                    });
                 }
-                out += ' when property ' + (it.util.escapeQuotes($property)) + ' is present\' ';
-              }
-              if (it.opts.verbose) {
-                out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-              }
-              out += ' } ';
-            } else {
-              out += ' {} ';
+                else {
+                    applyAdditionalSchema(key, valid);
+                    if (!allErrors)
+                        gen.if((0, codegen_1.not)(valid), () => gen.break());
+                }
             }
-            out += ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; } ';
-          }
         }
-      }
-      out += ' }   ';
-      if ($breakOnError) {
-        $closingBraces += '}';
-        out += ' else { ';
-      }
-    }
-  }
-  it.errorPath = $currentErrorPath;
-  var $currentBaseId = $it.baseId;
-  for (var $property in $schemaDeps) {
-    var $sch = $schemaDeps[$property];
-    if ((it.opts.strictKeywords ? (typeof $sch == 'object' && Object.keys($sch).length > 0) || $sch === false : it.util.schemaHasRules($sch, it.RULES.all))) {
-      out += ' ' + ($nextValid) + ' = true; if ( ' + ($data) + (it.util.getProperty($property)) + ' !== undefined ';
-      if ($ownProperties) {
-        out += ' && Object.prototype.hasOwnProperty.call(' + ($data) + ', \'' + (it.util.escapeQuotes($property)) + '\') ';
-      }
-      out += ') { ';
-      $it.schema = $sch;
-      $it.schemaPath = $schemaPath + it.util.getProperty($property);
-      $it.errSchemaPath = $errSchemaPath + '/' + it.util.escapeFragment($property);
-      out += '  ' + (it.validate($it)) + ' ';
-      $it.baseId = $currentBaseId;
-      out += ' }  ';
-      if ($breakOnError) {
-        out += ' if (' + ($nextValid) + ') { ';
-        $closingBraces += '}';
-      }
-    }
-  }
-  if ($breakOnError) {
-    out += '   ' + ($closingBraces) + ' if (' + ($errs) + ' == errors) {';
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 163:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_enum(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $data = 'data' + ($dataLvl || '');
-  var $valid = 'valid' + $lvl;
-  var $isData = it.opts.$data && $schema && $schema.$data,
-    $schemaValue;
-  if ($isData) {
-    out += ' var schema' + ($lvl) + ' = ' + (it.util.getData($schema.$data, $dataLvl, it.dataPathArr)) + '; ';
-    $schemaValue = 'schema' + $lvl;
-  } else {
-    $schemaValue = $schema;
-  }
-  var $i = 'i' + $lvl,
-    $vSchema = 'schema' + $lvl;
-  if (!$isData) {
-    out += ' var ' + ($vSchema) + ' = validate.schema' + ($schemaPath) + ';';
-  }
-  out += 'var ' + ($valid) + ';';
-  if ($isData) {
-    out += ' if (schema' + ($lvl) + ' === undefined) ' + ($valid) + ' = true; else if (!Array.isArray(schema' + ($lvl) + ')) ' + ($valid) + ' = false; else {';
-  }
-  out += '' + ($valid) + ' = false;for (var ' + ($i) + '=0; ' + ($i) + '<' + ($vSchema) + '.length; ' + ($i) + '++) if (equal(' + ($data) + ', ' + ($vSchema) + '[' + ($i) + '])) { ' + ($valid) + ' = true; break; }';
-  if ($isData) {
-    out += '  }  ';
-  }
-  out += ' if (!' + ($valid) + ') {   ';
-  var $$outStack = $$outStack || [];
-  $$outStack.push(out);
-  out = ''; /* istanbul ignore else */
-  if (it.createErrors !== false) {
-    out += ' { keyword: \'' + ('enum') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { allowedValues: schema' + ($lvl) + ' } ';
-    if (it.opts.messages !== false) {
-      out += ' , message: \'should be equal to one of the allowed values\' ';
-    }
-    if (it.opts.verbose) {
-      out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-    }
-    out += ' } ';
-  } else {
-    out += ' {} ';
-  }
-  var __err = out;
-  out = $$outStack.pop();
-  if (!it.compositeRule && $breakOnError) {
-    /* istanbul ignore if */
-    if (it.async) {
-      out += ' throw new ValidationError([' + (__err) + ']); ';
-    } else {
-      out += ' validate.errors = [' + (__err) + ']; return false; ';
-    }
-  } else {
-    out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-  }
-  out += ' }';
-  if ($breakOnError) {
-    out += ' else { ';
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 3847:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_format(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $data = 'data' + ($dataLvl || '');
-  if (it.opts.format === false) {
-    if ($breakOnError) {
-      out += ' if (true) { ';
-    }
-    return out;
-  }
-  var $isData = it.opts.$data && $schema && $schema.$data,
-    $schemaValue;
-  if ($isData) {
-    out += ' var schema' + ($lvl) + ' = ' + (it.util.getData($schema.$data, $dataLvl, it.dataPathArr)) + '; ';
-    $schemaValue = 'schema' + $lvl;
-  } else {
-    $schemaValue = $schema;
-  }
-  var $unknownFormats = it.opts.unknownFormats,
-    $allowUnknown = Array.isArray($unknownFormats);
-  if ($isData) {
-    var $format = 'format' + $lvl,
-      $isObject = 'isObject' + $lvl,
-      $formatType = 'formatType' + $lvl;
-    out += ' var ' + ($format) + ' = formats[' + ($schemaValue) + ']; var ' + ($isObject) + ' = typeof ' + ($format) + ' == \'object\' && !(' + ($format) + ' instanceof RegExp) && ' + ($format) + '.validate; var ' + ($formatType) + ' = ' + ($isObject) + ' && ' + ($format) + '.type || \'string\'; if (' + ($isObject) + ') { ';
-    if (it.async) {
-      out += ' var async' + ($lvl) + ' = ' + ($format) + '.async; ';
-    }
-    out += ' ' + ($format) + ' = ' + ($format) + '.validate; } if (  ';
-    if ($isData) {
-      out += ' (' + ($schemaValue) + ' !== undefined && typeof ' + ($schemaValue) + ' != \'string\') || ';
-    }
-    out += ' (';
-    if ($unknownFormats != 'ignore') {
-      out += ' (' + ($schemaValue) + ' && !' + ($format) + ' ';
-      if ($allowUnknown) {
-        out += ' && self._opts.unknownFormats.indexOf(' + ($schemaValue) + ') == -1 ';
-      }
-      out += ') || ';
-    }
-    out += ' (' + ($format) + ' && ' + ($formatType) + ' == \'' + ($ruleType) + '\' && !(typeof ' + ($format) + ' == \'function\' ? ';
-    if (it.async) {
-      out += ' (async' + ($lvl) + ' ? await ' + ($format) + '(' + ($data) + ') : ' + ($format) + '(' + ($data) + ')) ';
-    } else {
-      out += ' ' + ($format) + '(' + ($data) + ') ';
-    }
-    out += ' : ' + ($format) + '.test(' + ($data) + '))))) {';
-  } else {
-    var $format = it.formats[$schema];
-    if (!$format) {
-      if ($unknownFormats == 'ignore') {
-        it.logger.warn('unknown format "' + $schema + '" ignored in schema at path "' + it.errSchemaPath + '"');
-        if ($breakOnError) {
-          out += ' if (true) { ';
+        function applyAdditionalSchema(key, valid, errors) {
+            const subschema = {
+                keyword: "additionalProperties",
+                dataProp: key,
+                dataPropType: util_1.Type.Str,
+            };
+            if (errors === false) {
+                Object.assign(subschema, {
+                    compositeRule: true,
+                    createErrors: false,
+                    allErrors: false,
+                });
+            }
+            cxt.subschema(subschema, valid);
         }
-        return out;
-      } else if ($allowUnknown && $unknownFormats.indexOf($schema) >= 0) {
-        if ($breakOnError) {
-          out += ' if (true) { ';
-        }
-        return out;
-      } else {
-        throw new Error('unknown format "' + $schema + '" is used in schema at path "' + it.errSchemaPath + '"');
-      }
-    }
-    var $isObject = typeof $format == 'object' && !($format instanceof RegExp) && $format.validate;
-    var $formatType = $isObject && $format.type || 'string';
-    if ($isObject) {
-      var $async = $format.async === true;
-      $format = $format.validate;
-    }
-    if ($formatType != $ruleType) {
-      if ($breakOnError) {
-        out += ' if (true) { ';
-      }
-      return out;
-    }
-    if ($async) {
-      if (!it.async) throw new Error('async format in sync schema');
-      var $formatRef = 'formats' + it.util.getProperty($schema) + '.validate';
-      out += ' if (!(await ' + ($formatRef) + '(' + ($data) + '))) { ';
-    } else {
-      out += ' if (! ';
-      var $formatRef = 'formats' + it.util.getProperty($schema);
-      if ($isObject) $formatRef += '.validate';
-      if (typeof $format == 'function') {
-        out += ' ' + ($formatRef) + '(' + ($data) + ') ';
-      } else {
-        out += ' ' + ($formatRef) + '.test(' + ($data) + ') ';
-      }
-      out += ') { ';
-    }
-  }
-  var $$outStack = $$outStack || [];
-  $$outStack.push(out);
-  out = ''; /* istanbul ignore else */
-  if (it.createErrors !== false) {
-    out += ' { keyword: \'' + ('format') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { format:  ';
-    if ($isData) {
-      out += '' + ($schemaValue);
-    } else {
-      out += '' + (it.util.toQuotedString($schema));
-    }
-    out += '  } ';
-    if (it.opts.messages !== false) {
-      out += ' , message: \'should match format "';
-      if ($isData) {
-        out += '\' + ' + ($schemaValue) + ' + \'';
-      } else {
-        out += '' + (it.util.escapeQuotes($schema));
-      }
-      out += '"\' ';
-    }
-    if (it.opts.verbose) {
-      out += ' , schema:  ';
-      if ($isData) {
-        out += 'validate.schema' + ($schemaPath);
-      } else {
-        out += '' + (it.util.toQuotedString($schema));
-      }
-      out += '         , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-    }
-    out += ' } ';
-  } else {
-    out += ' {} ';
-  }
-  var __err = out;
-  out = $$outStack.pop();
-  if (!it.compositeRule && $breakOnError) {
-    /* istanbul ignore if */
-    if (it.async) {
-      out += ' throw new ValidationError([' + (__err) + ']); ';
-    } else {
-      out += ' validate.errors = [' + (__err) + ']; return false; ';
-    }
-  } else {
-    out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-  }
-  out += ' } ';
-  if ($breakOnError) {
-    out += ' else { ';
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 862:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_if(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $data = 'data' + ($dataLvl || '');
-  var $valid = 'valid' + $lvl;
-  var $errs = 'errs__' + $lvl;
-  var $it = it.util.copy(it);
-  $it.level++;
-  var $nextValid = 'valid' + $it.level;
-  var $thenSch = it.schema['then'],
-    $elseSch = it.schema['else'],
-    $thenPresent = $thenSch !== undefined && (it.opts.strictKeywords ? (typeof $thenSch == 'object' && Object.keys($thenSch).length > 0) || $thenSch === false : it.util.schemaHasRules($thenSch, it.RULES.all)),
-    $elsePresent = $elseSch !== undefined && (it.opts.strictKeywords ? (typeof $elseSch == 'object' && Object.keys($elseSch).length > 0) || $elseSch === false : it.util.schemaHasRules($elseSch, it.RULES.all)),
-    $currentBaseId = $it.baseId;
-  if ($thenPresent || $elsePresent) {
-    var $ifClause;
-    $it.createErrors = false;
-    $it.schema = $schema;
-    $it.schemaPath = $schemaPath;
-    $it.errSchemaPath = $errSchemaPath;
-    out += ' var ' + ($errs) + ' = errors; var ' + ($valid) + ' = true;  ';
-    var $wasComposite = it.compositeRule;
-    it.compositeRule = $it.compositeRule = true;
-    out += '  ' + (it.validate($it)) + ' ';
-    $it.baseId = $currentBaseId;
-    $it.createErrors = true;
-    out += '  errors = ' + ($errs) + '; if (vErrors !== null) { if (' + ($errs) + ') vErrors.length = ' + ($errs) + '; else vErrors = null; }  ';
-    it.compositeRule = $it.compositeRule = $wasComposite;
-    if ($thenPresent) {
-      out += ' if (' + ($nextValid) + ') {  ';
-      $it.schema = it.schema['then'];
-      $it.schemaPath = it.schemaPath + '.then';
-      $it.errSchemaPath = it.errSchemaPath + '/then';
-      out += '  ' + (it.validate($it)) + ' ';
-      $it.baseId = $currentBaseId;
-      out += ' ' + ($valid) + ' = ' + ($nextValid) + '; ';
-      if ($thenPresent && $elsePresent) {
-        $ifClause = 'ifClause' + $lvl;
-        out += ' var ' + ($ifClause) + ' = \'then\'; ';
-      } else {
-        $ifClause = '\'then\'';
-      }
-      out += ' } ';
-      if ($elsePresent) {
-        out += ' else { ';
-      }
-    } else {
-      out += ' if (!' + ($nextValid) + ') { ';
-    }
-    if ($elsePresent) {
-      $it.schema = it.schema['else'];
-      $it.schemaPath = it.schemaPath + '.else';
-      $it.errSchemaPath = it.errSchemaPath + '/else';
-      out += '  ' + (it.validate($it)) + ' ';
-      $it.baseId = $currentBaseId;
-      out += ' ' + ($valid) + ' = ' + ($nextValid) + '; ';
-      if ($thenPresent && $elsePresent) {
-        $ifClause = 'ifClause' + $lvl;
-        out += ' var ' + ($ifClause) + ' = \'else\'; ';
-      } else {
-        $ifClause = '\'else\'';
-      }
-      out += ' } ';
-    }
-    out += ' if (!' + ($valid) + ') {   var err =   '; /* istanbul ignore else */
-    if (it.createErrors !== false) {
-      out += ' { keyword: \'' + ('if') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { failingKeyword: ' + ($ifClause) + ' } ';
-      if (it.opts.messages !== false) {
-        out += ' , message: \'should match "\' + ' + ($ifClause) + ' + \'" schema\' ';
-      }
-      if (it.opts.verbose) {
-        out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-      }
-      out += ' } ';
-    } else {
-      out += ' {} ';
-    }
-    out += ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-    if (!it.compositeRule && $breakOnError) {
-      /* istanbul ignore if */
-      if (it.async) {
-        out += ' throw new ValidationError(vErrors); ';
-      } else {
-        out += ' validate.errors = vErrors; return false; ';
-      }
-    }
-    out += ' }   ';
-    if ($breakOnError) {
-      out += ' else { ';
-    }
-  } else {
-    if ($breakOnError) {
-      out += ' if (true) { ';
-    }
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 5810:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-//all requires must be explicit because browserify won't work with dynamic requires
-module.exports = {
-  '$ref': __nccwpck_require__(2393),
-  allOf: __nccwpck_require__(9443),
-  anyOf: __nccwpck_require__(3093),
-  '$comment': __nccwpck_require__(134),
-  const: __nccwpck_require__(1661),
-  contains: __nccwpck_require__(5964),
-  dependencies: __nccwpck_require__(2591),
-  'enum': __nccwpck_require__(163),
-  format: __nccwpck_require__(3847),
-  'if': __nccwpck_require__(862),
-  items: __nccwpck_require__(4408),
-  maximum: __nccwpck_require__(7404),
-  minimum: __nccwpck_require__(7404),
-  maxItems: __nccwpck_require__(4683),
-  minItems: __nccwpck_require__(4683),
-  maxLength: __nccwpck_require__(2114),
-  minLength: __nccwpck_require__(2114),
-  maxProperties: __nccwpck_require__(1142),
-  minProperties: __nccwpck_require__(1142),
-  multipleOf: __nccwpck_require__(9772),
-  not: __nccwpck_require__(750),
-  oneOf: __nccwpck_require__(6106),
-  pattern: __nccwpck_require__(3912),
-  properties: __nccwpck_require__(2924),
-  propertyNames: __nccwpck_require__(9195),
-  required: __nccwpck_require__(8420),
-  uniqueItems: __nccwpck_require__(4995),
-  validate: __nccwpck_require__(9585)
+    },
 };
-
+exports["default"] = def;
+//# sourceMappingURL=additionalProperties.js.map
 
 /***/ }),
 
-/***/ 4408:
-/***/ ((module) => {
+/***/ 8406:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
-module.exports = function generate_items(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $data = 'data' + ($dataLvl || '');
-  var $valid = 'valid' + $lvl;
-  var $errs = 'errs__' + $lvl;
-  var $it = it.util.copy(it);
-  var $closingBraces = '';
-  $it.level++;
-  var $nextValid = 'valid' + $it.level;
-  var $idx = 'i' + $lvl,
-    $dataNxt = $it.dataLevel = it.dataLevel + 1,
-    $nextData = 'data' + $dataNxt,
-    $currentBaseId = it.baseId;
-  out += 'var ' + ($errs) + ' = errors;var ' + ($valid) + ';';
-  if (Array.isArray($schema)) {
-    var $additionalItems = it.schema.additionalItems;
-    if ($additionalItems === false) {
-      out += ' ' + ($valid) + ' = ' + ($data) + '.length <= ' + ($schema.length) + '; ';
-      var $currErrSchemaPath = $errSchemaPath;
-      $errSchemaPath = it.errSchemaPath + '/additionalItems';
-      out += '  if (!' + ($valid) + ') {   ';
-      var $$outStack = $$outStack || [];
-      $$outStack.push(out);
-      out = ''; /* istanbul ignore else */
-      if (it.createErrors !== false) {
-        out += ' { keyword: \'' + ('additionalItems') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { limit: ' + ($schema.length) + ' } ';
-        if (it.opts.messages !== false) {
-          out += ' , message: \'should NOT have more than ' + ($schema.length) + ' items\' ';
-        }
-        if (it.opts.verbose) {
-          out += ' , schema: false , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-        }
-        out += ' } ';
-      } else {
-        out += ' {} ';
-      }
-      var __err = out;
-      out = $$outStack.pop();
-      if (!it.compositeRule && $breakOnError) {
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const util_1 = __nccwpck_require__(3439);
+const def = {
+    keyword: "allOf",
+    schemaType: "array",
+    code(cxt) {
+        const { gen, schema, it } = cxt;
         /* istanbul ignore if */
-        if (it.async) {
-          out += ' throw new ValidationError([' + (__err) + ']); ';
-        } else {
-          out += ' validate.errors = [' + (__err) + ']; return false; ';
+        if (!Array.isArray(schema))
+            throw new Error("ajv implementation error");
+        const valid = gen.name("valid");
+        schema.forEach((sch, i) => {
+            if ((0, util_1.alwaysValidSchema)(it, sch))
+                return;
+            const schCxt = cxt.subschema({ keyword: "allOf", schemaProp: i }, valid);
+            cxt.ok(valid);
+            cxt.mergeEvaluated(schCxt);
+        });
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=allOf.js.map
+
+/***/ }),
+
+/***/ 8168:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const code_1 = __nccwpck_require__(4205);
+const def = {
+    keyword: "anyOf",
+    schemaType: "array",
+    trackErrors: true,
+    code: code_1.validateUnion,
+    error: { message: "must match a schema in anyOf" },
+};
+exports["default"] = def;
+//# sourceMappingURL=anyOf.js.map
+
+/***/ }),
+
+/***/ 9535:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+const error = {
+    message: ({ params: { min, max } }) => max === undefined
+        ? (0, codegen_1.str) `must contain at least ${min} valid item(s)`
+        : (0, codegen_1.str) `must contain at least ${min} and no more than ${max} valid item(s)`,
+    params: ({ params: { min, max } }) => max === undefined ? (0, codegen_1._) `{minContains: ${min}}` : (0, codegen_1._) `{minContains: ${min}, maxContains: ${max}}`,
+};
+const def = {
+    keyword: "contains",
+    type: "array",
+    schemaType: ["object", "boolean"],
+    before: "uniqueItems",
+    trackErrors: true,
+    error,
+    code(cxt) {
+        const { gen, schema, parentSchema, data, it } = cxt;
+        let min;
+        let max;
+        const { minContains, maxContains } = parentSchema;
+        if (it.opts.next) {
+            min = minContains === undefined ? 1 : minContains;
+            max = maxContains;
         }
-      } else {
-        out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-      }
-      out += ' } ';
-      $errSchemaPath = $currErrSchemaPath;
-      if ($breakOnError) {
-        $closingBraces += '}';
-        out += ' else { ';
-      }
-    }
-    var arr1 = $schema;
-    if (arr1) {
-      var $sch, $i = -1,
-        l1 = arr1.length - 1;
-      while ($i < l1) {
-        $sch = arr1[$i += 1];
-        if ((it.opts.strictKeywords ? (typeof $sch == 'object' && Object.keys($sch).length > 0) || $sch === false : it.util.schemaHasRules($sch, it.RULES.all))) {
-          out += ' ' + ($nextValid) + ' = true; if (' + ($data) + '.length > ' + ($i) + ') { ';
-          var $passData = $data + '[' + $i + ']';
-          $it.schema = $sch;
-          $it.schemaPath = $schemaPath + '[' + $i + ']';
-          $it.errSchemaPath = $errSchemaPath + '/' + $i;
-          $it.errorPath = it.util.getPathExpr(it.errorPath, $i, it.opts.jsonPointers, true);
-          $it.dataPathArr[$dataNxt] = $i;
-          var $code = it.validate($it);
-          $it.baseId = $currentBaseId;
-          if (it.util.varOccurences($code, $nextData) < 2) {
-            out += ' ' + (it.util.varReplace($code, $nextData, $passData)) + ' ';
-          } else {
-            out += ' var ' + ($nextData) + ' = ' + ($passData) + '; ' + ($code) + ' ';
-          }
-          out += ' }  ';
-          if ($breakOnError) {
-            out += ' if (' + ($nextValid) + ') { ';
-            $closingBraces += '}';
-          }
+        else {
+            min = 1;
         }
-      }
-    }
-    if (typeof $additionalItems == 'object' && (it.opts.strictKeywords ? (typeof $additionalItems == 'object' && Object.keys($additionalItems).length > 0) || $additionalItems === false : it.util.schemaHasRules($additionalItems, it.RULES.all))) {
-      $it.schema = $additionalItems;
-      $it.schemaPath = it.schemaPath + '.additionalItems';
-      $it.errSchemaPath = it.errSchemaPath + '/additionalItems';
-      out += ' ' + ($nextValid) + ' = true; if (' + ($data) + '.length > ' + ($schema.length) + ') {  for (var ' + ($idx) + ' = ' + ($schema.length) + '; ' + ($idx) + ' < ' + ($data) + '.length; ' + ($idx) + '++) { ';
-      $it.errorPath = it.util.getPathExpr(it.errorPath, $idx, it.opts.jsonPointers, true);
-      var $passData = $data + '[' + $idx + ']';
-      $it.dataPathArr[$dataNxt] = $idx;
-      var $code = it.validate($it);
-      $it.baseId = $currentBaseId;
-      if (it.util.varOccurences($code, $nextData) < 2) {
-        out += ' ' + (it.util.varReplace($code, $nextData, $passData)) + ' ';
-      } else {
-        out += ' var ' + ($nextData) + ' = ' + ($passData) + '; ' + ($code) + ' ';
-      }
-      if ($breakOnError) {
-        out += ' if (!' + ($nextValid) + ') break; ';
-      }
-      out += ' } }  ';
-      if ($breakOnError) {
-        out += ' if (' + ($nextValid) + ') { ';
-        $closingBraces += '}';
-      }
-    }
-  } else if ((it.opts.strictKeywords ? (typeof $schema == 'object' && Object.keys($schema).length > 0) || $schema === false : it.util.schemaHasRules($schema, it.RULES.all))) {
-    $it.schema = $schema;
-    $it.schemaPath = $schemaPath;
-    $it.errSchemaPath = $errSchemaPath;
-    out += '  for (var ' + ($idx) + ' = ' + (0) + '; ' + ($idx) + ' < ' + ($data) + '.length; ' + ($idx) + '++) { ';
-    $it.errorPath = it.util.getPathExpr(it.errorPath, $idx, it.opts.jsonPointers, true);
-    var $passData = $data + '[' + $idx + ']';
-    $it.dataPathArr[$dataNxt] = $idx;
-    var $code = it.validate($it);
-    $it.baseId = $currentBaseId;
-    if (it.util.varOccurences($code, $nextData) < 2) {
-      out += ' ' + (it.util.varReplace($code, $nextData, $passData)) + ' ';
-    } else {
-      out += ' var ' + ($nextData) + ' = ' + ($passData) + '; ' + ($code) + ' ';
-    }
-    if ($breakOnError) {
-      out += ' if (!' + ($nextValid) + ') break; ';
-    }
-    out += ' }';
-  }
-  if ($breakOnError) {
-    out += ' ' + ($closingBraces) + ' if (' + ($errs) + ' == errors) {';
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 9772:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_multipleOf(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $data = 'data' + ($dataLvl || '');
-  var $isData = it.opts.$data && $schema && $schema.$data,
-    $schemaValue;
-  if ($isData) {
-    out += ' var schema' + ($lvl) + ' = ' + (it.util.getData($schema.$data, $dataLvl, it.dataPathArr)) + '; ';
-    $schemaValue = 'schema' + $lvl;
-  } else {
-    $schemaValue = $schema;
-  }
-  if (!($isData || typeof $schema == 'number')) {
-    throw new Error($keyword + ' must be number');
-  }
-  out += 'var division' + ($lvl) + ';if (';
-  if ($isData) {
-    out += ' ' + ($schemaValue) + ' !== undefined && ( typeof ' + ($schemaValue) + ' != \'number\' || ';
-  }
-  out += ' (division' + ($lvl) + ' = ' + ($data) + ' / ' + ($schemaValue) + ', ';
-  if (it.opts.multipleOfPrecision) {
-    out += ' Math.abs(Math.round(division' + ($lvl) + ') - division' + ($lvl) + ') > 1e-' + (it.opts.multipleOfPrecision) + ' ';
-  } else {
-    out += ' division' + ($lvl) + ' !== parseInt(division' + ($lvl) + ') ';
-  }
-  out += ' ) ';
-  if ($isData) {
-    out += '  )  ';
-  }
-  out += ' ) {   ';
-  var $$outStack = $$outStack || [];
-  $$outStack.push(out);
-  out = ''; /* istanbul ignore else */
-  if (it.createErrors !== false) {
-    out += ' { keyword: \'' + ('multipleOf') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { multipleOf: ' + ($schemaValue) + ' } ';
-    if (it.opts.messages !== false) {
-      out += ' , message: \'should be multiple of ';
-      if ($isData) {
-        out += '\' + ' + ($schemaValue);
-      } else {
-        out += '' + ($schemaValue) + '\'';
-      }
-    }
-    if (it.opts.verbose) {
-      out += ' , schema:  ';
-      if ($isData) {
-        out += 'validate.schema' + ($schemaPath);
-      } else {
-        out += '' + ($schema);
-      }
-      out += '         , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-    }
-    out += ' } ';
-  } else {
-    out += ' {} ';
-  }
-  var __err = out;
-  out = $$outStack.pop();
-  if (!it.compositeRule && $breakOnError) {
-    /* istanbul ignore if */
-    if (it.async) {
-      out += ' throw new ValidationError([' + (__err) + ']); ';
-    } else {
-      out += ' validate.errors = [' + (__err) + ']; return false; ';
-    }
-  } else {
-    out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-  }
-  out += '} ';
-  if ($breakOnError) {
-    out += ' else { ';
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 750:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_not(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $data = 'data' + ($dataLvl || '');
-  var $errs = 'errs__' + $lvl;
-  var $it = it.util.copy(it);
-  $it.level++;
-  var $nextValid = 'valid' + $it.level;
-  if ((it.opts.strictKeywords ? (typeof $schema == 'object' && Object.keys($schema).length > 0) || $schema === false : it.util.schemaHasRules($schema, it.RULES.all))) {
-    $it.schema = $schema;
-    $it.schemaPath = $schemaPath;
-    $it.errSchemaPath = $errSchemaPath;
-    out += ' var ' + ($errs) + ' = errors;  ';
-    var $wasComposite = it.compositeRule;
-    it.compositeRule = $it.compositeRule = true;
-    $it.createErrors = false;
-    var $allErrorsOption;
-    if ($it.opts.allErrors) {
-      $allErrorsOption = $it.opts.allErrors;
-      $it.opts.allErrors = false;
-    }
-    out += ' ' + (it.validate($it)) + ' ';
-    $it.createErrors = true;
-    if ($allErrorsOption) $it.opts.allErrors = $allErrorsOption;
-    it.compositeRule = $it.compositeRule = $wasComposite;
-    out += ' if (' + ($nextValid) + ') {   ';
-    var $$outStack = $$outStack || [];
-    $$outStack.push(out);
-    out = ''; /* istanbul ignore else */
-    if (it.createErrors !== false) {
-      out += ' { keyword: \'' + ('not') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: {} ';
-      if (it.opts.messages !== false) {
-        out += ' , message: \'should NOT be valid\' ';
-      }
-      if (it.opts.verbose) {
-        out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-      }
-      out += ' } ';
-    } else {
-      out += ' {} ';
-    }
-    var __err = out;
-    out = $$outStack.pop();
-    if (!it.compositeRule && $breakOnError) {
-      /* istanbul ignore if */
-      if (it.async) {
-        out += ' throw new ValidationError([' + (__err) + ']); ';
-      } else {
-        out += ' validate.errors = [' + (__err) + ']; return false; ';
-      }
-    } else {
-      out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-    }
-    out += ' } else {  errors = ' + ($errs) + '; if (vErrors !== null) { if (' + ($errs) + ') vErrors.length = ' + ($errs) + '; else vErrors = null; } ';
-    if (it.opts.allErrors) {
-      out += ' } ';
-    }
-  } else {
-    out += '  var err =   '; /* istanbul ignore else */
-    if (it.createErrors !== false) {
-      out += ' { keyword: \'' + ('not') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: {} ';
-      if (it.opts.messages !== false) {
-        out += ' , message: \'should NOT be valid\' ';
-      }
-      if (it.opts.verbose) {
-        out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-      }
-      out += ' } ';
-    } else {
-      out += ' {} ';
-    }
-    out += ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-    if ($breakOnError) {
-      out += ' if (false) { ';
-    }
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 6106:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_oneOf(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $data = 'data' + ($dataLvl || '');
-  var $valid = 'valid' + $lvl;
-  var $errs = 'errs__' + $lvl;
-  var $it = it.util.copy(it);
-  var $closingBraces = '';
-  $it.level++;
-  var $nextValid = 'valid' + $it.level;
-  var $currentBaseId = $it.baseId,
-    $prevValid = 'prevValid' + $lvl,
-    $passingSchemas = 'passingSchemas' + $lvl;
-  out += 'var ' + ($errs) + ' = errors , ' + ($prevValid) + ' = false , ' + ($valid) + ' = false , ' + ($passingSchemas) + ' = null; ';
-  var $wasComposite = it.compositeRule;
-  it.compositeRule = $it.compositeRule = true;
-  var arr1 = $schema;
-  if (arr1) {
-    var $sch, $i = -1,
-      l1 = arr1.length - 1;
-    while ($i < l1) {
-      $sch = arr1[$i += 1];
-      if ((it.opts.strictKeywords ? (typeof $sch == 'object' && Object.keys($sch).length > 0) || $sch === false : it.util.schemaHasRules($sch, it.RULES.all))) {
-        $it.schema = $sch;
-        $it.schemaPath = $schemaPath + '[' + $i + ']';
-        $it.errSchemaPath = $errSchemaPath + '/' + $i;
-        out += '  ' + (it.validate($it)) + ' ';
-        $it.baseId = $currentBaseId;
-      } else {
-        out += ' var ' + ($nextValid) + ' = true; ';
-      }
-      if ($i) {
-        out += ' if (' + ($nextValid) + ' && ' + ($prevValid) + ') { ' + ($valid) + ' = false; ' + ($passingSchemas) + ' = [' + ($passingSchemas) + ', ' + ($i) + ']; } else { ';
-        $closingBraces += '}';
-      }
-      out += ' if (' + ($nextValid) + ') { ' + ($valid) + ' = ' + ($prevValid) + ' = true; ' + ($passingSchemas) + ' = ' + ($i) + '; }';
-    }
-  }
-  it.compositeRule = $it.compositeRule = $wasComposite;
-  out += '' + ($closingBraces) + 'if (!' + ($valid) + ') {   var err =   '; /* istanbul ignore else */
-  if (it.createErrors !== false) {
-    out += ' { keyword: \'' + ('oneOf') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { passingSchemas: ' + ($passingSchemas) + ' } ';
-    if (it.opts.messages !== false) {
-      out += ' , message: \'should match exactly one schema in oneOf\' ';
-    }
-    if (it.opts.verbose) {
-      out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-    }
-    out += ' } ';
-  } else {
-    out += ' {} ';
-  }
-  out += ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-  if (!it.compositeRule && $breakOnError) {
-    /* istanbul ignore if */
-    if (it.async) {
-      out += ' throw new ValidationError(vErrors); ';
-    } else {
-      out += ' validate.errors = vErrors; return false; ';
-    }
-  }
-  out += '} else {  errors = ' + ($errs) + '; if (vErrors !== null) { if (' + ($errs) + ') vErrors.length = ' + ($errs) + '; else vErrors = null; }';
-  if (it.opts.allErrors) {
-    out += ' } ';
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 3912:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_pattern(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $data = 'data' + ($dataLvl || '');
-  var $isData = it.opts.$data && $schema && $schema.$data,
-    $schemaValue;
-  if ($isData) {
-    out += ' var schema' + ($lvl) + ' = ' + (it.util.getData($schema.$data, $dataLvl, it.dataPathArr)) + '; ';
-    $schemaValue = 'schema' + $lvl;
-  } else {
-    $schemaValue = $schema;
-  }
-  var $regexp = $isData ? '(new RegExp(' + $schemaValue + '))' : it.usePattern($schema);
-  out += 'if ( ';
-  if ($isData) {
-    out += ' (' + ($schemaValue) + ' !== undefined && typeof ' + ($schemaValue) + ' != \'string\') || ';
-  }
-  out += ' !' + ($regexp) + '.test(' + ($data) + ') ) {   ';
-  var $$outStack = $$outStack || [];
-  $$outStack.push(out);
-  out = ''; /* istanbul ignore else */
-  if (it.createErrors !== false) {
-    out += ' { keyword: \'' + ('pattern') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { pattern:  ';
-    if ($isData) {
-      out += '' + ($schemaValue);
-    } else {
-      out += '' + (it.util.toQuotedString($schema));
-    }
-    out += '  } ';
-    if (it.opts.messages !== false) {
-      out += ' , message: \'should match pattern "';
-      if ($isData) {
-        out += '\' + ' + ($schemaValue) + ' + \'';
-      } else {
-        out += '' + (it.util.escapeQuotes($schema));
-      }
-      out += '"\' ';
-    }
-    if (it.opts.verbose) {
-      out += ' , schema:  ';
-      if ($isData) {
-        out += 'validate.schema' + ($schemaPath);
-      } else {
-        out += '' + (it.util.toQuotedString($schema));
-      }
-      out += '         , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-    }
-    out += ' } ';
-  } else {
-    out += ' {} ';
-  }
-  var __err = out;
-  out = $$outStack.pop();
-  if (!it.compositeRule && $breakOnError) {
-    /* istanbul ignore if */
-    if (it.async) {
-      out += ' throw new ValidationError([' + (__err) + ']); ';
-    } else {
-      out += ' validate.errors = [' + (__err) + ']; return false; ';
-    }
-  } else {
-    out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-  }
-  out += '} ';
-  if ($breakOnError) {
-    out += ' else { ';
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 2924:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_properties(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $data = 'data' + ($dataLvl || '');
-  var $errs = 'errs__' + $lvl;
-  var $it = it.util.copy(it);
-  var $closingBraces = '';
-  $it.level++;
-  var $nextValid = 'valid' + $it.level;
-  var $key = 'key' + $lvl,
-    $idx = 'idx' + $lvl,
-    $dataNxt = $it.dataLevel = it.dataLevel + 1,
-    $nextData = 'data' + $dataNxt,
-    $dataProperties = 'dataProperties' + $lvl;
-  var $schemaKeys = Object.keys($schema || {}).filter(notProto),
-    $pProperties = it.schema.patternProperties || {},
-    $pPropertyKeys = Object.keys($pProperties).filter(notProto),
-    $aProperties = it.schema.additionalProperties,
-    $someProperties = $schemaKeys.length || $pPropertyKeys.length,
-    $noAdditional = $aProperties === false,
-    $additionalIsSchema = typeof $aProperties == 'object' && Object.keys($aProperties).length,
-    $removeAdditional = it.opts.removeAdditional,
-    $checkAdditional = $noAdditional || $additionalIsSchema || $removeAdditional,
-    $ownProperties = it.opts.ownProperties,
-    $currentBaseId = it.baseId;
-  var $required = it.schema.required;
-  if ($required && !(it.opts.$data && $required.$data) && $required.length < it.opts.loopRequired) {
-    var $requiredHash = it.util.toHash($required);
-  }
-
-  function notProto(p) {
-    return p !== '__proto__';
-  }
-  out += 'var ' + ($errs) + ' = errors;var ' + ($nextValid) + ' = true;';
-  if ($ownProperties) {
-    out += ' var ' + ($dataProperties) + ' = undefined;';
-  }
-  if ($checkAdditional) {
-    if ($ownProperties) {
-      out += ' ' + ($dataProperties) + ' = ' + ($dataProperties) + ' || Object.keys(' + ($data) + '); for (var ' + ($idx) + '=0; ' + ($idx) + '<' + ($dataProperties) + '.length; ' + ($idx) + '++) { var ' + ($key) + ' = ' + ($dataProperties) + '[' + ($idx) + ']; ';
-    } else {
-      out += ' for (var ' + ($key) + ' in ' + ($data) + ') { ';
-    }
-    if ($someProperties) {
-      out += ' var isAdditional' + ($lvl) + ' = !(false ';
-      if ($schemaKeys.length) {
-        if ($schemaKeys.length > 8) {
-          out += ' || validate.schema' + ($schemaPath) + '.hasOwnProperty(' + ($key) + ') ';
-        } else {
-          var arr1 = $schemaKeys;
-          if (arr1) {
-            var $propertyKey, i1 = -1,
-              l1 = arr1.length - 1;
-            while (i1 < l1) {
-              $propertyKey = arr1[i1 += 1];
-              out += ' || ' + ($key) + ' == ' + (it.util.toQuotedString($propertyKey)) + ' ';
+        const len = gen.const("len", (0, codegen_1._) `${data}.length`);
+        cxt.setParams({ min, max });
+        if (max === undefined && min === 0) {
+            (0, util_1.checkStrictMode)(it, `"minContains" == 0 without "maxContains": "contains" keyword ignored`);
+            return;
+        }
+        if (max !== undefined && min > max) {
+            (0, util_1.checkStrictMode)(it, `"minContains" > "maxContains" is always invalid`);
+            cxt.fail();
+            return;
+        }
+        if ((0, util_1.alwaysValidSchema)(it, schema)) {
+            let cond = (0, codegen_1._) `${len} >= ${min}`;
+            if (max !== undefined)
+                cond = (0, codegen_1._) `${cond} && ${len} <= ${max}`;
+            cxt.pass(cond);
+            return;
+        }
+        it.items = true;
+        const valid = gen.name("valid");
+        if (max === undefined && min === 1) {
+            validateItems(valid, () => gen.if(valid, () => gen.break()));
+        }
+        else if (min === 0) {
+            gen.let(valid, true);
+            if (max !== undefined)
+                gen.if((0, codegen_1._) `${data}.length > 0`, validateItemsWithCount);
+        }
+        else {
+            gen.let(valid, false);
+            validateItemsWithCount();
+        }
+        cxt.result(valid, () => cxt.reset());
+        function validateItemsWithCount() {
+            const schValid = gen.name("_valid");
+            const count = gen.let("count", 0);
+            validateItems(schValid, () => gen.if(schValid, () => checkLimits(count)));
+        }
+        function validateItems(_valid, block) {
+            gen.forRange("i", 0, len, (i) => {
+                cxt.subschema({
+                    keyword: "contains",
+                    dataProp: i,
+                    dataPropType: util_1.Type.Num,
+                    compositeRule: true,
+                }, _valid);
+                block();
+            });
+        }
+        function checkLimits(count) {
+            gen.code((0, codegen_1._) `${count}++`);
+            if (max === undefined) {
+                gen.if((0, codegen_1._) `${count} >= ${min}`, () => gen.assign(valid, true).break());
             }
-          }
+            else {
+                gen.if((0, codegen_1._) `${count} > ${max}`, () => gen.assign(valid, false).break());
+                if (min === 1)
+                    gen.assign(valid, true);
+                else
+                    gen.if((0, codegen_1._) `${count} >= ${min}`, () => gen.assign(valid, true));
+            }
         }
-      }
-      if ($pPropertyKeys.length) {
-        var arr2 = $pPropertyKeys;
-        if (arr2) {
-          var $pProperty, $i = -1,
-            l2 = arr2.length - 1;
-          while ($i < l2) {
-            $pProperty = arr2[$i += 1];
-            out += ' || ' + (it.usePattern($pProperty)) + '.test(' + ($key) + ') ';
-          }
-        }
-      }
-      out += ' ); if (isAdditional' + ($lvl) + ') { ';
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=contains.js.map
+
+/***/ }),
+
+/***/ 4611:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.validateSchemaDeps = exports.validatePropertyDeps = exports.error = void 0;
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+const code_1 = __nccwpck_require__(4205);
+exports.error = {
+    message: ({ params: { property, depsCount, deps } }) => {
+        const property_ies = depsCount === 1 ? "property" : "properties";
+        return (0, codegen_1.str) `must have ${property_ies} ${deps} when property ${property} is present`;
+    },
+    params: ({ params: { property, depsCount, deps, missingProperty } }) => (0, codegen_1._) `{property: ${property},
+    missingProperty: ${missingProperty},
+    depsCount: ${depsCount},
+    deps: ${deps}}`, // TODO change to reference
+};
+const def = {
+    keyword: "dependencies",
+    type: "object",
+    schemaType: "object",
+    error: exports.error,
+    code(cxt) {
+        const [propDeps, schDeps] = splitDependencies(cxt);
+        validatePropertyDeps(cxt, propDeps);
+        validateSchemaDeps(cxt, schDeps);
+    },
+};
+function splitDependencies({ schema }) {
+    const propertyDeps = {};
+    const schemaDeps = {};
+    for (const key in schema) {
+        if (key === "__proto__")
+            continue;
+        const deps = Array.isArray(schema[key]) ? propertyDeps : schemaDeps;
+        deps[key] = schema[key];
     }
-    if ($removeAdditional == 'all') {
-      out += ' delete ' + ($data) + '[' + ($key) + ']; ';
-    } else {
-      var $currentErrorPath = it.errorPath;
-      var $additionalProperty = '\' + ' + $key + ' + \'';
-      if (it.opts._errorDataPathProperty) {
-        it.errorPath = it.util.getPathExpr(it.errorPath, $key, it.opts.jsonPointers);
-      }
-      if ($noAdditional) {
-        if ($removeAdditional) {
-          out += ' delete ' + ($data) + '[' + ($key) + ']; ';
-        } else {
-          out += ' ' + ($nextValid) + ' = false; ';
-          var $currErrSchemaPath = $errSchemaPath;
-          $errSchemaPath = it.errSchemaPath + '/additionalProperties';
-          var $$outStack = $$outStack || [];
-          $$outStack.push(out);
-          out = ''; /* istanbul ignore else */
-          if (it.createErrors !== false) {
-            out += ' { keyword: \'' + ('additionalProperties') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { additionalProperty: \'' + ($additionalProperty) + '\' } ';
-            if (it.opts.messages !== false) {
-              out += ' , message: \'';
-              if (it.opts._errorDataPathProperty) {
-                out += 'is an invalid additional property';
-              } else {
-                out += 'should NOT have additional properties';
-              }
-              out += '\' ';
+    return [propertyDeps, schemaDeps];
+}
+function validatePropertyDeps(cxt, propertyDeps = cxt.schema) {
+    const { gen, data, it } = cxt;
+    if (Object.keys(propertyDeps).length === 0)
+        return;
+    const missing = gen.let("missing");
+    for (const prop in propertyDeps) {
+        const deps = propertyDeps[prop];
+        if (deps.length === 0)
+            continue;
+        const hasProperty = (0, code_1.propertyInData)(gen, data, prop, it.opts.ownProperties);
+        cxt.setParams({
+            property: prop,
+            depsCount: deps.length,
+            deps: deps.join(", "),
+        });
+        if (it.allErrors) {
+            gen.if(hasProperty, () => {
+                for (const depProp of deps) {
+                    (0, code_1.checkReportMissingProp)(cxt, depProp);
+                }
+            });
+        }
+        else {
+            gen.if((0, codegen_1._) `${hasProperty} && (${(0, code_1.checkMissingProp)(cxt, deps, missing)})`);
+            (0, code_1.reportMissingProp)(cxt, missing);
+            gen.else();
+        }
+    }
+}
+exports.validatePropertyDeps = validatePropertyDeps;
+function validateSchemaDeps(cxt, schemaDeps = cxt.schema) {
+    const { gen, data, keyword, it } = cxt;
+    const valid = gen.name("valid");
+    for (const prop in schemaDeps) {
+        if ((0, util_1.alwaysValidSchema)(it, schemaDeps[prop]))
+            continue;
+        gen.if((0, code_1.propertyInData)(gen, data, prop, it.opts.ownProperties), () => {
+            const schCxt = cxt.subschema({ keyword, schemaProp: prop }, valid);
+            cxt.mergeValidEvaluated(schCxt, valid);
+        }, () => gen.var(valid, true) // TODO var
+        );
+        cxt.ok(valid);
+    }
+}
+exports.validateSchemaDeps = validateSchemaDeps;
+exports["default"] = def;
+//# sourceMappingURL=dependencies.js.map
+
+/***/ }),
+
+/***/ 7701:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+const error = {
+    message: ({ params }) => (0, codegen_1.str) `must match "${params.ifClause}" schema`,
+    params: ({ params }) => (0, codegen_1._) `{failingKeyword: ${params.ifClause}}`,
+};
+const def = {
+    keyword: "if",
+    schemaType: ["object", "boolean"],
+    trackErrors: true,
+    error,
+    code(cxt) {
+        const { gen, parentSchema, it } = cxt;
+        if (parentSchema.then === undefined && parentSchema.else === undefined) {
+            (0, util_1.checkStrictMode)(it, '"if" without "then" and "else" is ignored');
+        }
+        const hasThen = hasSchema(it, "then");
+        const hasElse = hasSchema(it, "else");
+        if (!hasThen && !hasElse)
+            return;
+        const valid = gen.let("valid", true);
+        const schValid = gen.name("_valid");
+        validateIf();
+        cxt.reset();
+        if (hasThen && hasElse) {
+            const ifClause = gen.let("ifClause");
+            cxt.setParams({ ifClause });
+            gen.if(schValid, validateClause("then", ifClause), validateClause("else", ifClause));
+        }
+        else if (hasThen) {
+            gen.if(schValid, validateClause("then"));
+        }
+        else {
+            gen.if((0, codegen_1.not)(schValid), validateClause("else"));
+        }
+        cxt.pass(valid, () => cxt.error(true));
+        function validateIf() {
+            const schCxt = cxt.subschema({
+                keyword: "if",
+                compositeRule: true,
+                createErrors: false,
+                allErrors: false,
+            }, schValid);
+            cxt.mergeEvaluated(schCxt);
+        }
+        function validateClause(keyword, ifClause) {
+            return () => {
+                const schCxt = cxt.subschema({ keyword }, schValid);
+                gen.assign(valid, schValid);
+                cxt.mergeValidEvaluated(schCxt, valid);
+                if (ifClause)
+                    gen.assign(ifClause, (0, codegen_1._) `${keyword}`);
+                else
+                    cxt.setParams({ ifClause: keyword });
+            };
+        }
+    },
+};
+function hasSchema(it, keyword) {
+    const schema = it.schema[keyword];
+    return schema !== undefined && !(0, util_1.alwaysValidSchema)(it, schema);
+}
+exports["default"] = def;
+//# sourceMappingURL=if.js.map
+
+/***/ }),
+
+/***/ 3048:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const additionalItems_1 = __nccwpck_require__(4720);
+const prefixItems_1 = __nccwpck_require__(9498);
+const items_1 = __nccwpck_require__(8008);
+const items2020_1 = __nccwpck_require__(9084);
+const contains_1 = __nccwpck_require__(9535);
+const dependencies_1 = __nccwpck_require__(4611);
+const propertyNames_1 = __nccwpck_require__(2554);
+const additionalProperties_1 = __nccwpck_require__(3481);
+const properties_1 = __nccwpck_require__(7666);
+const patternProperties_1 = __nccwpck_require__(5157);
+const not_1 = __nccwpck_require__(8720);
+const anyOf_1 = __nccwpck_require__(8168);
+const oneOf_1 = __nccwpck_require__(6434);
+const allOf_1 = __nccwpck_require__(8406);
+const if_1 = __nccwpck_require__(7701);
+const thenElse_1 = __nccwpck_require__(7680);
+function getApplicator(draft2020 = false) {
+    const applicator = [
+        // any
+        not_1.default,
+        anyOf_1.default,
+        oneOf_1.default,
+        allOf_1.default,
+        if_1.default,
+        thenElse_1.default,
+        // object
+        propertyNames_1.default,
+        additionalProperties_1.default,
+        dependencies_1.default,
+        properties_1.default,
+        patternProperties_1.default,
+    ];
+    // array
+    if (draft2020)
+        applicator.push(prefixItems_1.default, items2020_1.default);
+    else
+        applicator.push(additionalItems_1.default, items_1.default);
+    applicator.push(contains_1.default);
+    return applicator;
+}
+exports["default"] = getApplicator;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 8008:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.validateTuple = void 0;
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+const code_1 = __nccwpck_require__(4205);
+const def = {
+    keyword: "items",
+    type: "array",
+    schemaType: ["object", "array", "boolean"],
+    before: "uniqueItems",
+    code(cxt) {
+        const { schema, it } = cxt;
+        if (Array.isArray(schema))
+            return validateTuple(cxt, "additionalItems", schema);
+        it.items = true;
+        if ((0, util_1.alwaysValidSchema)(it, schema))
+            return;
+        cxt.ok((0, code_1.validateArray)(cxt));
+    },
+};
+function validateTuple(cxt, extraItems, schArr = cxt.schema) {
+    const { gen, parentSchema, data, keyword, it } = cxt;
+    checkStrictTuple(parentSchema);
+    if (it.opts.unevaluated && schArr.length && it.items !== true) {
+        it.items = util_1.mergeEvaluated.items(gen, schArr.length, it.items);
+    }
+    const valid = gen.name("valid");
+    const len = gen.const("len", (0, codegen_1._) `${data}.length`);
+    schArr.forEach((sch, i) => {
+        if ((0, util_1.alwaysValidSchema)(it, sch))
+            return;
+        gen.if((0, codegen_1._) `${len} > ${i}`, () => cxt.subschema({
+            keyword,
+            schemaProp: i,
+            dataProp: i,
+        }, valid));
+        cxt.ok(valid);
+    });
+    function checkStrictTuple(sch) {
+        const { opts, errSchemaPath } = it;
+        const l = schArr.length;
+        const fullTuple = l === sch.minItems && (l === sch.maxItems || sch[extraItems] === false);
+        if (opts.strictTuples && !fullTuple) {
+            const msg = `"${keyword}" is ${l}-tuple, but minItems or maxItems/${extraItems} are not specified or different at path "${errSchemaPath}"`;
+            (0, util_1.checkStrictMode)(it, msg, opts.strictTuples);
+        }
+    }
+}
+exports.validateTuple = validateTuple;
+exports["default"] = def;
+//# sourceMappingURL=items.js.map
+
+/***/ }),
+
+/***/ 9084:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+const code_1 = __nccwpck_require__(4205);
+const additionalItems_1 = __nccwpck_require__(4720);
+const error = {
+    message: ({ params: { len } }) => (0, codegen_1.str) `must NOT have more than ${len} items`,
+    params: ({ params: { len } }) => (0, codegen_1._) `{limit: ${len}}`,
+};
+const def = {
+    keyword: "items",
+    type: "array",
+    schemaType: ["object", "boolean"],
+    before: "uniqueItems",
+    error,
+    code(cxt) {
+        const { schema, parentSchema, it } = cxt;
+        const { prefixItems } = parentSchema;
+        it.items = true;
+        if ((0, util_1.alwaysValidSchema)(it, schema))
+            return;
+        if (prefixItems)
+            (0, additionalItems_1.validateAdditionalItems)(cxt, prefixItems);
+        else
+            cxt.ok((0, code_1.validateArray)(cxt));
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=items2020.js.map
+
+/***/ }),
+
+/***/ 8720:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const util_1 = __nccwpck_require__(3439);
+const def = {
+    keyword: "not",
+    schemaType: ["object", "boolean"],
+    trackErrors: true,
+    code(cxt) {
+        const { gen, schema, it } = cxt;
+        if ((0, util_1.alwaysValidSchema)(it, schema)) {
+            cxt.fail();
+            return;
+        }
+        const valid = gen.name("valid");
+        cxt.subschema({
+            keyword: "not",
+            compositeRule: true,
+            createErrors: false,
+            allErrors: false,
+        }, valid);
+        cxt.failResult(valid, () => cxt.reset(), () => cxt.error());
+    },
+    error: { message: "must NOT be valid" },
+};
+exports["default"] = def;
+//# sourceMappingURL=not.js.map
+
+/***/ }),
+
+/***/ 6434:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+const error = {
+    message: "must match exactly one schema in oneOf",
+    params: ({ params }) => (0, codegen_1._) `{passingSchemas: ${params.passing}}`,
+};
+const def = {
+    keyword: "oneOf",
+    schemaType: "array",
+    trackErrors: true,
+    error,
+    code(cxt) {
+        const { gen, schema, parentSchema, it } = cxt;
+        /* istanbul ignore if */
+        if (!Array.isArray(schema))
+            throw new Error("ajv implementation error");
+        if (it.opts.discriminator && parentSchema.discriminator)
+            return;
+        const schArr = schema;
+        const valid = gen.let("valid", false);
+        const passing = gen.let("passing", null);
+        const schValid = gen.name("_valid");
+        cxt.setParams({ passing });
+        // TODO possibly fail straight away (with warning or exception) if there are two empty always valid schemas
+        gen.block(validateOneOf);
+        cxt.result(valid, () => cxt.reset(), () => cxt.error(true));
+        function validateOneOf() {
+            schArr.forEach((sch, i) => {
+                let schCxt;
+                if ((0, util_1.alwaysValidSchema)(it, sch)) {
+                    gen.var(schValid, true);
+                }
+                else {
+                    schCxt = cxt.subschema({
+                        keyword: "oneOf",
+                        schemaProp: i,
+                        compositeRule: true,
+                    }, schValid);
+                }
+                if (i > 0) {
+                    gen
+                        .if((0, codegen_1._) `${schValid} && ${valid}`)
+                        .assign(valid, false)
+                        .assign(passing, (0, codegen_1._) `[${passing}, ${i}]`)
+                        .else();
+                }
+                gen.if(schValid, () => {
+                    gen.assign(valid, true);
+                    gen.assign(passing, i);
+                    if (schCxt)
+                        cxt.mergeEvaluated(schCxt, codegen_1.Name);
+                });
+            });
+        }
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=oneOf.js.map
+
+/***/ }),
+
+/***/ 5157:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const code_1 = __nccwpck_require__(4205);
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+const util_2 = __nccwpck_require__(3439);
+const def = {
+    keyword: "patternProperties",
+    type: "object",
+    schemaType: "object",
+    code(cxt) {
+        const { gen, schema, data, parentSchema, it } = cxt;
+        const { opts } = it;
+        const patterns = (0, code_1.allSchemaProperties)(schema);
+        const alwaysValidPatterns = patterns.filter((p) => (0, util_1.alwaysValidSchema)(it, schema[p]));
+        if (patterns.length === 0 ||
+            (alwaysValidPatterns.length === patterns.length &&
+                (!it.opts.unevaluated || it.props === true))) {
+            return;
+        }
+        const checkProperties = opts.strictSchema && !opts.allowMatchingProperties && parentSchema.properties;
+        const valid = gen.name("valid");
+        if (it.props !== true && !(it.props instanceof codegen_1.Name)) {
+            it.props = (0, util_2.evaluatedPropsToName)(gen, it.props);
+        }
+        const { props } = it;
+        validatePatternProperties();
+        function validatePatternProperties() {
+            for (const pat of patterns) {
+                if (checkProperties)
+                    checkMatchingProperties(pat);
+                if (it.allErrors) {
+                    validateProperties(pat);
+                }
+                else {
+                    gen.var(valid, true); // TODO var
+                    validateProperties(pat);
+                    gen.if(valid);
+                }
             }
-            if (it.opts.verbose) {
-              out += ' , schema: false , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
+        }
+        function checkMatchingProperties(pat) {
+            for (const prop in checkProperties) {
+                if (new RegExp(pat).test(prop)) {
+                    (0, util_1.checkStrictMode)(it, `property ${prop} matches pattern ${pat} (use allowMatchingProperties)`);
+                }
             }
-            out += ' } ';
-          } else {
-            out += ' {} ';
-          }
-          var __err = out;
-          out = $$outStack.pop();
-          if (!it.compositeRule && $breakOnError) {
+        }
+        function validateProperties(pat) {
+            gen.forIn("key", data, (key) => {
+                gen.if((0, codegen_1._) `${(0, code_1.usePattern)(cxt, pat)}.test(${key})`, () => {
+                    const alwaysValid = alwaysValidPatterns.includes(pat);
+                    if (!alwaysValid) {
+                        cxt.subschema({
+                            keyword: "patternProperties",
+                            schemaProp: pat,
+                            dataProp: key,
+                            dataPropType: util_2.Type.Str,
+                        }, valid);
+                    }
+                    if (it.opts.unevaluated && props !== true) {
+                        gen.assign((0, codegen_1._) `${props}[${key}]`, true);
+                    }
+                    else if (!alwaysValid && !it.allErrors) {
+                        // can short-circuit if `unevaluatedProperties` is not supported (opts.next === false)
+                        // or if all properties were evaluated (props === true)
+                        gen.if((0, codegen_1.not)(valid), () => gen.break());
+                    }
+                });
+            });
+        }
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=patternProperties.js.map
+
+/***/ }),
+
+/***/ 9498:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const items_1 = __nccwpck_require__(8008);
+const def = {
+    keyword: "prefixItems",
+    type: "array",
+    schemaType: ["array"],
+    before: "uniqueItems",
+    code: (cxt) => (0, items_1.validateTuple)(cxt, "items"),
+};
+exports["default"] = def;
+//# sourceMappingURL=prefixItems.js.map
+
+/***/ }),
+
+/***/ 7666:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const validate_1 = __nccwpck_require__(8955);
+const code_1 = __nccwpck_require__(4205);
+const util_1 = __nccwpck_require__(3439);
+const additionalProperties_1 = __nccwpck_require__(3481);
+const def = {
+    keyword: "properties",
+    type: "object",
+    schemaType: "object",
+    code(cxt) {
+        const { gen, schema, parentSchema, data, it } = cxt;
+        if (it.opts.removeAdditional === "all" && parentSchema.additionalProperties === undefined) {
+            additionalProperties_1.default.code(new validate_1.KeywordCxt(it, additionalProperties_1.default, "additionalProperties"));
+        }
+        const allProps = (0, code_1.allSchemaProperties)(schema);
+        for (const prop of allProps) {
+            it.definedProperties.add(prop);
+        }
+        if (it.opts.unevaluated && allProps.length && it.props !== true) {
+            it.props = util_1.mergeEvaluated.props(gen, (0, util_1.toHash)(allProps), it.props);
+        }
+        const properties = allProps.filter((p) => !(0, util_1.alwaysValidSchema)(it, schema[p]));
+        if (properties.length === 0)
+            return;
+        const valid = gen.name("valid");
+        for (const prop of properties) {
+            if (hasDefault(prop)) {
+                applyPropertySchema(prop);
+            }
+            else {
+                gen.if((0, code_1.propertyInData)(gen, data, prop, it.opts.ownProperties));
+                applyPropertySchema(prop);
+                if (!it.allErrors)
+                    gen.else().var(valid, true);
+                gen.endIf();
+            }
+            cxt.it.definedProperties.add(prop);
+            cxt.ok(valid);
+        }
+        function hasDefault(prop) {
+            return it.opts.useDefaults && !it.compositeRule && schema[prop].default !== undefined;
+        }
+        function applyPropertySchema(prop) {
+            cxt.subschema({
+                keyword: "properties",
+                schemaProp: prop,
+                dataProp: prop,
+            }, valid);
+        }
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=properties.js.map
+
+/***/ }),
+
+/***/ 2554:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+const error = {
+    message: "property name must be valid",
+    params: ({ params }) => (0, codegen_1._) `{propertyName: ${params.propertyName}}`,
+};
+const def = {
+    keyword: "propertyNames",
+    type: "object",
+    schemaType: ["object", "boolean"],
+    error,
+    code(cxt) {
+        const { gen, schema, data, it } = cxt;
+        if ((0, util_1.alwaysValidSchema)(it, schema))
+            return;
+        const valid = gen.name("valid");
+        gen.forIn("key", data, (key) => {
+            cxt.setParams({ propertyName: key });
+            cxt.subschema({
+                keyword: "propertyNames",
+                data: key,
+                dataTypes: ["string"],
+                propertyName: key,
+                compositeRule: true,
+            }, valid);
+            gen.if((0, codegen_1.not)(valid), () => {
+                cxt.error(true);
+                if (!it.allErrors)
+                    gen.break();
+            });
+        });
+        cxt.ok(valid);
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=propertyNames.js.map
+
+/***/ }),
+
+/***/ 7680:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const util_1 = __nccwpck_require__(3439);
+const def = {
+    keyword: ["then", "else"],
+    schemaType: ["object", "boolean"],
+    code({ keyword, parentSchema, it }) {
+        if (parentSchema.if === undefined)
+            (0, util_1.checkStrictMode)(it, `"${keyword}" without "if" is ignored`);
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=thenElse.js.map
+
+/***/ }),
+
+/***/ 4205:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.validateUnion = exports.validateArray = exports.usePattern = exports.callValidateCode = exports.schemaProperties = exports.allSchemaProperties = exports.noPropertyInData = exports.propertyInData = exports.isOwnProperty = exports.hasPropFunc = exports.reportMissingProp = exports.checkMissingProp = exports.checkReportMissingProp = void 0;
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+const names_1 = __nccwpck_require__(50);
+const util_2 = __nccwpck_require__(3439);
+function checkReportMissingProp(cxt, prop) {
+    const { gen, data, it } = cxt;
+    gen.if(noPropertyInData(gen, data, prop, it.opts.ownProperties), () => {
+        cxt.setParams({ missingProperty: (0, codegen_1._) `${prop}` }, true);
+        cxt.error();
+    });
+}
+exports.checkReportMissingProp = checkReportMissingProp;
+function checkMissingProp({ gen, data, it: { opts } }, properties, missing) {
+    return (0, codegen_1.or)(...properties.map((prop) => (0, codegen_1.and)(noPropertyInData(gen, data, prop, opts.ownProperties), (0, codegen_1._) `${missing} = ${prop}`)));
+}
+exports.checkMissingProp = checkMissingProp;
+function reportMissingProp(cxt, missing) {
+    cxt.setParams({ missingProperty: missing }, true);
+    cxt.error();
+}
+exports.reportMissingProp = reportMissingProp;
+function hasPropFunc(gen) {
+    return gen.scopeValue("func", {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        ref: Object.prototype.hasOwnProperty,
+        code: (0, codegen_1._) `Object.prototype.hasOwnProperty`,
+    });
+}
+exports.hasPropFunc = hasPropFunc;
+function isOwnProperty(gen, data, property) {
+    return (0, codegen_1._) `${hasPropFunc(gen)}.call(${data}, ${property})`;
+}
+exports.isOwnProperty = isOwnProperty;
+function propertyInData(gen, data, property, ownProperties) {
+    const cond = (0, codegen_1._) `${data}${(0, codegen_1.getProperty)(property)} !== undefined`;
+    return ownProperties ? (0, codegen_1._) `${cond} && ${isOwnProperty(gen, data, property)}` : cond;
+}
+exports.propertyInData = propertyInData;
+function noPropertyInData(gen, data, property, ownProperties) {
+    const cond = (0, codegen_1._) `${data}${(0, codegen_1.getProperty)(property)} === undefined`;
+    return ownProperties ? (0, codegen_1.or)(cond, (0, codegen_1.not)(isOwnProperty(gen, data, property))) : cond;
+}
+exports.noPropertyInData = noPropertyInData;
+function allSchemaProperties(schemaMap) {
+    return schemaMap ? Object.keys(schemaMap).filter((p) => p !== "__proto__") : [];
+}
+exports.allSchemaProperties = allSchemaProperties;
+function schemaProperties(it, schemaMap) {
+    return allSchemaProperties(schemaMap).filter((p) => !(0, util_1.alwaysValidSchema)(it, schemaMap[p]));
+}
+exports.schemaProperties = schemaProperties;
+function callValidateCode({ schemaCode, data, it: { gen, topSchemaRef, schemaPath, errorPath }, it }, func, context, passSchema) {
+    const dataAndSchema = passSchema ? (0, codegen_1._) `${schemaCode}, ${data}, ${topSchemaRef}${schemaPath}` : data;
+    const valCxt = [
+        [names_1.default.instancePath, (0, codegen_1.strConcat)(names_1.default.instancePath, errorPath)],
+        [names_1.default.parentData, it.parentData],
+        [names_1.default.parentDataProperty, it.parentDataProperty],
+        [names_1.default.rootData, names_1.default.rootData],
+    ];
+    if (it.opts.dynamicRef)
+        valCxt.push([names_1.default.dynamicAnchors, names_1.default.dynamicAnchors]);
+    const args = (0, codegen_1._) `${dataAndSchema}, ${gen.object(...valCxt)}`;
+    return context !== codegen_1.nil ? (0, codegen_1._) `${func}.call(${context}, ${args})` : (0, codegen_1._) `${func}(${args})`;
+}
+exports.callValidateCode = callValidateCode;
+const newRegExp = (0, codegen_1._) `new RegExp`;
+function usePattern({ gen, it: { opts } }, pattern) {
+    const u = opts.unicodeRegExp ? "u" : "";
+    const { regExp } = opts.code;
+    const rx = regExp(pattern, u);
+    return gen.scopeValue("pattern", {
+        key: rx.toString(),
+        ref: rx,
+        code: (0, codegen_1._) `${regExp.code === "new RegExp" ? newRegExp : (0, util_2.useFunc)(gen, regExp)}(${pattern}, ${u})`,
+    });
+}
+exports.usePattern = usePattern;
+function validateArray(cxt) {
+    const { gen, data, keyword, it } = cxt;
+    const valid = gen.name("valid");
+    if (it.allErrors) {
+        const validArr = gen.let("valid", true);
+        validateItems(() => gen.assign(validArr, false));
+        return validArr;
+    }
+    gen.var(valid, true);
+    validateItems(() => gen.break());
+    return valid;
+    function validateItems(notValid) {
+        const len = gen.const("len", (0, codegen_1._) `${data}.length`);
+        gen.forRange("i", 0, len, (i) => {
+            cxt.subschema({
+                keyword,
+                dataProp: i,
+                dataPropType: util_1.Type.Num,
+            }, valid);
+            gen.if((0, codegen_1.not)(valid), notValid);
+        });
+    }
+}
+exports.validateArray = validateArray;
+function validateUnion(cxt) {
+    const { gen, schema, keyword, it } = cxt;
+    /* istanbul ignore if */
+    if (!Array.isArray(schema))
+        throw new Error("ajv implementation error");
+    const alwaysValid = schema.some((sch) => (0, util_1.alwaysValidSchema)(it, sch));
+    if (alwaysValid && !it.opts.unevaluated)
+        return;
+    const valid = gen.let("valid", false);
+    const schValid = gen.name("_valid");
+    gen.block(() => schema.forEach((_sch, i) => {
+        const schCxt = cxt.subschema({
+            keyword,
+            schemaProp: i,
+            compositeRule: true,
+        }, schValid);
+        gen.assign(valid, (0, codegen_1._) `${valid} || ${schValid}`);
+        const merged = cxt.mergeValidEvaluated(schCxt, schValid);
+        // can short-circuit if `unevaluatedProperties/Items` not supported (opts.unevaluated !== true)
+        // or if all properties and items were evaluated (it.props === true && it.items === true)
+        if (!merged)
+            gen.if((0, codegen_1.not)(valid));
+    }));
+    cxt.result(valid, () => cxt.reset(), () => cxt.error(true));
+}
+exports.validateUnion = validateUnion;
+//# sourceMappingURL=code.js.map
+
+/***/ }),
+
+/***/ 1674:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const def = {
+    keyword: "id",
+    code() {
+        throw new Error('NOT SUPPORTED: keyword "id", use "$id" for schema ID');
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=id.js.map
+
+/***/ }),
+
+/***/ 3707:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const id_1 = __nccwpck_require__(1674);
+const ref_1 = __nccwpck_require__(6532);
+const core = [
+    "$schema",
+    "$id",
+    "$defs",
+    "$vocabulary",
+    { keyword: "$comment" },
+    "definitions",
+    id_1.default,
+    ref_1.default,
+];
+exports["default"] = core;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 6532:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.callRef = exports.getValidate = void 0;
+const ref_error_1 = __nccwpck_require__(8190);
+const code_1 = __nccwpck_require__(4205);
+const codegen_1 = __nccwpck_require__(9179);
+const names_1 = __nccwpck_require__(50);
+const compile_1 = __nccwpck_require__(813);
+const util_1 = __nccwpck_require__(3439);
+const def = {
+    keyword: "$ref",
+    schemaType: "string",
+    code(cxt) {
+        const { gen, schema: $ref, it } = cxt;
+        const { baseId, schemaEnv: env, validateName, opts, self } = it;
+        const { root } = env;
+        if (($ref === "#" || $ref === "#/") && baseId === root.baseId)
+            return callRootRef();
+        const schOrEnv = compile_1.resolveRef.call(self, root, baseId, $ref);
+        if (schOrEnv === undefined)
+            throw new ref_error_1.default(baseId, $ref);
+        if (schOrEnv instanceof compile_1.SchemaEnv)
+            return callValidate(schOrEnv);
+        return inlineRefSchema(schOrEnv);
+        function callRootRef() {
+            if (env === root)
+                return callRef(cxt, validateName, env, env.$async);
+            const rootName = gen.scopeValue("root", { ref: root });
+            return callRef(cxt, (0, codegen_1._) `${rootName}.validate`, root, root.$async);
+        }
+        function callValidate(sch) {
+            const v = getValidate(cxt, sch);
+            callRef(cxt, v, sch, sch.$async);
+        }
+        function inlineRefSchema(sch) {
+            const schName = gen.scopeValue("schema", opts.code.source === true ? { ref: sch, code: (0, codegen_1.stringify)(sch) } : { ref: sch });
+            const valid = gen.name("valid");
+            const schCxt = cxt.subschema({
+                schema: sch,
+                dataTypes: [],
+                schemaPath: codegen_1.nil,
+                topSchemaRef: schName,
+                errSchemaPath: $ref,
+            }, valid);
+            cxt.mergeEvaluated(schCxt);
+            cxt.ok(valid);
+        }
+    },
+};
+function getValidate(cxt, sch) {
+    const { gen } = cxt;
+    return sch.validate
+        ? gen.scopeValue("validate", { ref: sch.validate })
+        : (0, codegen_1._) `${gen.scopeValue("wrapper", { ref: sch })}.validate`;
+}
+exports.getValidate = getValidate;
+function callRef(cxt, v, sch, $async) {
+    const { gen, it } = cxt;
+    const { allErrors, schemaEnv: env, opts } = it;
+    const passCxt = opts.passContext ? names_1.default.this : codegen_1.nil;
+    if ($async)
+        callAsyncRef();
+    else
+        callSyncRef();
+    function callAsyncRef() {
+        if (!env.$async)
+            throw new Error("async schema referenced by sync schema");
+        const valid = gen.let("valid");
+        gen.try(() => {
+            gen.code((0, codegen_1._) `await ${(0, code_1.callValidateCode)(cxt, v, passCxt)}`);
+            addEvaluatedFrom(v); // TODO will not work with async, it has to be returned with the result
+            if (!allErrors)
+                gen.assign(valid, true);
+        }, (e) => {
+            gen.if((0, codegen_1._) `!(${e} instanceof ${it.ValidationError})`, () => gen.throw(e));
+            addErrorsFrom(e);
+            if (!allErrors)
+                gen.assign(valid, false);
+        });
+        cxt.ok(valid);
+    }
+    function callSyncRef() {
+        cxt.result((0, code_1.callValidateCode)(cxt, v, passCxt), () => addEvaluatedFrom(v), () => addErrorsFrom(v));
+    }
+    function addErrorsFrom(source) {
+        const errs = (0, codegen_1._) `${source}.errors`;
+        gen.assign(names_1.default.vErrors, (0, codegen_1._) `${names_1.default.vErrors} === null ? ${errs} : ${names_1.default.vErrors}.concat(${errs})`); // TODO tagged
+        gen.assign(names_1.default.errors, (0, codegen_1._) `${names_1.default.vErrors}.length`);
+    }
+    function addEvaluatedFrom(source) {
+        var _a;
+        if (!it.opts.unevaluated)
+            return;
+        const schEvaluated = (_a = sch === null || sch === void 0 ? void 0 : sch.validate) === null || _a === void 0 ? void 0 : _a.evaluated;
+        // TODO refactor
+        if (it.props !== true) {
+            if (schEvaluated && !schEvaluated.dynamicProps) {
+                if (schEvaluated.props !== undefined) {
+                    it.props = util_1.mergeEvaluated.props(gen, schEvaluated.props, it.props);
+                }
+            }
+            else {
+                const props = gen.var("props", (0, codegen_1._) `${source}.evaluated.props`);
+                it.props = util_1.mergeEvaluated.props(gen, props, it.props, codegen_1.Name);
+            }
+        }
+        if (it.items !== true) {
+            if (schEvaluated && !schEvaluated.dynamicItems) {
+                if (schEvaluated.items !== undefined) {
+                    it.items = util_1.mergeEvaluated.items(gen, schEvaluated.items, it.items);
+                }
+            }
+            else {
+                const items = gen.var("items", (0, codegen_1._) `${source}.evaluated.items`);
+                it.items = util_1.mergeEvaluated.items(gen, items, it.items, codegen_1.Name);
+            }
+        }
+    }
+}
+exports.callRef = callRef;
+exports["default"] = def;
+//# sourceMappingURL=ref.js.map
+
+/***/ }),
+
+/***/ 4025:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const codegen_1 = __nccwpck_require__(9179);
+const types_1 = __nccwpck_require__(8374);
+const error = {
+    message: ({ params: { discrError, tagName } }) => discrError === types_1.DiscrError.Tag
+        ? `tag "${tagName}" must be string`
+        : `value of tag "${tagName}" must be in oneOf`,
+    params: ({ params: { discrError, tag, tagName } }) => (0, codegen_1._) `{error: ${discrError}, tag: ${tagName}, tagValue: ${tag}}`,
+};
+const def = {
+    keyword: "discriminator",
+    type: "object",
+    schemaType: "object",
+    error,
+    code(cxt) {
+        const { gen, data, schema, parentSchema, it } = cxt;
+        const { oneOf } = parentSchema;
+        if (!it.opts.discriminator) {
+            throw new Error("discriminator: requires discriminator option");
+        }
+        const tagName = schema.propertyName;
+        if (typeof tagName != "string")
+            throw new Error("discriminator: requires propertyName");
+        if (schema.mapping)
+            throw new Error("discriminator: mapping is not supported");
+        if (!oneOf)
+            throw new Error("discriminator: requires oneOf keyword");
+        const valid = gen.let("valid", false);
+        const tag = gen.const("tag", (0, codegen_1._) `${data}${(0, codegen_1.getProperty)(tagName)}`);
+        gen.if((0, codegen_1._) `typeof ${tag} == "string"`, () => validateMapping(), () => cxt.error(false, { discrError: types_1.DiscrError.Tag, tag, tagName }));
+        cxt.ok(valid);
+        function validateMapping() {
+            const mapping = getMapping();
+            gen.if(false);
+            for (const tagValue in mapping) {
+                gen.elseIf((0, codegen_1._) `${tag} === ${tagValue}`);
+                gen.assign(valid, applyTagSchema(mapping[tagValue]));
+            }
+            gen.else();
+            cxt.error(false, { discrError: types_1.DiscrError.Mapping, tag, tagName });
+            gen.endIf();
+        }
+        function applyTagSchema(schemaProp) {
+            const _valid = gen.name("valid");
+            const schCxt = cxt.subschema({ keyword: "oneOf", schemaProp }, _valid);
+            cxt.mergeEvaluated(schCxt, codegen_1.Name);
+            return _valid;
+        }
+        function getMapping() {
+            var _a;
+            const oneOfMapping = {};
+            const topRequired = hasRequired(parentSchema);
+            let tagRequired = true;
+            for (let i = 0; i < oneOf.length; i++) {
+                const sch = oneOf[i];
+                const propSch = (_a = sch.properties) === null || _a === void 0 ? void 0 : _a[tagName];
+                if (typeof propSch != "object") {
+                    throw new Error(`discriminator: oneOf schemas must have "properties/${tagName}"`);
+                }
+                tagRequired = tagRequired && (topRequired || hasRequired(sch));
+                addMappings(propSch, i);
+            }
+            if (!tagRequired)
+                throw new Error(`discriminator: "${tagName}" must be required`);
+            return oneOfMapping;
+            function hasRequired({ required }) {
+                return Array.isArray(required) && required.includes(tagName);
+            }
+            function addMappings(sch, i) {
+                if (sch.const) {
+                    addMapping(sch.const, i);
+                }
+                else if (sch.enum) {
+                    for (const tagValue of sch.enum) {
+                        addMapping(tagValue, i);
+                    }
+                }
+                else {
+                    throw new Error(`discriminator: "properties/${tagName}" must have "const" or "enum"`);
+                }
+            }
+            function addMapping(tagValue, i) {
+                if (typeof tagValue != "string" || tagValue in oneOfMapping) {
+                    throw new Error(`discriminator: "${tagName}" values must be unique strings`);
+                }
+                oneOfMapping[tagValue] = i;
+            }
+        }
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 8374:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DiscrError = void 0;
+var DiscrError;
+(function (DiscrError) {
+    DiscrError["Tag"] = "tag";
+    DiscrError["Mapping"] = "mapping";
+})(DiscrError = exports.DiscrError || (exports.DiscrError = {}));
+//# sourceMappingURL=types.js.map
+
+/***/ }),
+
+/***/ 691:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core_1 = __nccwpck_require__(3707);
+const validation_1 = __nccwpck_require__(9805);
+const applicator_1 = __nccwpck_require__(3048);
+const format_1 = __nccwpck_require__(9841);
+const metadata_1 = __nccwpck_require__(5799);
+const draft7Vocabularies = [
+    core_1.default,
+    validation_1.default,
+    (0, applicator_1.default)(),
+    format_1.default,
+    metadata_1.metadataVocabulary,
+    metadata_1.contentVocabulary,
+];
+exports["default"] = draft7Vocabularies;
+//# sourceMappingURL=draft7.js.map
+
+/***/ }),
+
+/***/ 3691:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const codegen_1 = __nccwpck_require__(9179);
+const error = {
+    message: ({ schemaCode }) => (0, codegen_1.str) `must match format "${schemaCode}"`,
+    params: ({ schemaCode }) => (0, codegen_1._) `{format: ${schemaCode}}`,
+};
+const def = {
+    keyword: "format",
+    type: ["number", "string"],
+    schemaType: "string",
+    $data: true,
+    error,
+    code(cxt, ruleType) {
+        const { gen, data, $data, schema, schemaCode, it } = cxt;
+        const { opts, errSchemaPath, schemaEnv, self } = it;
+        if (!opts.validateFormats)
+            return;
+        if ($data)
+            validate$DataFormat();
+        else
+            validateFormat();
+        function validate$DataFormat() {
+            const fmts = gen.scopeValue("formats", {
+                ref: self.formats,
+                code: opts.code.formats,
+            });
+            const fDef = gen.const("fDef", (0, codegen_1._) `${fmts}[${schemaCode}]`);
+            const fType = gen.let("fType");
+            const format = gen.let("format");
+            // TODO simplify
+            gen.if((0, codegen_1._) `typeof ${fDef} == "object" && !(${fDef} instanceof RegExp)`, () => gen.assign(fType, (0, codegen_1._) `${fDef}.type || "string"`).assign(format, (0, codegen_1._) `${fDef}.validate`), () => gen.assign(fType, (0, codegen_1._) `"string"`).assign(format, fDef));
+            cxt.fail$data((0, codegen_1.or)(unknownFmt(), invalidFmt()));
+            function unknownFmt() {
+                if (opts.strictSchema === false)
+                    return codegen_1.nil;
+                return (0, codegen_1._) `${schemaCode} && !${format}`;
+            }
+            function invalidFmt() {
+                const callFormat = schemaEnv.$async
+                    ? (0, codegen_1._) `(${fDef}.async ? await ${format}(${data}) : ${format}(${data}))`
+                    : (0, codegen_1._) `${format}(${data})`;
+                const validData = (0, codegen_1._) `(typeof ${format} == "function" ? ${callFormat} : ${format}.test(${data}))`;
+                return (0, codegen_1._) `${format} && ${format} !== true && ${fType} === ${ruleType} && !${validData}`;
+            }
+        }
+        function validateFormat() {
+            const formatDef = self.formats[schema];
+            if (!formatDef) {
+                unknownFormat();
+                return;
+            }
+            if (formatDef === true)
+                return;
+            const [fmtType, format, fmtRef] = getFormat(formatDef);
+            if (fmtType === ruleType)
+                cxt.pass(validCondition());
+            function unknownFormat() {
+                if (opts.strictSchema === false) {
+                    self.logger.warn(unknownMsg());
+                    return;
+                }
+                throw new Error(unknownMsg());
+                function unknownMsg() {
+                    return `unknown format "${schema}" ignored in schema at path "${errSchemaPath}"`;
+                }
+            }
+            function getFormat(fmtDef) {
+                const code = fmtDef instanceof RegExp
+                    ? (0, codegen_1.regexpCode)(fmtDef)
+                    : opts.code.formats
+                        ? (0, codegen_1._) `${opts.code.formats}${(0, codegen_1.getProperty)(schema)}`
+                        : undefined;
+                const fmt = gen.scopeValue("formats", { key: schema, ref: fmtDef, code });
+                if (typeof fmtDef == "object" && !(fmtDef instanceof RegExp)) {
+                    return [fmtDef.type || "string", fmtDef.validate, (0, codegen_1._) `${fmt}.validate`];
+                }
+                return ["string", fmtDef, fmt];
+            }
+            function validCondition() {
+                if (typeof formatDef == "object" && !(formatDef instanceof RegExp) && formatDef.async) {
+                    if (!schemaEnv.$async)
+                        throw new Error("async format in sync schema");
+                    return (0, codegen_1._) `await ${fmtRef}(${data})`;
+                }
+                return typeof format == "function" ? (0, codegen_1._) `${fmtRef}(${data})` : (0, codegen_1._) `${fmtRef}.test(${data})`;
+            }
+        }
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=format.js.map
+
+/***/ }),
+
+/***/ 9841:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const format_1 = __nccwpck_require__(3691);
+const format = [format_1.default];
+exports["default"] = format;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 5799:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.contentVocabulary = exports.metadataVocabulary = void 0;
+exports.metadataVocabulary = [
+    "title",
+    "description",
+    "default",
+    "deprecated",
+    "readOnly",
+    "writeOnly",
+    "examples",
+];
+exports.contentVocabulary = [
+    "contentMediaType",
+    "contentEncoding",
+    "contentSchema",
+];
+//# sourceMappingURL=metadata.js.map
+
+/***/ }),
+
+/***/ 3694:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+const equal_1 = __nccwpck_require__(3809);
+const error = {
+    message: "must be equal to constant",
+    params: ({ schemaCode }) => (0, codegen_1._) `{allowedValue: ${schemaCode}}`,
+};
+const def = {
+    keyword: "const",
+    $data: true,
+    error,
+    code(cxt) {
+        const { gen, data, $data, schemaCode, schema } = cxt;
+        if ($data || (schema && typeof schema == "object")) {
+            cxt.fail$data((0, codegen_1._) `!${(0, util_1.useFunc)(gen, equal_1.default)}(${data}, ${schemaCode})`);
+        }
+        else {
+            cxt.fail((0, codegen_1._) `${schema} !== ${data}`);
+        }
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=const.js.map
+
+/***/ }),
+
+/***/ 5529:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+const equal_1 = __nccwpck_require__(3809);
+const error = {
+    message: "must be equal to one of the allowed values",
+    params: ({ schemaCode }) => (0, codegen_1._) `{allowedValues: ${schemaCode}}`,
+};
+const def = {
+    keyword: "enum",
+    schemaType: "array",
+    $data: true,
+    error,
+    code(cxt) {
+        const { gen, data, $data, schema, schemaCode, it } = cxt;
+        if (!$data && schema.length === 0)
+            throw new Error("enum must have non-empty array");
+        const useLoop = schema.length >= it.opts.loopEnum;
+        const eql = (0, util_1.useFunc)(gen, equal_1.default);
+        let valid;
+        if (useLoop || $data) {
+            valid = gen.let("valid");
+            cxt.block$data(valid, loopEnum);
+        }
+        else {
             /* istanbul ignore if */
-            if (it.async) {
-              out += ' throw new ValidationError([' + (__err) + ']); ';
-            } else {
-              out += ' validate.errors = [' + (__err) + ']; return false; ';
-            }
-          } else {
-            out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-          }
-          $errSchemaPath = $currErrSchemaPath;
-          if ($breakOnError) {
-            out += ' break; ';
-          }
+            if (!Array.isArray(schema))
+                throw new Error("ajv implementation error");
+            const vSchema = gen.const("vSchema", schemaCode);
+            valid = (0, codegen_1.or)(...schema.map((_x, i) => equalCode(vSchema, i)));
         }
-      } else if ($additionalIsSchema) {
-        if ($removeAdditional == 'failing') {
-          out += ' var ' + ($errs) + ' = errors;  ';
-          var $wasComposite = it.compositeRule;
-          it.compositeRule = $it.compositeRule = true;
-          $it.schema = $aProperties;
-          $it.schemaPath = it.schemaPath + '.additionalProperties';
-          $it.errSchemaPath = it.errSchemaPath + '/additionalProperties';
-          $it.errorPath = it.opts._errorDataPathProperty ? it.errorPath : it.util.getPathExpr(it.errorPath, $key, it.opts.jsonPointers);
-          var $passData = $data + '[' + $key + ']';
-          $it.dataPathArr[$dataNxt] = $key;
-          var $code = it.validate($it);
-          $it.baseId = $currentBaseId;
-          if (it.util.varOccurences($code, $nextData) < 2) {
-            out += ' ' + (it.util.varReplace($code, $nextData, $passData)) + ' ';
-          } else {
-            out += ' var ' + ($nextData) + ' = ' + ($passData) + '; ' + ($code) + ' ';
-          }
-          out += ' if (!' + ($nextValid) + ') { errors = ' + ($errs) + '; if (validate.errors !== null) { if (errors) validate.errors.length = errors; else validate.errors = null; } delete ' + ($data) + '[' + ($key) + ']; }  ';
-          it.compositeRule = $it.compositeRule = $wasComposite;
-        } else {
-          $it.schema = $aProperties;
-          $it.schemaPath = it.schemaPath + '.additionalProperties';
-          $it.errSchemaPath = it.errSchemaPath + '/additionalProperties';
-          $it.errorPath = it.opts._errorDataPathProperty ? it.errorPath : it.util.getPathExpr(it.errorPath, $key, it.opts.jsonPointers);
-          var $passData = $data + '[' + $key + ']';
-          $it.dataPathArr[$dataNxt] = $key;
-          var $code = it.validate($it);
-          $it.baseId = $currentBaseId;
-          if (it.util.varOccurences($code, $nextData) < 2) {
-            out += ' ' + (it.util.varReplace($code, $nextData, $passData)) + ' ';
-          } else {
-            out += ' var ' + ($nextData) + ' = ' + ($passData) + '; ' + ($code) + ' ';
-          }
-          if ($breakOnError) {
-            out += ' if (!' + ($nextValid) + ') break; ';
-          }
+        cxt.pass(valid);
+        function loopEnum() {
+            gen.assign(valid, false);
+            gen.forOf("v", schemaCode, (v) => gen.if((0, codegen_1._) `${eql}(${data}, ${v})`, () => gen.assign(valid, true).break()));
         }
-      }
-      it.errorPath = $currentErrorPath;
-    }
-    if ($someProperties) {
-      out += ' } ';
-    }
-    out += ' }  ';
-    if ($breakOnError) {
-      out += ' if (' + ($nextValid) + ') { ';
-      $closingBraces += '}';
-    }
-  }
-  var $useDefaults = it.opts.useDefaults && !it.compositeRule;
-  if ($schemaKeys.length) {
-    var arr3 = $schemaKeys;
-    if (arr3) {
-      var $propertyKey, i3 = -1,
-        l3 = arr3.length - 1;
-      while (i3 < l3) {
-        $propertyKey = arr3[i3 += 1];
-        var $sch = $schema[$propertyKey];
-        if ((it.opts.strictKeywords ? (typeof $sch == 'object' && Object.keys($sch).length > 0) || $sch === false : it.util.schemaHasRules($sch, it.RULES.all))) {
-          var $prop = it.util.getProperty($propertyKey),
-            $passData = $data + $prop,
-            $hasDefault = $useDefaults && $sch.default !== undefined;
-          $it.schema = $sch;
-          $it.schemaPath = $schemaPath + $prop;
-          $it.errSchemaPath = $errSchemaPath + '/' + it.util.escapeFragment($propertyKey);
-          $it.errorPath = it.util.getPath(it.errorPath, $propertyKey, it.opts.jsonPointers);
-          $it.dataPathArr[$dataNxt] = it.util.toQuotedString($propertyKey);
-          var $code = it.validate($it);
-          $it.baseId = $currentBaseId;
-          if (it.util.varOccurences($code, $nextData) < 2) {
-            $code = it.util.varReplace($code, $nextData, $passData);
-            var $useData = $passData;
-          } else {
-            var $useData = $nextData;
-            out += ' var ' + ($nextData) + ' = ' + ($passData) + '; ';
-          }
-          if ($hasDefault) {
-            out += ' ' + ($code) + ' ';
-          } else {
-            if ($requiredHash && $requiredHash[$propertyKey]) {
-              out += ' if ( ' + ($useData) + ' === undefined ';
-              if ($ownProperties) {
-                out += ' || ! Object.prototype.hasOwnProperty.call(' + ($data) + ', \'' + (it.util.escapeQuotes($propertyKey)) + '\') ';
-              }
-              out += ') { ' + ($nextValid) + ' = false; ';
-              var $currentErrorPath = it.errorPath,
-                $currErrSchemaPath = $errSchemaPath,
-                $missingProperty = it.util.escapeQuotes($propertyKey);
-              if (it.opts._errorDataPathProperty) {
-                it.errorPath = it.util.getPath($currentErrorPath, $propertyKey, it.opts.jsonPointers);
-              }
-              $errSchemaPath = it.errSchemaPath + '/required';
-              var $$outStack = $$outStack || [];
-              $$outStack.push(out);
-              out = ''; /* istanbul ignore else */
-              if (it.createErrors !== false) {
-                out += ' { keyword: \'' + ('required') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { missingProperty: \'' + ($missingProperty) + '\' } ';
-                if (it.opts.messages !== false) {
-                  out += ' , message: \'';
-                  if (it.opts._errorDataPathProperty) {
-                    out += 'is a required property';
-                  } else {
-                    out += 'should have required property \\\'' + ($missingProperty) + '\\\'';
-                  }
-                  out += '\' ';
-                }
-                if (it.opts.verbose) {
-                  out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-                }
-                out += ' } ';
-              } else {
-                out += ' {} ';
-              }
-              var __err = out;
-              out = $$outStack.pop();
-              if (!it.compositeRule && $breakOnError) {
-                /* istanbul ignore if */
-                if (it.async) {
-                  out += ' throw new ValidationError([' + (__err) + ']); ';
-                } else {
-                  out += ' validate.errors = [' + (__err) + ']; return false; ';
-                }
-              } else {
-                out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-              }
-              $errSchemaPath = $currErrSchemaPath;
-              it.errorPath = $currentErrorPath;
-              out += ' } else { ';
-            } else {
-              if ($breakOnError) {
-                out += ' if ( ' + ($useData) + ' === undefined ';
-                if ($ownProperties) {
-                  out += ' || ! Object.prototype.hasOwnProperty.call(' + ($data) + ', \'' + (it.util.escapeQuotes($propertyKey)) + '\') ';
-                }
-                out += ') { ' + ($nextValid) + ' = true; } else { ';
-              } else {
-                out += ' if (' + ($useData) + ' !== undefined ';
-                if ($ownProperties) {
-                  out += ' &&   Object.prototype.hasOwnProperty.call(' + ($data) + ', \'' + (it.util.escapeQuotes($propertyKey)) + '\') ';
-                }
-                out += ' ) { ';
-              }
-            }
-            out += ' ' + ($code) + ' } ';
-          }
+        function equalCode(vSchema, i) {
+            const sch = schema[i];
+            return typeof sch === "object" && sch !== null
+                ? (0, codegen_1._) `${eql}(${data}, ${vSchema}[${i}])`
+                : (0, codegen_1._) `${data} === ${sch}`;
         }
-        if ($breakOnError) {
-          out += ' if (' + ($nextValid) + ') { ';
-          $closingBraces += '}';
-        }
-      }
-    }
-  }
-  if ($pPropertyKeys.length) {
-    var arr4 = $pPropertyKeys;
-    if (arr4) {
-      var $pProperty, i4 = -1,
-        l4 = arr4.length - 1;
-      while (i4 < l4) {
-        $pProperty = arr4[i4 += 1];
-        var $sch = $pProperties[$pProperty];
-        if ((it.opts.strictKeywords ? (typeof $sch == 'object' && Object.keys($sch).length > 0) || $sch === false : it.util.schemaHasRules($sch, it.RULES.all))) {
-          $it.schema = $sch;
-          $it.schemaPath = it.schemaPath + '.patternProperties' + it.util.getProperty($pProperty);
-          $it.errSchemaPath = it.errSchemaPath + '/patternProperties/' + it.util.escapeFragment($pProperty);
-          if ($ownProperties) {
-            out += ' ' + ($dataProperties) + ' = ' + ($dataProperties) + ' || Object.keys(' + ($data) + '); for (var ' + ($idx) + '=0; ' + ($idx) + '<' + ($dataProperties) + '.length; ' + ($idx) + '++) { var ' + ($key) + ' = ' + ($dataProperties) + '[' + ($idx) + ']; ';
-          } else {
-            out += ' for (var ' + ($key) + ' in ' + ($data) + ') { ';
-          }
-          out += ' if (' + (it.usePattern($pProperty)) + '.test(' + ($key) + ')) { ';
-          $it.errorPath = it.util.getPathExpr(it.errorPath, $key, it.opts.jsonPointers);
-          var $passData = $data + '[' + $key + ']';
-          $it.dataPathArr[$dataNxt] = $key;
-          var $code = it.validate($it);
-          $it.baseId = $currentBaseId;
-          if (it.util.varOccurences($code, $nextData) < 2) {
-            out += ' ' + (it.util.varReplace($code, $nextData, $passData)) + ' ';
-          } else {
-            out += ' var ' + ($nextData) + ' = ' + ($passData) + '; ' + ($code) + ' ';
-          }
-          if ($breakOnError) {
-            out += ' if (!' + ($nextValid) + ') break; ';
-          }
-          out += ' } ';
-          if ($breakOnError) {
-            out += ' else ' + ($nextValid) + ' = true; ';
-          }
-          out += ' }  ';
-          if ($breakOnError) {
-            out += ' if (' + ($nextValid) + ') { ';
-            $closingBraces += '}';
-          }
-        }
-      }
-    }
-  }
-  if ($breakOnError) {
-    out += ' ' + ($closingBraces) + ' if (' + ($errs) + ' == errors) {';
-  }
-  return out;
-}
-
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=enum.js.map
 
 /***/ }),
 
-/***/ 9195:
+/***/ 9805:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const limitNumber_1 = __nccwpck_require__(345);
+const multipleOf_1 = __nccwpck_require__(3201);
+const limitLength_1 = __nccwpck_require__(7598);
+const pattern_1 = __nccwpck_require__(4960);
+const limitProperties_1 = __nccwpck_require__(3470);
+const required_1 = __nccwpck_require__(3602);
+const limitItems_1 = __nccwpck_require__(3924);
+const uniqueItems_1 = __nccwpck_require__(9351);
+const const_1 = __nccwpck_require__(3694);
+const enum_1 = __nccwpck_require__(5529);
+const validation = [
+    // number
+    limitNumber_1.default,
+    multipleOf_1.default,
+    // string
+    limitLength_1.default,
+    pattern_1.default,
+    // object
+    limitProperties_1.default,
+    required_1.default,
+    // array
+    limitItems_1.default,
+    uniqueItems_1.default,
+    // any
+    { keyword: "type", schemaType: ["string", "array"] },
+    { keyword: "nullable", schemaType: "boolean" },
+    const_1.default,
+    enum_1.default,
+];
+exports["default"] = validation;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 3924:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const codegen_1 = __nccwpck_require__(9179);
+const error = {
+    message({ keyword, schemaCode }) {
+        const comp = keyword === "maxItems" ? "more" : "fewer";
+        return (0, codegen_1.str) `must NOT have ${comp} than ${schemaCode} items`;
+    },
+    params: ({ schemaCode }) => (0, codegen_1._) `{limit: ${schemaCode}}`,
+};
+const def = {
+    keyword: ["maxItems", "minItems"],
+    type: "array",
+    schemaType: "number",
+    $data: true,
+    error,
+    code(cxt) {
+        const { keyword, data, schemaCode } = cxt;
+        const op = keyword === "maxItems" ? codegen_1.operators.GT : codegen_1.operators.LT;
+        cxt.fail$data((0, codegen_1._) `${data}.length ${op} ${schemaCode}`);
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=limitItems.js.map
+
+/***/ }),
+
+/***/ 7598:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+const ucs2length_1 = __nccwpck_require__(2470);
+const error = {
+    message({ keyword, schemaCode }) {
+        const comp = keyword === "maxLength" ? "more" : "fewer";
+        return (0, codegen_1.str) `must NOT have ${comp} than ${schemaCode} characters`;
+    },
+    params: ({ schemaCode }) => (0, codegen_1._) `{limit: ${schemaCode}}`,
+};
+const def = {
+    keyword: ["maxLength", "minLength"],
+    type: "string",
+    schemaType: "number",
+    $data: true,
+    error,
+    code(cxt) {
+        const { keyword, data, schemaCode, it } = cxt;
+        const op = keyword === "maxLength" ? codegen_1.operators.GT : codegen_1.operators.LT;
+        const len = it.opts.unicode === false ? (0, codegen_1._) `${data}.length` : (0, codegen_1._) `${(0, util_1.useFunc)(cxt.gen, ucs2length_1.default)}(${data})`;
+        cxt.fail$data((0, codegen_1._) `${len} ${op} ${schemaCode}`);
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=limitLength.js.map
+
+/***/ }),
+
+/***/ 345:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const codegen_1 = __nccwpck_require__(9179);
+const ops = codegen_1.operators;
+const KWDs = {
+    maximum: { okStr: "<=", ok: ops.LTE, fail: ops.GT },
+    minimum: { okStr: ">=", ok: ops.GTE, fail: ops.LT },
+    exclusiveMaximum: { okStr: "<", ok: ops.LT, fail: ops.GTE },
+    exclusiveMinimum: { okStr: ">", ok: ops.GT, fail: ops.LTE },
+};
+const error = {
+    message: ({ keyword, schemaCode }) => (0, codegen_1.str) `must be ${KWDs[keyword].okStr} ${schemaCode}`,
+    params: ({ keyword, schemaCode }) => (0, codegen_1._) `{comparison: ${KWDs[keyword].okStr}, limit: ${schemaCode}}`,
+};
+const def = {
+    keyword: Object.keys(KWDs),
+    type: "number",
+    schemaType: "number",
+    $data: true,
+    error,
+    code(cxt) {
+        const { keyword, data, schemaCode } = cxt;
+        cxt.fail$data((0, codegen_1._) `${data} ${KWDs[keyword].fail} ${schemaCode} || isNaN(${data})`);
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=limitNumber.js.map
+
+/***/ }),
+
+/***/ 3470:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const codegen_1 = __nccwpck_require__(9179);
+const error = {
+    message({ keyword, schemaCode }) {
+        const comp = keyword === "maxProperties" ? "more" : "fewer";
+        return (0, codegen_1.str) `must NOT have ${comp} than ${schemaCode} items`;
+    },
+    params: ({ schemaCode }) => (0, codegen_1._) `{limit: ${schemaCode}}`,
+};
+const def = {
+    keyword: ["maxProperties", "minProperties"],
+    type: "object",
+    schemaType: "number",
+    $data: true,
+    error,
+    code(cxt) {
+        const { keyword, data, schemaCode } = cxt;
+        const op = keyword === "maxProperties" ? codegen_1.operators.GT : codegen_1.operators.LT;
+        cxt.fail$data((0, codegen_1._) `Object.keys(${data}).length ${op} ${schemaCode}`);
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=limitProperties.js.map
+
+/***/ }),
+
+/***/ 3201:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const codegen_1 = __nccwpck_require__(9179);
+const error = {
+    message: ({ schemaCode }) => (0, codegen_1.str) `must be multiple of ${schemaCode}`,
+    params: ({ schemaCode }) => (0, codegen_1._) `{multipleOf: ${schemaCode}}`,
+};
+const def = {
+    keyword: "multipleOf",
+    type: "number",
+    schemaType: "number",
+    $data: true,
+    error,
+    code(cxt) {
+        const { gen, data, schemaCode, it } = cxt;
+        // const bdt = bad$DataType(schemaCode, <string>def.schemaType, $data)
+        const prec = it.opts.multipleOfPrecision;
+        const res = gen.let("res");
+        const invalid = prec
+            ? (0, codegen_1._) `Math.abs(Math.round(${res}) - ${res}) > 1e-${prec}`
+            : (0, codegen_1._) `${res} !== parseInt(${res})`;
+        cxt.fail$data((0, codegen_1._) `(${schemaCode} === 0 || (${res} = ${data}/${schemaCode}, ${invalid}))`);
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=multipleOf.js.map
+
+/***/ }),
+
+/***/ 4960:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const code_1 = __nccwpck_require__(4205);
+const codegen_1 = __nccwpck_require__(9179);
+const error = {
+    message: ({ schemaCode }) => (0, codegen_1.str) `must match pattern "${schemaCode}"`,
+    params: ({ schemaCode }) => (0, codegen_1._) `{pattern: ${schemaCode}}`,
+};
+const def = {
+    keyword: "pattern",
+    type: "string",
+    schemaType: "string",
+    $data: true,
+    error,
+    code(cxt) {
+        const { data, $data, schema, schemaCode, it } = cxt;
+        // TODO regexp should be wrapped in try/catchs
+        const u = it.opts.unicodeRegExp ? "u" : "";
+        const regExp = $data ? (0, codegen_1._) `(new RegExp(${schemaCode}, ${u}))` : (0, code_1.usePattern)(cxt, schema);
+        cxt.fail$data((0, codegen_1._) `!${regExp}.test(${data})`);
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=pattern.js.map
+
+/***/ }),
+
+/***/ 3602:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const code_1 = __nccwpck_require__(4205);
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+const error = {
+    message: ({ params: { missingProperty } }) => (0, codegen_1.str) `must have required property '${missingProperty}'`,
+    params: ({ params: { missingProperty } }) => (0, codegen_1._) `{missingProperty: ${missingProperty}}`,
+};
+const def = {
+    keyword: "required",
+    type: "object",
+    schemaType: "array",
+    $data: true,
+    error,
+    code(cxt) {
+        const { gen, schema, schemaCode, data, $data, it } = cxt;
+        const { opts } = it;
+        if (!$data && schema.length === 0)
+            return;
+        const useLoop = schema.length >= opts.loopRequired;
+        if (it.allErrors)
+            allErrorsMode();
+        else
+            exitOnErrorMode();
+        if (opts.strictRequired) {
+            const props = cxt.parentSchema.properties;
+            const { definedProperties } = cxt.it;
+            for (const requiredKey of schema) {
+                if ((props === null || props === void 0 ? void 0 : props[requiredKey]) === undefined && !definedProperties.has(requiredKey)) {
+                    const schemaPath = it.schemaEnv.baseId + it.errSchemaPath;
+                    const msg = `required property "${requiredKey}" is not defined at "${schemaPath}" (strictRequired)`;
+                    (0, util_1.checkStrictMode)(it, msg, it.opts.strictRequired);
+                }
+            }
+        }
+        function allErrorsMode() {
+            if (useLoop || $data) {
+                cxt.block$data(codegen_1.nil, loopAllRequired);
+            }
+            else {
+                for (const prop of schema) {
+                    (0, code_1.checkReportMissingProp)(cxt, prop);
+                }
+            }
+        }
+        function exitOnErrorMode() {
+            const missing = gen.let("missing");
+            if (useLoop || $data) {
+                const valid = gen.let("valid", true);
+                cxt.block$data(valid, () => loopUntilMissing(missing, valid));
+                cxt.ok(valid);
+            }
+            else {
+                gen.if((0, code_1.checkMissingProp)(cxt, schema, missing));
+                (0, code_1.reportMissingProp)(cxt, missing);
+                gen.else();
+            }
+        }
+        function loopAllRequired() {
+            gen.forOf("prop", schemaCode, (prop) => {
+                cxt.setParams({ missingProperty: prop });
+                gen.if((0, code_1.noPropertyInData)(gen, data, prop, opts.ownProperties), () => cxt.error());
+            });
+        }
+        function loopUntilMissing(missing, valid) {
+            cxt.setParams({ missingProperty: missing });
+            gen.forOf(missing, schemaCode, () => {
+                gen.assign(valid, (0, code_1.propertyInData)(gen, data, missing, opts.ownProperties));
+                gen.if((0, codegen_1.not)(valid), () => {
+                    cxt.error();
+                    gen.break();
+                });
+            }, codegen_1.nil);
+        }
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=required.js.map
+
+/***/ }),
+
+/***/ 9351:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const dataType_1 = __nccwpck_require__(7725);
+const codegen_1 = __nccwpck_require__(9179);
+const util_1 = __nccwpck_require__(3439);
+const equal_1 = __nccwpck_require__(3809);
+const error = {
+    message: ({ params: { i, j } }) => (0, codegen_1.str) `must NOT have duplicate items (items ## ${j} and ${i} are identical)`,
+    params: ({ params: { i, j } }) => (0, codegen_1._) `{i: ${i}, j: ${j}}`,
+};
+const def = {
+    keyword: "uniqueItems",
+    type: "array",
+    schemaType: "boolean",
+    $data: true,
+    error,
+    code(cxt) {
+        const { gen, data, $data, schema, parentSchema, schemaCode, it } = cxt;
+        if (!$data && !schema)
+            return;
+        const valid = gen.let("valid");
+        const itemTypes = parentSchema.items ? (0, dataType_1.getSchemaTypes)(parentSchema.items) : [];
+        cxt.block$data(valid, validateUniqueItems, (0, codegen_1._) `${schemaCode} === false`);
+        cxt.ok(valid);
+        function validateUniqueItems() {
+            const i = gen.let("i", (0, codegen_1._) `${data}.length`);
+            const j = gen.let("j");
+            cxt.setParams({ i, j });
+            gen.assign(valid, true);
+            gen.if((0, codegen_1._) `${i} > 1`, () => (canOptimize() ? loopN : loopN2)(i, j));
+        }
+        function canOptimize() {
+            return itemTypes.length > 0 && !itemTypes.some((t) => t === "object" || t === "array");
+        }
+        function loopN(i, j) {
+            const item = gen.name("item");
+            const wrongType = (0, dataType_1.checkDataTypes)(itemTypes, item, it.opts.strictNumbers, dataType_1.DataType.Wrong);
+            const indices = gen.const("indices", (0, codegen_1._) `{}`);
+            gen.for((0, codegen_1._) `;${i}--;`, () => {
+                gen.let(item, (0, codegen_1._) `${data}[${i}]`);
+                gen.if(wrongType, (0, codegen_1._) `continue`);
+                if (itemTypes.length > 1)
+                    gen.if((0, codegen_1._) `typeof ${item} == "string"`, (0, codegen_1._) `${item} += "_"`);
+                gen
+                    .if((0, codegen_1._) `typeof ${indices}[${item}] == "number"`, () => {
+                    gen.assign(j, (0, codegen_1._) `${indices}[${item}]`);
+                    cxt.error();
+                    gen.assign(valid, false).break();
+                })
+                    .code((0, codegen_1._) `${indices}[${item}] = ${i}`);
+            });
+        }
+        function loopN2(i, j) {
+            const eql = (0, util_1.useFunc)(gen, equal_1.default);
+            const outer = gen.name("outer");
+            gen.label(outer).for((0, codegen_1._) `;${i}--;`, () => gen.for((0, codegen_1._) `${j} = ${i}; ${j}--;`, () => gen.if((0, codegen_1._) `${eql}(${data}[${i}], ${data}[${j}])`, () => {
+                cxt.error();
+                gen.assign(valid, false).break(outer);
+            })));
+        }
+    },
+};
+exports["default"] = def;
+//# sourceMappingURL=uniqueItems.js.map
+
+/***/ }),
+
+/***/ 5063:
 /***/ ((module) => {
 
 "use strict";
 
-module.exports = function generate_propertyNames(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $data = 'data' + ($dataLvl || '');
-  var $errs = 'errs__' + $lvl;
-  var $it = it.util.copy(it);
-  var $closingBraces = '';
-  $it.level++;
-  var $nextValid = 'valid' + $it.level;
-  out += 'var ' + ($errs) + ' = errors;';
-  if ((it.opts.strictKeywords ? (typeof $schema == 'object' && Object.keys($schema).length > 0) || $schema === false : it.util.schemaHasRules($schema, it.RULES.all))) {
-    $it.schema = $schema;
-    $it.schemaPath = $schemaPath;
-    $it.errSchemaPath = $errSchemaPath;
-    var $key = 'key' + $lvl,
-      $idx = 'idx' + $lvl,
-      $i = 'i' + $lvl,
-      $invalidName = '\' + ' + $key + ' + \'',
-      $dataNxt = $it.dataLevel = it.dataLevel + 1,
-      $nextData = 'data' + $dataNxt,
-      $dataProperties = 'dataProperties' + $lvl,
-      $ownProperties = it.opts.ownProperties,
-      $currentBaseId = it.baseId;
-    if ($ownProperties) {
-      out += ' var ' + ($dataProperties) + ' = undefined; ';
-    }
-    if ($ownProperties) {
-      out += ' ' + ($dataProperties) + ' = ' + ($dataProperties) + ' || Object.keys(' + ($data) + '); for (var ' + ($idx) + '=0; ' + ($idx) + '<' + ($dataProperties) + '.length; ' + ($idx) + '++) { var ' + ($key) + ' = ' + ($dataProperties) + '[' + ($idx) + ']; ';
-    } else {
-      out += ' for (var ' + ($key) + ' in ' + ($data) + ') { ';
-    }
-    out += ' var startErrs' + ($lvl) + ' = errors; ';
-    var $passData = $key;
-    var $wasComposite = it.compositeRule;
-    it.compositeRule = $it.compositeRule = true;
-    var $code = it.validate($it);
-    $it.baseId = $currentBaseId;
-    if (it.util.varOccurences($code, $nextData) < 2) {
-      out += ' ' + (it.util.varReplace($code, $nextData, $passData)) + ' ';
-    } else {
-      out += ' var ' + ($nextData) + ' = ' + ($passData) + '; ' + ($code) + ' ';
-    }
-    it.compositeRule = $it.compositeRule = $wasComposite;
-    out += ' if (!' + ($nextValid) + ') { for (var ' + ($i) + '=startErrs' + ($lvl) + '; ' + ($i) + '<errors; ' + ($i) + '++) { vErrors[' + ($i) + '].propertyName = ' + ($key) + '; }   var err =   '; /* istanbul ignore else */
-    if (it.createErrors !== false) {
-      out += ' { keyword: \'' + ('propertyNames') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { propertyName: \'' + ($invalidName) + '\' } ';
-      if (it.opts.messages !== false) {
-        out += ' , message: \'property name \\\'' + ($invalidName) + '\\\' is invalid\' ';
-      }
-      if (it.opts.verbose) {
-        out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-      }
-      out += ' } ';
-    } else {
-      out += ' {} ';
-    }
-    out += ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-    if (!it.compositeRule && $breakOnError) {
-      /* istanbul ignore if */
-      if (it.async) {
-        out += ' throw new ValidationError(vErrors); ';
-      } else {
-        out += ' validate.errors = vErrors; return false; ';
-      }
-    }
-    if ($breakOnError) {
-      out += ' break; ';
-    }
-    out += ' } }';
-  }
-  if ($breakOnError) {
-    out += ' ' + ($closingBraces) + ' if (' + ($errs) + ' == errors) {';
-  }
-  return out;
-}
 
+module.exports = ({onlyFirst = false} = {}) => {
+	const pattern = [
+		'[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
+		'(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))'
+	].join('|');
 
-/***/ }),
-
-/***/ 2393:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_ref(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $data = 'data' + ($dataLvl || '');
-  var $valid = 'valid' + $lvl;
-  var $async, $refCode;
-  if ($schema == '#' || $schema == '#/') {
-    if (it.isRoot) {
-      $async = it.async;
-      $refCode = 'validate';
-    } else {
-      $async = it.root.schema.$async === true;
-      $refCode = 'root.refVal[0]';
-    }
-  } else {
-    var $refVal = it.resolveRef(it.baseId, $schema, it.isRoot);
-    if ($refVal === undefined) {
-      var $message = it.MissingRefError.message(it.baseId, $schema);
-      if (it.opts.missingRefs == 'fail') {
-        it.logger.error($message);
-        var $$outStack = $$outStack || [];
-        $$outStack.push(out);
-        out = ''; /* istanbul ignore else */
-        if (it.createErrors !== false) {
-          out += ' { keyword: \'' + ('$ref') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { ref: \'' + (it.util.escapeQuotes($schema)) + '\' } ';
-          if (it.opts.messages !== false) {
-            out += ' , message: \'can\\\'t resolve reference ' + (it.util.escapeQuotes($schema)) + '\' ';
-          }
-          if (it.opts.verbose) {
-            out += ' , schema: ' + (it.util.toQuotedString($schema)) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-          }
-          out += ' } ';
-        } else {
-          out += ' {} ';
-        }
-        var __err = out;
-        out = $$outStack.pop();
-        if (!it.compositeRule && $breakOnError) {
-          /* istanbul ignore if */
-          if (it.async) {
-            out += ' throw new ValidationError([' + (__err) + ']); ';
-          } else {
-            out += ' validate.errors = [' + (__err) + ']; return false; ';
-          }
-        } else {
-          out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-        }
-        if ($breakOnError) {
-          out += ' if (false) { ';
-        }
-      } else if (it.opts.missingRefs == 'ignore') {
-        it.logger.warn($message);
-        if ($breakOnError) {
-          out += ' if (true) { ';
-        }
-      } else {
-        throw new it.MissingRefError(it.baseId, $schema, $message);
-      }
-    } else if ($refVal.inline) {
-      var $it = it.util.copy(it);
-      $it.level++;
-      var $nextValid = 'valid' + $it.level;
-      $it.schema = $refVal.schema;
-      $it.schemaPath = '';
-      $it.errSchemaPath = $schema;
-      var $code = it.validate($it).replace(/validate\.schema/g, $refVal.code);
-      out += ' ' + ($code) + ' ';
-      if ($breakOnError) {
-        out += ' if (' + ($nextValid) + ') { ';
-      }
-    } else {
-      $async = $refVal.$async === true || (it.async && $refVal.$async !== false);
-      $refCode = $refVal.code;
-    }
-  }
-  if ($refCode) {
-    var $$outStack = $$outStack || [];
-    $$outStack.push(out);
-    out = '';
-    if (it.opts.passContext) {
-      out += ' ' + ($refCode) + '.call(this, ';
-    } else {
-      out += ' ' + ($refCode) + '( ';
-    }
-    out += ' ' + ($data) + ', (dataPath || \'\')';
-    if (it.errorPath != '""') {
-      out += ' + ' + (it.errorPath);
-    }
-    var $parentData = $dataLvl ? 'data' + (($dataLvl - 1) || '') : 'parentData',
-      $parentDataProperty = $dataLvl ? it.dataPathArr[$dataLvl] : 'parentDataProperty';
-    out += ' , ' + ($parentData) + ' , ' + ($parentDataProperty) + ', rootData)  ';
-    var __callValidate = out;
-    out = $$outStack.pop();
-    if ($async) {
-      if (!it.async) throw new Error('async schema referenced by sync schema');
-      if ($breakOnError) {
-        out += ' var ' + ($valid) + '; ';
-      }
-      out += ' try { await ' + (__callValidate) + '; ';
-      if ($breakOnError) {
-        out += ' ' + ($valid) + ' = true; ';
-      }
-      out += ' } catch (e) { if (!(e instanceof ValidationError)) throw e; if (vErrors === null) vErrors = e.errors; else vErrors = vErrors.concat(e.errors); errors = vErrors.length; ';
-      if ($breakOnError) {
-        out += ' ' + ($valid) + ' = false; ';
-      }
-      out += ' } ';
-      if ($breakOnError) {
-        out += ' if (' + ($valid) + ') { ';
-      }
-    } else {
-      out += ' if (!' + (__callValidate) + ') { if (vErrors === null) vErrors = ' + ($refCode) + '.errors; else vErrors = vErrors.concat(' + ($refCode) + '.errors); errors = vErrors.length; } ';
-      if ($breakOnError) {
-        out += ' else { ';
-      }
-    }
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 8420:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_required(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $data = 'data' + ($dataLvl || '');
-  var $valid = 'valid' + $lvl;
-  var $isData = it.opts.$data && $schema && $schema.$data,
-    $schemaValue;
-  if ($isData) {
-    out += ' var schema' + ($lvl) + ' = ' + (it.util.getData($schema.$data, $dataLvl, it.dataPathArr)) + '; ';
-    $schemaValue = 'schema' + $lvl;
-  } else {
-    $schemaValue = $schema;
-  }
-  var $vSchema = 'schema' + $lvl;
-  if (!$isData) {
-    if ($schema.length < it.opts.loopRequired && it.schema.properties && Object.keys(it.schema.properties).length) {
-      var $required = [];
-      var arr1 = $schema;
-      if (arr1) {
-        var $property, i1 = -1,
-          l1 = arr1.length - 1;
-        while (i1 < l1) {
-          $property = arr1[i1 += 1];
-          var $propertySch = it.schema.properties[$property];
-          if (!($propertySch && (it.opts.strictKeywords ? (typeof $propertySch == 'object' && Object.keys($propertySch).length > 0) || $propertySch === false : it.util.schemaHasRules($propertySch, it.RULES.all)))) {
-            $required[$required.length] = $property;
-          }
-        }
-      }
-    } else {
-      var $required = $schema;
-    }
-  }
-  if ($isData || $required.length) {
-    var $currentErrorPath = it.errorPath,
-      $loopRequired = $isData || $required.length >= it.opts.loopRequired,
-      $ownProperties = it.opts.ownProperties;
-    if ($breakOnError) {
-      out += ' var missing' + ($lvl) + '; ';
-      if ($loopRequired) {
-        if (!$isData) {
-          out += ' var ' + ($vSchema) + ' = validate.schema' + ($schemaPath) + '; ';
-        }
-        var $i = 'i' + $lvl,
-          $propertyPath = 'schema' + $lvl + '[' + $i + ']',
-          $missingProperty = '\' + ' + $propertyPath + ' + \'';
-        if (it.opts._errorDataPathProperty) {
-          it.errorPath = it.util.getPathExpr($currentErrorPath, $propertyPath, it.opts.jsonPointers);
-        }
-        out += ' var ' + ($valid) + ' = true; ';
-        if ($isData) {
-          out += ' if (schema' + ($lvl) + ' === undefined) ' + ($valid) + ' = true; else if (!Array.isArray(schema' + ($lvl) + ')) ' + ($valid) + ' = false; else {';
-        }
-        out += ' for (var ' + ($i) + ' = 0; ' + ($i) + ' < ' + ($vSchema) + '.length; ' + ($i) + '++) { ' + ($valid) + ' = ' + ($data) + '[' + ($vSchema) + '[' + ($i) + ']] !== undefined ';
-        if ($ownProperties) {
-          out += ' &&   Object.prototype.hasOwnProperty.call(' + ($data) + ', ' + ($vSchema) + '[' + ($i) + ']) ';
-        }
-        out += '; if (!' + ($valid) + ') break; } ';
-        if ($isData) {
-          out += '  }  ';
-        }
-        out += '  if (!' + ($valid) + ') {   ';
-        var $$outStack = $$outStack || [];
-        $$outStack.push(out);
-        out = ''; /* istanbul ignore else */
-        if (it.createErrors !== false) {
-          out += ' { keyword: \'' + ('required') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { missingProperty: \'' + ($missingProperty) + '\' } ';
-          if (it.opts.messages !== false) {
-            out += ' , message: \'';
-            if (it.opts._errorDataPathProperty) {
-              out += 'is a required property';
-            } else {
-              out += 'should have required property \\\'' + ($missingProperty) + '\\\'';
-            }
-            out += '\' ';
-          }
-          if (it.opts.verbose) {
-            out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-          }
-          out += ' } ';
-        } else {
-          out += ' {} ';
-        }
-        var __err = out;
-        out = $$outStack.pop();
-        if (!it.compositeRule && $breakOnError) {
-          /* istanbul ignore if */
-          if (it.async) {
-            out += ' throw new ValidationError([' + (__err) + ']); ';
-          } else {
-            out += ' validate.errors = [' + (__err) + ']; return false; ';
-          }
-        } else {
-          out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-        }
-        out += ' } else { ';
-      } else {
-        out += ' if ( ';
-        var arr2 = $required;
-        if (arr2) {
-          var $propertyKey, $i = -1,
-            l2 = arr2.length - 1;
-          while ($i < l2) {
-            $propertyKey = arr2[$i += 1];
-            if ($i) {
-              out += ' || ';
-            }
-            var $prop = it.util.getProperty($propertyKey),
-              $useData = $data + $prop;
-            out += ' ( ( ' + ($useData) + ' === undefined ';
-            if ($ownProperties) {
-              out += ' || ! Object.prototype.hasOwnProperty.call(' + ($data) + ', \'' + (it.util.escapeQuotes($propertyKey)) + '\') ';
-            }
-            out += ') && (missing' + ($lvl) + ' = ' + (it.util.toQuotedString(it.opts.jsonPointers ? $propertyKey : $prop)) + ') ) ';
-          }
-        }
-        out += ') {  ';
-        var $propertyPath = 'missing' + $lvl,
-          $missingProperty = '\' + ' + $propertyPath + ' + \'';
-        if (it.opts._errorDataPathProperty) {
-          it.errorPath = it.opts.jsonPointers ? it.util.getPathExpr($currentErrorPath, $propertyPath, true) : $currentErrorPath + ' + ' + $propertyPath;
-        }
-        var $$outStack = $$outStack || [];
-        $$outStack.push(out);
-        out = ''; /* istanbul ignore else */
-        if (it.createErrors !== false) {
-          out += ' { keyword: \'' + ('required') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { missingProperty: \'' + ($missingProperty) + '\' } ';
-          if (it.opts.messages !== false) {
-            out += ' , message: \'';
-            if (it.opts._errorDataPathProperty) {
-              out += 'is a required property';
-            } else {
-              out += 'should have required property \\\'' + ($missingProperty) + '\\\'';
-            }
-            out += '\' ';
-          }
-          if (it.opts.verbose) {
-            out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-          }
-          out += ' } ';
-        } else {
-          out += ' {} ';
-        }
-        var __err = out;
-        out = $$outStack.pop();
-        if (!it.compositeRule && $breakOnError) {
-          /* istanbul ignore if */
-          if (it.async) {
-            out += ' throw new ValidationError([' + (__err) + ']); ';
-          } else {
-            out += ' validate.errors = [' + (__err) + ']; return false; ';
-          }
-        } else {
-          out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-        }
-        out += ' } else { ';
-      }
-    } else {
-      if ($loopRequired) {
-        if (!$isData) {
-          out += ' var ' + ($vSchema) + ' = validate.schema' + ($schemaPath) + '; ';
-        }
-        var $i = 'i' + $lvl,
-          $propertyPath = 'schema' + $lvl + '[' + $i + ']',
-          $missingProperty = '\' + ' + $propertyPath + ' + \'';
-        if (it.opts._errorDataPathProperty) {
-          it.errorPath = it.util.getPathExpr($currentErrorPath, $propertyPath, it.opts.jsonPointers);
-        }
-        if ($isData) {
-          out += ' if (' + ($vSchema) + ' && !Array.isArray(' + ($vSchema) + ')) {  var err =   '; /* istanbul ignore else */
-          if (it.createErrors !== false) {
-            out += ' { keyword: \'' + ('required') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { missingProperty: \'' + ($missingProperty) + '\' } ';
-            if (it.opts.messages !== false) {
-              out += ' , message: \'';
-              if (it.opts._errorDataPathProperty) {
-                out += 'is a required property';
-              } else {
-                out += 'should have required property \\\'' + ($missingProperty) + '\\\'';
-              }
-              out += '\' ';
-            }
-            if (it.opts.verbose) {
-              out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-            }
-            out += ' } ';
-          } else {
-            out += ' {} ';
-          }
-          out += ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; } else if (' + ($vSchema) + ' !== undefined) { ';
-        }
-        out += ' for (var ' + ($i) + ' = 0; ' + ($i) + ' < ' + ($vSchema) + '.length; ' + ($i) + '++) { if (' + ($data) + '[' + ($vSchema) + '[' + ($i) + ']] === undefined ';
-        if ($ownProperties) {
-          out += ' || ! Object.prototype.hasOwnProperty.call(' + ($data) + ', ' + ($vSchema) + '[' + ($i) + ']) ';
-        }
-        out += ') {  var err =   '; /* istanbul ignore else */
-        if (it.createErrors !== false) {
-          out += ' { keyword: \'' + ('required') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { missingProperty: \'' + ($missingProperty) + '\' } ';
-          if (it.opts.messages !== false) {
-            out += ' , message: \'';
-            if (it.opts._errorDataPathProperty) {
-              out += 'is a required property';
-            } else {
-              out += 'should have required property \\\'' + ($missingProperty) + '\\\'';
-            }
-            out += '\' ';
-          }
-          if (it.opts.verbose) {
-            out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-          }
-          out += ' } ';
-        } else {
-          out += ' {} ';
-        }
-        out += ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; } } ';
-        if ($isData) {
-          out += '  }  ';
-        }
-      } else {
-        var arr3 = $required;
-        if (arr3) {
-          var $propertyKey, i3 = -1,
-            l3 = arr3.length - 1;
-          while (i3 < l3) {
-            $propertyKey = arr3[i3 += 1];
-            var $prop = it.util.getProperty($propertyKey),
-              $missingProperty = it.util.escapeQuotes($propertyKey),
-              $useData = $data + $prop;
-            if (it.opts._errorDataPathProperty) {
-              it.errorPath = it.util.getPath($currentErrorPath, $propertyKey, it.opts.jsonPointers);
-            }
-            out += ' if ( ' + ($useData) + ' === undefined ';
-            if ($ownProperties) {
-              out += ' || ! Object.prototype.hasOwnProperty.call(' + ($data) + ', \'' + (it.util.escapeQuotes($propertyKey)) + '\') ';
-            }
-            out += ') {  var err =   '; /* istanbul ignore else */
-            if (it.createErrors !== false) {
-              out += ' { keyword: \'' + ('required') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { missingProperty: \'' + ($missingProperty) + '\' } ';
-              if (it.opts.messages !== false) {
-                out += ' , message: \'';
-                if (it.opts._errorDataPathProperty) {
-                  out += 'is a required property';
-                } else {
-                  out += 'should have required property \\\'' + ($missingProperty) + '\\\'';
-                }
-                out += '\' ';
-              }
-              if (it.opts.verbose) {
-                out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-              }
-              out += ' } ';
-            } else {
-              out += ' {} ';
-            }
-            out += ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; } ';
-          }
-        }
-      }
-    }
-    it.errorPath = $currentErrorPath;
-  } else if ($breakOnError) {
-    out += ' if (true) {';
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 4995:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_uniqueItems(it, $keyword, $ruleType) {
-  var out = ' ';
-  var $lvl = it.level;
-  var $dataLvl = it.dataLevel;
-  var $schema = it.schema[$keyword];
-  var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-  var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-  var $breakOnError = !it.opts.allErrors;
-  var $data = 'data' + ($dataLvl || '');
-  var $valid = 'valid' + $lvl;
-  var $isData = it.opts.$data && $schema && $schema.$data,
-    $schemaValue;
-  if ($isData) {
-    out += ' var schema' + ($lvl) + ' = ' + (it.util.getData($schema.$data, $dataLvl, it.dataPathArr)) + '; ';
-    $schemaValue = 'schema' + $lvl;
-  } else {
-    $schemaValue = $schema;
-  }
-  if (($schema || $isData) && it.opts.uniqueItems !== false) {
-    if ($isData) {
-      out += ' var ' + ($valid) + '; if (' + ($schemaValue) + ' === false || ' + ($schemaValue) + ' === undefined) ' + ($valid) + ' = true; else if (typeof ' + ($schemaValue) + ' != \'boolean\') ' + ($valid) + ' = false; else { ';
-    }
-    out += ' var i = ' + ($data) + '.length , ' + ($valid) + ' = true , j; if (i > 1) { ';
-    var $itemType = it.schema.items && it.schema.items.type,
-      $typeIsArray = Array.isArray($itemType);
-    if (!$itemType || $itemType == 'object' || $itemType == 'array' || ($typeIsArray && ($itemType.indexOf('object') >= 0 || $itemType.indexOf('array') >= 0))) {
-      out += ' outer: for (;i--;) { for (j = i; j--;) { if (equal(' + ($data) + '[i], ' + ($data) + '[j])) { ' + ($valid) + ' = false; break outer; } } } ';
-    } else {
-      out += ' var itemIndices = {}, item; for (;i--;) { var item = ' + ($data) + '[i]; ';
-      var $method = 'checkDataType' + ($typeIsArray ? 's' : '');
-      out += ' if (' + (it.util[$method]($itemType, 'item', it.opts.strictNumbers, true)) + ') continue; ';
-      if ($typeIsArray) {
-        out += ' if (typeof item == \'string\') item = \'"\' + item; ';
-      }
-      out += ' if (typeof itemIndices[item] == \'number\') { ' + ($valid) + ' = false; j = itemIndices[item]; break; } itemIndices[item] = i; } ';
-    }
-    out += ' } ';
-    if ($isData) {
-      out += '  }  ';
-    }
-    out += ' if (!' + ($valid) + ') {   ';
-    var $$outStack = $$outStack || [];
-    $$outStack.push(out);
-    out = ''; /* istanbul ignore else */
-    if (it.createErrors !== false) {
-      out += ' { keyword: \'' + ('uniqueItems') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { i: i, j: j } ';
-      if (it.opts.messages !== false) {
-        out += ' , message: \'should NOT have duplicate items (items ## \' + j + \' and \' + i + \' are identical)\' ';
-      }
-      if (it.opts.verbose) {
-        out += ' , schema:  ';
-        if ($isData) {
-          out += 'validate.schema' + ($schemaPath);
-        } else {
-          out += '' + ($schema);
-        }
-        out += '         , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-      }
-      out += ' } ';
-    } else {
-      out += ' {} ';
-    }
-    var __err = out;
-    out = $$outStack.pop();
-    if (!it.compositeRule && $breakOnError) {
-      /* istanbul ignore if */
-      if (it.async) {
-        out += ' throw new ValidationError([' + (__err) + ']); ';
-      } else {
-        out += ' validate.errors = [' + (__err) + ']; return false; ';
-      }
-    } else {
-      out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-    }
-    out += ' } ';
-    if ($breakOnError) {
-      out += ' else { ';
-    }
-  } else {
-    if ($breakOnError) {
-      out += ' if (true) { ';
-    }
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 9585:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = function generate_validate(it, $keyword, $ruleType) {
-  var out = '';
-  var $async = it.schema.$async === true,
-    $refKeywords = it.util.schemaHasRulesExcept(it.schema, it.RULES.all, '$ref'),
-    $id = it.self._getId(it.schema);
-  if (it.opts.strictKeywords) {
-    var $unknownKwd = it.util.schemaUnknownRules(it.schema, it.RULES.keywords);
-    if ($unknownKwd) {
-      var $keywordsMsg = 'unknown keyword: ' + $unknownKwd;
-      if (it.opts.strictKeywords === 'log') it.logger.warn($keywordsMsg);
-      else throw new Error($keywordsMsg);
-    }
-  }
-  if (it.isTop) {
-    out += ' var validate = ';
-    if ($async) {
-      it.async = true;
-      out += 'async ';
-    }
-    out += 'function(data, dataPath, parentData, parentDataProperty, rootData) { \'use strict\'; ';
-    if ($id && (it.opts.sourceCode || it.opts.processCode)) {
-      out += ' ' + ('/\*# sourceURL=' + $id + ' */') + ' ';
-    }
-  }
-  if (typeof it.schema == 'boolean' || !($refKeywords || it.schema.$ref)) {
-    var $keyword = 'false schema';
-    var $lvl = it.level;
-    var $dataLvl = it.dataLevel;
-    var $schema = it.schema[$keyword];
-    var $schemaPath = it.schemaPath + it.util.getProperty($keyword);
-    var $errSchemaPath = it.errSchemaPath + '/' + $keyword;
-    var $breakOnError = !it.opts.allErrors;
-    var $errorKeyword;
-    var $data = 'data' + ($dataLvl || '');
-    var $valid = 'valid' + $lvl;
-    if (it.schema === false) {
-      if (it.isTop) {
-        $breakOnError = true;
-      } else {
-        out += ' var ' + ($valid) + ' = false; ';
-      }
-      var $$outStack = $$outStack || [];
-      $$outStack.push(out);
-      out = ''; /* istanbul ignore else */
-      if (it.createErrors !== false) {
-        out += ' { keyword: \'' + ($errorKeyword || 'false schema') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: {} ';
-        if (it.opts.messages !== false) {
-          out += ' , message: \'boolean schema is false\' ';
-        }
-        if (it.opts.verbose) {
-          out += ' , schema: false , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-        }
-        out += ' } ';
-      } else {
-        out += ' {} ';
-      }
-      var __err = out;
-      out = $$outStack.pop();
-      if (!it.compositeRule && $breakOnError) {
-        /* istanbul ignore if */
-        if (it.async) {
-          out += ' throw new ValidationError([' + (__err) + ']); ';
-        } else {
-          out += ' validate.errors = [' + (__err) + ']; return false; ';
-        }
-      } else {
-        out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-      }
-    } else {
-      if (it.isTop) {
-        if ($async) {
-          out += ' return data; ';
-        } else {
-          out += ' validate.errors = null; return true; ';
-        }
-      } else {
-        out += ' var ' + ($valid) + ' = true; ';
-      }
-    }
-    if (it.isTop) {
-      out += ' }; return validate; ';
-    }
-    return out;
-  }
-  if (it.isTop) {
-    var $top = it.isTop,
-      $lvl = it.level = 0,
-      $dataLvl = it.dataLevel = 0,
-      $data = 'data';
-    it.rootId = it.resolve.fullPath(it.self._getId(it.root.schema));
-    it.baseId = it.baseId || it.rootId;
-    delete it.isTop;
-    it.dataPathArr = [""];
-    if (it.schema.default !== undefined && it.opts.useDefaults && it.opts.strictDefaults) {
-      var $defaultMsg = 'default is ignored in the schema root';
-      if (it.opts.strictDefaults === 'log') it.logger.warn($defaultMsg);
-      else throw new Error($defaultMsg);
-    }
-    out += ' var vErrors = null; ';
-    out += ' var errors = 0;     ';
-    out += ' if (rootData === undefined) rootData = data; ';
-  } else {
-    var $lvl = it.level,
-      $dataLvl = it.dataLevel,
-      $data = 'data' + ($dataLvl || '');
-    if ($id) it.baseId = it.resolve.url(it.baseId, $id);
-    if ($async && !it.async) throw new Error('async schema in sync schema');
-    out += ' var errs_' + ($lvl) + ' = errors;';
-  }
-  var $valid = 'valid' + $lvl,
-    $breakOnError = !it.opts.allErrors,
-    $closingBraces1 = '',
-    $closingBraces2 = '';
-  var $errorKeyword;
-  var $typeSchema = it.schema.type,
-    $typeIsArray = Array.isArray($typeSchema);
-  if ($typeSchema && it.opts.nullable && it.schema.nullable === true) {
-    if ($typeIsArray) {
-      if ($typeSchema.indexOf('null') == -1) $typeSchema = $typeSchema.concat('null');
-    } else if ($typeSchema != 'null') {
-      $typeSchema = [$typeSchema, 'null'];
-      $typeIsArray = true;
-    }
-  }
-  if ($typeIsArray && $typeSchema.length == 1) {
-    $typeSchema = $typeSchema[0];
-    $typeIsArray = false;
-  }
-  if (it.schema.$ref && $refKeywords) {
-    if (it.opts.extendRefs == 'fail') {
-      throw new Error('$ref: validation keywords used in schema at path "' + it.errSchemaPath + '" (see option extendRefs)');
-    } else if (it.opts.extendRefs !== true) {
-      $refKeywords = false;
-      it.logger.warn('$ref: keywords ignored in schema at path "' + it.errSchemaPath + '"');
-    }
-  }
-  if (it.schema.$comment && it.opts.$comment) {
-    out += ' ' + (it.RULES.all.$comment.code(it, '$comment'));
-  }
-  if ($typeSchema) {
-    if (it.opts.coerceTypes) {
-      var $coerceToTypes = it.util.coerceToTypes(it.opts.coerceTypes, $typeSchema);
-    }
-    var $rulesGroup = it.RULES.types[$typeSchema];
-    if ($coerceToTypes || $typeIsArray || $rulesGroup === true || ($rulesGroup && !$shouldUseGroup($rulesGroup))) {
-      var $schemaPath = it.schemaPath + '.type',
-        $errSchemaPath = it.errSchemaPath + '/type';
-      var $schemaPath = it.schemaPath + '.type',
-        $errSchemaPath = it.errSchemaPath + '/type',
-        $method = $typeIsArray ? 'checkDataTypes' : 'checkDataType';
-      out += ' if (' + (it.util[$method]($typeSchema, $data, it.opts.strictNumbers, true)) + ') { ';
-      if ($coerceToTypes) {
-        var $dataType = 'dataType' + $lvl,
-          $coerced = 'coerced' + $lvl;
-        out += ' var ' + ($dataType) + ' = typeof ' + ($data) + '; var ' + ($coerced) + ' = undefined; ';
-        if (it.opts.coerceTypes == 'array') {
-          out += ' if (' + ($dataType) + ' == \'object\' && Array.isArray(' + ($data) + ') && ' + ($data) + '.length == 1) { ' + ($data) + ' = ' + ($data) + '[0]; ' + ($dataType) + ' = typeof ' + ($data) + '; if (' + (it.util.checkDataType(it.schema.type, $data, it.opts.strictNumbers)) + ') ' + ($coerced) + ' = ' + ($data) + '; } ';
-        }
-        out += ' if (' + ($coerced) + ' !== undefined) ; ';
-        var arr1 = $coerceToTypes;
-        if (arr1) {
-          var $type, $i = -1,
-            l1 = arr1.length - 1;
-          while ($i < l1) {
-            $type = arr1[$i += 1];
-            if ($type == 'string') {
-              out += ' else if (' + ($dataType) + ' == \'number\' || ' + ($dataType) + ' == \'boolean\') ' + ($coerced) + ' = \'\' + ' + ($data) + '; else if (' + ($data) + ' === null) ' + ($coerced) + ' = \'\'; ';
-            } else if ($type == 'number' || $type == 'integer') {
-              out += ' else if (' + ($dataType) + ' == \'boolean\' || ' + ($data) + ' === null || (' + ($dataType) + ' == \'string\' && ' + ($data) + ' && ' + ($data) + ' == +' + ($data) + ' ';
-              if ($type == 'integer') {
-                out += ' && !(' + ($data) + ' % 1)';
-              }
-              out += ')) ' + ($coerced) + ' = +' + ($data) + '; ';
-            } else if ($type == 'boolean') {
-              out += ' else if (' + ($data) + ' === \'false\' || ' + ($data) + ' === 0 || ' + ($data) + ' === null) ' + ($coerced) + ' = false; else if (' + ($data) + ' === \'true\' || ' + ($data) + ' === 1) ' + ($coerced) + ' = true; ';
-            } else if ($type == 'null') {
-              out += ' else if (' + ($data) + ' === \'\' || ' + ($data) + ' === 0 || ' + ($data) + ' === false) ' + ($coerced) + ' = null; ';
-            } else if (it.opts.coerceTypes == 'array' && $type == 'array') {
-              out += ' else if (' + ($dataType) + ' == \'string\' || ' + ($dataType) + ' == \'number\' || ' + ($dataType) + ' == \'boolean\' || ' + ($data) + ' == null) ' + ($coerced) + ' = [' + ($data) + ']; ';
-            }
-          }
-        }
-        out += ' else {   ';
-        var $$outStack = $$outStack || [];
-        $$outStack.push(out);
-        out = ''; /* istanbul ignore else */
-        if (it.createErrors !== false) {
-          out += ' { keyword: \'' + ($errorKeyword || 'type') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { type: \'';
-          if ($typeIsArray) {
-            out += '' + ($typeSchema.join(","));
-          } else {
-            out += '' + ($typeSchema);
-          }
-          out += '\' } ';
-          if (it.opts.messages !== false) {
-            out += ' , message: \'should be ';
-            if ($typeIsArray) {
-              out += '' + ($typeSchema.join(","));
-            } else {
-              out += '' + ($typeSchema);
-            }
-            out += '\' ';
-          }
-          if (it.opts.verbose) {
-            out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-          }
-          out += ' } ';
-        } else {
-          out += ' {} ';
-        }
-        var __err = out;
-        out = $$outStack.pop();
-        if (!it.compositeRule && $breakOnError) {
-          /* istanbul ignore if */
-          if (it.async) {
-            out += ' throw new ValidationError([' + (__err) + ']); ';
-          } else {
-            out += ' validate.errors = [' + (__err) + ']; return false; ';
-          }
-        } else {
-          out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-        }
-        out += ' } if (' + ($coerced) + ' !== undefined) {  ';
-        var $parentData = $dataLvl ? 'data' + (($dataLvl - 1) || '') : 'parentData',
-          $parentDataProperty = $dataLvl ? it.dataPathArr[$dataLvl] : 'parentDataProperty';
-        out += ' ' + ($data) + ' = ' + ($coerced) + '; ';
-        if (!$dataLvl) {
-          out += 'if (' + ($parentData) + ' !== undefined)';
-        }
-        out += ' ' + ($parentData) + '[' + ($parentDataProperty) + '] = ' + ($coerced) + '; } ';
-      } else {
-        var $$outStack = $$outStack || [];
-        $$outStack.push(out);
-        out = ''; /* istanbul ignore else */
-        if (it.createErrors !== false) {
-          out += ' { keyword: \'' + ($errorKeyword || 'type') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { type: \'';
-          if ($typeIsArray) {
-            out += '' + ($typeSchema.join(","));
-          } else {
-            out += '' + ($typeSchema);
-          }
-          out += '\' } ';
-          if (it.opts.messages !== false) {
-            out += ' , message: \'should be ';
-            if ($typeIsArray) {
-              out += '' + ($typeSchema.join(","));
-            } else {
-              out += '' + ($typeSchema);
-            }
-            out += '\' ';
-          }
-          if (it.opts.verbose) {
-            out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-          }
-          out += ' } ';
-        } else {
-          out += ' {} ';
-        }
-        var __err = out;
-        out = $$outStack.pop();
-        if (!it.compositeRule && $breakOnError) {
-          /* istanbul ignore if */
-          if (it.async) {
-            out += ' throw new ValidationError([' + (__err) + ']); ';
-          } else {
-            out += ' validate.errors = [' + (__err) + ']; return false; ';
-          }
-        } else {
-          out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-        }
-      }
-      out += ' } ';
-    }
-  }
-  if (it.schema.$ref && !$refKeywords) {
-    out += ' ' + (it.RULES.all.$ref.code(it, '$ref')) + ' ';
-    if ($breakOnError) {
-      out += ' } if (errors === ';
-      if ($top) {
-        out += '0';
-      } else {
-        out += 'errs_' + ($lvl);
-      }
-      out += ') { ';
-      $closingBraces2 += '}';
-    }
-  } else {
-    var arr2 = it.RULES;
-    if (arr2) {
-      var $rulesGroup, i2 = -1,
-        l2 = arr2.length - 1;
-      while (i2 < l2) {
-        $rulesGroup = arr2[i2 += 1];
-        if ($shouldUseGroup($rulesGroup)) {
-          if ($rulesGroup.type) {
-            out += ' if (' + (it.util.checkDataType($rulesGroup.type, $data, it.opts.strictNumbers)) + ') { ';
-          }
-          if (it.opts.useDefaults) {
-            if ($rulesGroup.type == 'object' && it.schema.properties) {
-              var $schema = it.schema.properties,
-                $schemaKeys = Object.keys($schema);
-              var arr3 = $schemaKeys;
-              if (arr3) {
-                var $propertyKey, i3 = -1,
-                  l3 = arr3.length - 1;
-                while (i3 < l3) {
-                  $propertyKey = arr3[i3 += 1];
-                  var $sch = $schema[$propertyKey];
-                  if ($sch.default !== undefined) {
-                    var $passData = $data + it.util.getProperty($propertyKey);
-                    if (it.compositeRule) {
-                      if (it.opts.strictDefaults) {
-                        var $defaultMsg = 'default is ignored for: ' + $passData;
-                        if (it.opts.strictDefaults === 'log') it.logger.warn($defaultMsg);
-                        else throw new Error($defaultMsg);
-                      }
-                    } else {
-                      out += ' if (' + ($passData) + ' === undefined ';
-                      if (it.opts.useDefaults == 'empty') {
-                        out += ' || ' + ($passData) + ' === null || ' + ($passData) + ' === \'\' ';
-                      }
-                      out += ' ) ' + ($passData) + ' = ';
-                      if (it.opts.useDefaults == 'shared') {
-                        out += ' ' + (it.useDefault($sch.default)) + ' ';
-                      } else {
-                        out += ' ' + (JSON.stringify($sch.default)) + ' ';
-                      }
-                      out += '; ';
-                    }
-                  }
-                }
-              }
-            } else if ($rulesGroup.type == 'array' && Array.isArray(it.schema.items)) {
-              var arr4 = it.schema.items;
-              if (arr4) {
-                var $sch, $i = -1,
-                  l4 = arr4.length - 1;
-                while ($i < l4) {
-                  $sch = arr4[$i += 1];
-                  if ($sch.default !== undefined) {
-                    var $passData = $data + '[' + $i + ']';
-                    if (it.compositeRule) {
-                      if (it.opts.strictDefaults) {
-                        var $defaultMsg = 'default is ignored for: ' + $passData;
-                        if (it.opts.strictDefaults === 'log') it.logger.warn($defaultMsg);
-                        else throw new Error($defaultMsg);
-                      }
-                    } else {
-                      out += ' if (' + ($passData) + ' === undefined ';
-                      if (it.opts.useDefaults == 'empty') {
-                        out += ' || ' + ($passData) + ' === null || ' + ($passData) + ' === \'\' ';
-                      }
-                      out += ' ) ' + ($passData) + ' = ';
-                      if (it.opts.useDefaults == 'shared') {
-                        out += ' ' + (it.useDefault($sch.default)) + ' ';
-                      } else {
-                        out += ' ' + (JSON.stringify($sch.default)) + ' ';
-                      }
-                      out += '; ';
-                    }
-                  }
-                }
-              }
-            }
-          }
-          var arr5 = $rulesGroup.rules;
-          if (arr5) {
-            var $rule, i5 = -1,
-              l5 = arr5.length - 1;
-            while (i5 < l5) {
-              $rule = arr5[i5 += 1];
-              if ($shouldUseRule($rule)) {
-                var $code = $rule.code(it, $rule.keyword, $rulesGroup.type);
-                if ($code) {
-                  out += ' ' + ($code) + ' ';
-                  if ($breakOnError) {
-                    $closingBraces1 += '}';
-                  }
-                }
-              }
-            }
-          }
-          if ($breakOnError) {
-            out += ' ' + ($closingBraces1) + ' ';
-            $closingBraces1 = '';
-          }
-          if ($rulesGroup.type) {
-            out += ' } ';
-            if ($typeSchema && $typeSchema === $rulesGroup.type && !$coerceToTypes) {
-              out += ' else { ';
-              var $schemaPath = it.schemaPath + '.type',
-                $errSchemaPath = it.errSchemaPath + '/type';
-              var $$outStack = $$outStack || [];
-              $$outStack.push(out);
-              out = ''; /* istanbul ignore else */
-              if (it.createErrors !== false) {
-                out += ' { keyword: \'' + ($errorKeyword || 'type') + '\' , dataPath: (dataPath || \'\') + ' + (it.errorPath) + ' , schemaPath: ' + (it.util.toQuotedString($errSchemaPath)) + ' , params: { type: \'';
-                if ($typeIsArray) {
-                  out += '' + ($typeSchema.join(","));
-                } else {
-                  out += '' + ($typeSchema);
-                }
-                out += '\' } ';
-                if (it.opts.messages !== false) {
-                  out += ' , message: \'should be ';
-                  if ($typeIsArray) {
-                    out += '' + ($typeSchema.join(","));
-                  } else {
-                    out += '' + ($typeSchema);
-                  }
-                  out += '\' ';
-                }
-                if (it.opts.verbose) {
-                  out += ' , schema: validate.schema' + ($schemaPath) + ' , parentSchema: validate.schema' + (it.schemaPath) + ' , data: ' + ($data) + ' ';
-                }
-                out += ' } ';
-              } else {
-                out += ' {} ';
-              }
-              var __err = out;
-              out = $$outStack.pop();
-              if (!it.compositeRule && $breakOnError) {
-                /* istanbul ignore if */
-                if (it.async) {
-                  out += ' throw new ValidationError([' + (__err) + ']); ';
-                } else {
-                  out += ' validate.errors = [' + (__err) + ']; return false; ';
-                }
-              } else {
-                out += ' var err = ' + (__err) + ';  if (vErrors === null) vErrors = [err]; else vErrors.push(err); errors++; ';
-              }
-              out += ' } ';
-            }
-          }
-          if ($breakOnError) {
-            out += ' if (errors === ';
-            if ($top) {
-              out += '0';
-            } else {
-              out += 'errs_' + ($lvl);
-            }
-            out += ') { ';
-            $closingBraces2 += '}';
-          }
-        }
-      }
-    }
-  }
-  if ($breakOnError) {
-    out += ' ' + ($closingBraces2) + ' ';
-  }
-  if ($top) {
-    if ($async) {
-      out += ' if (errors === 0) return data;           ';
-      out += ' else throw new ValidationError(vErrors); ';
-    } else {
-      out += ' validate.errors = vErrors; ';
-      out += ' return errors === 0;       ';
-    }
-    out += ' }; return validate;';
-  } else {
-    out += ' var ' + ($valid) + ' = errors === errs_' + ($lvl) + ';';
-  }
-
-  function $shouldUseGroup($rulesGroup) {
-    var rules = $rulesGroup.rules;
-    for (var i = 0; i < rules.length; i++)
-      if ($shouldUseRule(rules[i])) return true;
-  }
-
-  function $shouldUseRule($rule) {
-    return it.schema[$rule.keyword] !== undefined || ($rule.implements && $ruleImplementsSomeKeyword($rule));
-  }
-
-  function $ruleImplementsSomeKeyword($rule) {
-    var impl = $rule.implements;
-    for (var i = 0; i < impl.length; i++)
-      if (it.schema[impl[i]] !== undefined) return true;
-  }
-  return out;
-}
-
-
-/***/ }),
-
-/***/ 3297:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-var IDENTIFIER = /^[a-z_$][a-z0-9_$-]*$/i;
-var customRuleCode = __nccwpck_require__(5912);
-var definitionSchema = __nccwpck_require__(458);
-
-module.exports = {
-  add: addKeyword,
-  get: getKeyword,
-  remove: removeKeyword,
-  validate: validateKeyword
+	return new RegExp(pattern, onlyFirst ? undefined : 'g');
 };
 
 
-/**
- * Define custom keyword
- * @this  Ajv
- * @param {String} keyword custom keyword, should be unique (including different from all standard, custom and macro keywords).
- * @param {Object} definition keyword definition object with properties `type` (type(s) which the keyword applies to), `validate` or `compile`.
- * @return {Ajv} this for method chaining
- */
-function addKeyword(keyword, definition) {
-  /* jshint validthis: true */
-  /* eslint no-shadow: 0 */
-  var RULES = this.RULES;
-  if (RULES.keywords[keyword])
-    throw new Error('Keyword ' + keyword + ' is already defined');
+/***/ }),
 
-  if (!IDENTIFIER.test(keyword))
-    throw new Error('Keyword ' + keyword + ' is not a valid identifier');
+/***/ 2068:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-  if (definition) {
-    this.validateKeyword(definition, true);
-
-    var dataType = definition.type;
-    if (Array.isArray(dataType)) {
-      for (var i=0; i<dataType.length; i++)
-        _addRule(keyword, dataType[i], definition);
-    } else {
-      _addRule(keyword, dataType, definition);
-    }
-
-    var metaSchema = definition.metaSchema;
-    if (metaSchema) {
-      if (definition.$data && this._opts.$data) {
-        metaSchema = {
-          anyOf: [
-            metaSchema,
-            { '$ref': 'https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#' }
-          ]
-        };
-      }
-      definition.validateSchema = this.compile(metaSchema, true);
-    }
-  }
-
-  RULES.keywords[keyword] = RULES.all[keyword] = true;
+"use strict";
+/* module decorator */ module = __nccwpck_require__.nmd(module);
 
 
-  function _addRule(keyword, dataType, definition) {
-    var ruleGroup;
-    for (var i=0; i<RULES.length; i++) {
-      var rg = RULES[i];
-      if (rg.type == dataType) {
-        ruleGroup = rg;
-        break;
-      }
-    }
+const wrapAnsi16 = (fn, offset) => (...args) => {
+	const code = fn(...args);
+	return `\u001B[${code + offset}m`;
+};
 
-    if (!ruleGroup) {
-      ruleGroup = { type: dataType, rules: [] };
-      RULES.push(ruleGroup);
-    }
+const wrapAnsi256 = (fn, offset) => (...args) => {
+	const code = fn(...args);
+	return `\u001B[${38 + offset};5;${code}m`;
+};
 
-    var rule = {
-      keyword: keyword,
-      definition: definition,
-      custom: true,
-      code: customRuleCode,
-      implements: definition.implements
-    };
-    ruleGroup.rules.push(rule);
-    RULES.custom[keyword] = rule;
-  }
+const wrapAnsi16m = (fn, offset) => (...args) => {
+	const rgb = fn(...args);
+	return `\u001B[${38 + offset};2;${rgb[0]};${rgb[1]};${rgb[2]}m`;
+};
 
-  return this;
+const ansi2ansi = n => n;
+const rgb2rgb = (r, g, b) => [r, g, b];
+
+const setLazyProperty = (object, property, get) => {
+	Object.defineProperty(object, property, {
+		get: () => {
+			const value = get();
+
+			Object.defineProperty(object, property, {
+				value,
+				enumerable: true,
+				configurable: true
+			});
+
+			return value;
+		},
+		enumerable: true,
+		configurable: true
+	});
+};
+
+/** @type {typeof import('color-convert')} */
+let colorConvert;
+const makeDynamicStyles = (wrap, targetSpace, identity, isBackground) => {
+	if (colorConvert === undefined) {
+		colorConvert = __nccwpck_require__(6931);
+	}
+
+	const offset = isBackground ? 10 : 0;
+	const styles = {};
+
+	for (const [sourceSpace, suite] of Object.entries(colorConvert)) {
+		const name = sourceSpace === 'ansi16' ? 'ansi' : sourceSpace;
+		if (sourceSpace === targetSpace) {
+			styles[name] = wrap(identity, offset);
+		} else if (typeof suite === 'object') {
+			styles[name] = wrap(suite[targetSpace], offset);
+		}
+	}
+
+	return styles;
+};
+
+function assembleStyles() {
+	const codes = new Map();
+	const styles = {
+		modifier: {
+			reset: [0, 0],
+			// 21 isn't widely supported and 22 does the same thing
+			bold: [1, 22],
+			dim: [2, 22],
+			italic: [3, 23],
+			underline: [4, 24],
+			inverse: [7, 27],
+			hidden: [8, 28],
+			strikethrough: [9, 29]
+		},
+		color: {
+			black: [30, 39],
+			red: [31, 39],
+			green: [32, 39],
+			yellow: [33, 39],
+			blue: [34, 39],
+			magenta: [35, 39],
+			cyan: [36, 39],
+			white: [37, 39],
+
+			// Bright color
+			blackBright: [90, 39],
+			redBright: [91, 39],
+			greenBright: [92, 39],
+			yellowBright: [93, 39],
+			blueBright: [94, 39],
+			magentaBright: [95, 39],
+			cyanBright: [96, 39],
+			whiteBright: [97, 39]
+		},
+		bgColor: {
+			bgBlack: [40, 49],
+			bgRed: [41, 49],
+			bgGreen: [42, 49],
+			bgYellow: [43, 49],
+			bgBlue: [44, 49],
+			bgMagenta: [45, 49],
+			bgCyan: [46, 49],
+			bgWhite: [47, 49],
+
+			// Bright color
+			bgBlackBright: [100, 49],
+			bgRedBright: [101, 49],
+			bgGreenBright: [102, 49],
+			bgYellowBright: [103, 49],
+			bgBlueBright: [104, 49],
+			bgMagentaBright: [105, 49],
+			bgCyanBright: [106, 49],
+			bgWhiteBright: [107, 49]
+		}
+	};
+
+	// Alias bright black as gray (and grey)
+	styles.color.gray = styles.color.blackBright;
+	styles.bgColor.bgGray = styles.bgColor.bgBlackBright;
+	styles.color.grey = styles.color.blackBright;
+	styles.bgColor.bgGrey = styles.bgColor.bgBlackBright;
+
+	for (const [groupName, group] of Object.entries(styles)) {
+		for (const [styleName, style] of Object.entries(group)) {
+			styles[styleName] = {
+				open: `\u001B[${style[0]}m`,
+				close: `\u001B[${style[1]}m`
+			};
+
+			group[styleName] = styles[styleName];
+
+			codes.set(style[0], style[1]);
+		}
+
+		Object.defineProperty(styles, groupName, {
+			value: group,
+			enumerable: false
+		});
+	}
+
+	Object.defineProperty(styles, 'codes', {
+		value: codes,
+		enumerable: false
+	});
+
+	styles.color.close = '\u001B[39m';
+	styles.bgColor.close = '\u001B[49m';
+
+	setLazyProperty(styles.color, 'ansi', () => makeDynamicStyles(wrapAnsi16, 'ansi16', ansi2ansi, false));
+	setLazyProperty(styles.color, 'ansi256', () => makeDynamicStyles(wrapAnsi256, 'ansi256', ansi2ansi, false));
+	setLazyProperty(styles.color, 'ansi16m', () => makeDynamicStyles(wrapAnsi16m, 'rgb', rgb2rgb, false));
+	setLazyProperty(styles.bgColor, 'ansi', () => makeDynamicStyles(wrapAnsi16, 'ansi16', ansi2ansi, true));
+	setLazyProperty(styles.bgColor, 'ansi256', () => makeDynamicStyles(wrapAnsi256, 'ansi256', ansi2ansi, true));
+	setLazyProperty(styles.bgColor, 'ansi16m', () => makeDynamicStyles(wrapAnsi16m, 'rgb', rgb2rgb, true));
+
+	return styles;
 }
 
-
-/**
- * Get keyword
- * @this  Ajv
- * @param {String} keyword pre-defined or custom keyword.
- * @return {Object|Boolean} custom keyword definition, `true` if it is a predefined keyword, `false` otherwise.
- */
-function getKeyword(keyword) {
-  /* jshint validthis: true */
-  var rule = this.RULES.custom[keyword];
-  return rule ? rule.definition : this.RULES.keywords[keyword] || false;
-}
-
-
-/**
- * Remove keyword
- * @this  Ajv
- * @param {String} keyword pre-defined or custom keyword.
- * @return {Ajv} this for method chaining
- */
-function removeKeyword(keyword) {
-  /* jshint validthis: true */
-  var RULES = this.RULES;
-  delete RULES.keywords[keyword];
-  delete RULES.all[keyword];
-  delete RULES.custom[keyword];
-  for (var i=0; i<RULES.length; i++) {
-    var rules = RULES[i].rules;
-    for (var j=0; j<rules.length; j++) {
-      if (rules[j].keyword == keyword) {
-        rules.splice(j, 1);
-        break;
-      }
-    }
-  }
-  return this;
-}
-
-
-/**
- * Validate keyword definition
- * @this  Ajv
- * @param {Object} definition keyword definition object.
- * @param {Boolean} throwError true to throw exception if definition is invalid
- * @return {boolean} validation result
- */
-function validateKeyword(definition, throwError) {
-  validateKeyword.errors = null;
-  var v = this._validateKeyword = this._validateKeyword
-                                  || this.compile(definitionSchema, true);
-
-  if (v(definition)) return true;
-  validateKeyword.errors = v.errors;
-  if (throwError)
-    throw new Error('custom keyword definition is invalid: '  + this.errorsText(v.errors));
-  else
-    return false;
-}
+// Make the export immutable
+Object.defineProperty(module, 'exports', {
+	enumerable: true,
+	get: assembleStyles
+});
 
 
 /***/ }),
@@ -5874,6 +6116,1204 @@ function expand(str, isTop) {
 
 /***/ }),
 
+/***/ 7391:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+/* MIT license */
+/* eslint-disable no-mixed-operators */
+const cssKeywords = __nccwpck_require__(8510);
+
+// NOTE: conversions should only return primitive values (i.e. arrays, or
+//       values that give correct `typeof` results).
+//       do not use box values types (i.e. Number(), String(), etc.)
+
+const reverseKeywords = {};
+for (const key of Object.keys(cssKeywords)) {
+	reverseKeywords[cssKeywords[key]] = key;
+}
+
+const convert = {
+	rgb: {channels: 3, labels: 'rgb'},
+	hsl: {channels: 3, labels: 'hsl'},
+	hsv: {channels: 3, labels: 'hsv'},
+	hwb: {channels: 3, labels: 'hwb'},
+	cmyk: {channels: 4, labels: 'cmyk'},
+	xyz: {channels: 3, labels: 'xyz'},
+	lab: {channels: 3, labels: 'lab'},
+	lch: {channels: 3, labels: 'lch'},
+	hex: {channels: 1, labels: ['hex']},
+	keyword: {channels: 1, labels: ['keyword']},
+	ansi16: {channels: 1, labels: ['ansi16']},
+	ansi256: {channels: 1, labels: ['ansi256']},
+	hcg: {channels: 3, labels: ['h', 'c', 'g']},
+	apple: {channels: 3, labels: ['r16', 'g16', 'b16']},
+	gray: {channels: 1, labels: ['gray']}
+};
+
+module.exports = convert;
+
+// Hide .channels and .labels properties
+for (const model of Object.keys(convert)) {
+	if (!('channels' in convert[model])) {
+		throw new Error('missing channels property: ' + model);
+	}
+
+	if (!('labels' in convert[model])) {
+		throw new Error('missing channel labels property: ' + model);
+	}
+
+	if (convert[model].labels.length !== convert[model].channels) {
+		throw new Error('channel and label counts mismatch: ' + model);
+	}
+
+	const {channels, labels} = convert[model];
+	delete convert[model].channels;
+	delete convert[model].labels;
+	Object.defineProperty(convert[model], 'channels', {value: channels});
+	Object.defineProperty(convert[model], 'labels', {value: labels});
+}
+
+convert.rgb.hsl = function (rgb) {
+	const r = rgb[0] / 255;
+	const g = rgb[1] / 255;
+	const b = rgb[2] / 255;
+	const min = Math.min(r, g, b);
+	const max = Math.max(r, g, b);
+	const delta = max - min;
+	let h;
+	let s;
+
+	if (max === min) {
+		h = 0;
+	} else if (r === max) {
+		h = (g - b) / delta;
+	} else if (g === max) {
+		h = 2 + (b - r) / delta;
+	} else if (b === max) {
+		h = 4 + (r - g) / delta;
+	}
+
+	h = Math.min(h * 60, 360);
+
+	if (h < 0) {
+		h += 360;
+	}
+
+	const l = (min + max) / 2;
+
+	if (max === min) {
+		s = 0;
+	} else if (l <= 0.5) {
+		s = delta / (max + min);
+	} else {
+		s = delta / (2 - max - min);
+	}
+
+	return [h, s * 100, l * 100];
+};
+
+convert.rgb.hsv = function (rgb) {
+	let rdif;
+	let gdif;
+	let bdif;
+	let h;
+	let s;
+
+	const r = rgb[0] / 255;
+	const g = rgb[1] / 255;
+	const b = rgb[2] / 255;
+	const v = Math.max(r, g, b);
+	const diff = v - Math.min(r, g, b);
+	const diffc = function (c) {
+		return (v - c) / 6 / diff + 1 / 2;
+	};
+
+	if (diff === 0) {
+		h = 0;
+		s = 0;
+	} else {
+		s = diff / v;
+		rdif = diffc(r);
+		gdif = diffc(g);
+		bdif = diffc(b);
+
+		if (r === v) {
+			h = bdif - gdif;
+		} else if (g === v) {
+			h = (1 / 3) + rdif - bdif;
+		} else if (b === v) {
+			h = (2 / 3) + gdif - rdif;
+		}
+
+		if (h < 0) {
+			h += 1;
+		} else if (h > 1) {
+			h -= 1;
+		}
+	}
+
+	return [
+		h * 360,
+		s * 100,
+		v * 100
+	];
+};
+
+convert.rgb.hwb = function (rgb) {
+	const r = rgb[0];
+	const g = rgb[1];
+	let b = rgb[2];
+	const h = convert.rgb.hsl(rgb)[0];
+	const w = 1 / 255 * Math.min(r, Math.min(g, b));
+
+	b = 1 - 1 / 255 * Math.max(r, Math.max(g, b));
+
+	return [h, w * 100, b * 100];
+};
+
+convert.rgb.cmyk = function (rgb) {
+	const r = rgb[0] / 255;
+	const g = rgb[1] / 255;
+	const b = rgb[2] / 255;
+
+	const k = Math.min(1 - r, 1 - g, 1 - b);
+	const c = (1 - r - k) / (1 - k) || 0;
+	const m = (1 - g - k) / (1 - k) || 0;
+	const y = (1 - b - k) / (1 - k) || 0;
+
+	return [c * 100, m * 100, y * 100, k * 100];
+};
+
+function comparativeDistance(x, y) {
+	/*
+		See https://en.m.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance
+	*/
+	return (
+		((x[0] - y[0]) ** 2) +
+		((x[1] - y[1]) ** 2) +
+		((x[2] - y[2]) ** 2)
+	);
+}
+
+convert.rgb.keyword = function (rgb) {
+	const reversed = reverseKeywords[rgb];
+	if (reversed) {
+		return reversed;
+	}
+
+	let currentClosestDistance = Infinity;
+	let currentClosestKeyword;
+
+	for (const keyword of Object.keys(cssKeywords)) {
+		const value = cssKeywords[keyword];
+
+		// Compute comparative distance
+		const distance = comparativeDistance(rgb, value);
+
+		// Check if its less, if so set as closest
+		if (distance < currentClosestDistance) {
+			currentClosestDistance = distance;
+			currentClosestKeyword = keyword;
+		}
+	}
+
+	return currentClosestKeyword;
+};
+
+convert.keyword.rgb = function (keyword) {
+	return cssKeywords[keyword];
+};
+
+convert.rgb.xyz = function (rgb) {
+	let r = rgb[0] / 255;
+	let g = rgb[1] / 255;
+	let b = rgb[2] / 255;
+
+	// Assume sRGB
+	r = r > 0.04045 ? (((r + 0.055) / 1.055) ** 2.4) : (r / 12.92);
+	g = g > 0.04045 ? (((g + 0.055) / 1.055) ** 2.4) : (g / 12.92);
+	b = b > 0.04045 ? (((b + 0.055) / 1.055) ** 2.4) : (b / 12.92);
+
+	const x = (r * 0.4124) + (g * 0.3576) + (b * 0.1805);
+	const y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
+	const z = (r * 0.0193) + (g * 0.1192) + (b * 0.9505);
+
+	return [x * 100, y * 100, z * 100];
+};
+
+convert.rgb.lab = function (rgb) {
+	const xyz = convert.rgb.xyz(rgb);
+	let x = xyz[0];
+	let y = xyz[1];
+	let z = xyz[2];
+
+	x /= 95.047;
+	y /= 100;
+	z /= 108.883;
+
+	x = x > 0.008856 ? (x ** (1 / 3)) : (7.787 * x) + (16 / 116);
+	y = y > 0.008856 ? (y ** (1 / 3)) : (7.787 * y) + (16 / 116);
+	z = z > 0.008856 ? (z ** (1 / 3)) : (7.787 * z) + (16 / 116);
+
+	const l = (116 * y) - 16;
+	const a = 500 * (x - y);
+	const b = 200 * (y - z);
+
+	return [l, a, b];
+};
+
+convert.hsl.rgb = function (hsl) {
+	const h = hsl[0] / 360;
+	const s = hsl[1] / 100;
+	const l = hsl[2] / 100;
+	let t2;
+	let t3;
+	let val;
+
+	if (s === 0) {
+		val = l * 255;
+		return [val, val, val];
+	}
+
+	if (l < 0.5) {
+		t2 = l * (1 + s);
+	} else {
+		t2 = l + s - l * s;
+	}
+
+	const t1 = 2 * l - t2;
+
+	const rgb = [0, 0, 0];
+	for (let i = 0; i < 3; i++) {
+		t3 = h + 1 / 3 * -(i - 1);
+		if (t3 < 0) {
+			t3++;
+		}
+
+		if (t3 > 1) {
+			t3--;
+		}
+
+		if (6 * t3 < 1) {
+			val = t1 + (t2 - t1) * 6 * t3;
+		} else if (2 * t3 < 1) {
+			val = t2;
+		} else if (3 * t3 < 2) {
+			val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;
+		} else {
+			val = t1;
+		}
+
+		rgb[i] = val * 255;
+	}
+
+	return rgb;
+};
+
+convert.hsl.hsv = function (hsl) {
+	const h = hsl[0];
+	let s = hsl[1] / 100;
+	let l = hsl[2] / 100;
+	let smin = s;
+	const lmin = Math.max(l, 0.01);
+
+	l *= 2;
+	s *= (l <= 1) ? l : 2 - l;
+	smin *= lmin <= 1 ? lmin : 2 - lmin;
+	const v = (l + s) / 2;
+	const sv = l === 0 ? (2 * smin) / (lmin + smin) : (2 * s) / (l + s);
+
+	return [h, sv * 100, v * 100];
+};
+
+convert.hsv.rgb = function (hsv) {
+	const h = hsv[0] / 60;
+	const s = hsv[1] / 100;
+	let v = hsv[2] / 100;
+	const hi = Math.floor(h) % 6;
+
+	const f = h - Math.floor(h);
+	const p = 255 * v * (1 - s);
+	const q = 255 * v * (1 - (s * f));
+	const t = 255 * v * (1 - (s * (1 - f)));
+	v *= 255;
+
+	switch (hi) {
+		case 0:
+			return [v, t, p];
+		case 1:
+			return [q, v, p];
+		case 2:
+			return [p, v, t];
+		case 3:
+			return [p, q, v];
+		case 4:
+			return [t, p, v];
+		case 5:
+			return [v, p, q];
+	}
+};
+
+convert.hsv.hsl = function (hsv) {
+	const h = hsv[0];
+	const s = hsv[1] / 100;
+	const v = hsv[2] / 100;
+	const vmin = Math.max(v, 0.01);
+	let sl;
+	let l;
+
+	l = (2 - s) * v;
+	const lmin = (2 - s) * vmin;
+	sl = s * vmin;
+	sl /= (lmin <= 1) ? lmin : 2 - lmin;
+	sl = sl || 0;
+	l /= 2;
+
+	return [h, sl * 100, l * 100];
+};
+
+// http://dev.w3.org/csswg/css-color/#hwb-to-rgb
+convert.hwb.rgb = function (hwb) {
+	const h = hwb[0] / 360;
+	let wh = hwb[1] / 100;
+	let bl = hwb[2] / 100;
+	const ratio = wh + bl;
+	let f;
+
+	// Wh + bl cant be > 1
+	if (ratio > 1) {
+		wh /= ratio;
+		bl /= ratio;
+	}
+
+	const i = Math.floor(6 * h);
+	const v = 1 - bl;
+	f = 6 * h - i;
+
+	if ((i & 0x01) !== 0) {
+		f = 1 - f;
+	}
+
+	const n = wh + f * (v - wh); // Linear interpolation
+
+	let r;
+	let g;
+	let b;
+	/* eslint-disable max-statements-per-line,no-multi-spaces */
+	switch (i) {
+		default:
+		case 6:
+		case 0: r = v;  g = n;  b = wh; break;
+		case 1: r = n;  g = v;  b = wh; break;
+		case 2: r = wh; g = v;  b = n; break;
+		case 3: r = wh; g = n;  b = v; break;
+		case 4: r = n;  g = wh; b = v; break;
+		case 5: r = v;  g = wh; b = n; break;
+	}
+	/* eslint-enable max-statements-per-line,no-multi-spaces */
+
+	return [r * 255, g * 255, b * 255];
+};
+
+convert.cmyk.rgb = function (cmyk) {
+	const c = cmyk[0] / 100;
+	const m = cmyk[1] / 100;
+	const y = cmyk[2] / 100;
+	const k = cmyk[3] / 100;
+
+	const r = 1 - Math.min(1, c * (1 - k) + k);
+	const g = 1 - Math.min(1, m * (1 - k) + k);
+	const b = 1 - Math.min(1, y * (1 - k) + k);
+
+	return [r * 255, g * 255, b * 255];
+};
+
+convert.xyz.rgb = function (xyz) {
+	const x = xyz[0] / 100;
+	const y = xyz[1] / 100;
+	const z = xyz[2] / 100;
+	let r;
+	let g;
+	let b;
+
+	r = (x * 3.2406) + (y * -1.5372) + (z * -0.4986);
+	g = (x * -0.9689) + (y * 1.8758) + (z * 0.0415);
+	b = (x * 0.0557) + (y * -0.2040) + (z * 1.0570);
+
+	// Assume sRGB
+	r = r > 0.0031308
+		? ((1.055 * (r ** (1.0 / 2.4))) - 0.055)
+		: r * 12.92;
+
+	g = g > 0.0031308
+		? ((1.055 * (g ** (1.0 / 2.4))) - 0.055)
+		: g * 12.92;
+
+	b = b > 0.0031308
+		? ((1.055 * (b ** (1.0 / 2.4))) - 0.055)
+		: b * 12.92;
+
+	r = Math.min(Math.max(0, r), 1);
+	g = Math.min(Math.max(0, g), 1);
+	b = Math.min(Math.max(0, b), 1);
+
+	return [r * 255, g * 255, b * 255];
+};
+
+convert.xyz.lab = function (xyz) {
+	let x = xyz[0];
+	let y = xyz[1];
+	let z = xyz[2];
+
+	x /= 95.047;
+	y /= 100;
+	z /= 108.883;
+
+	x = x > 0.008856 ? (x ** (1 / 3)) : (7.787 * x) + (16 / 116);
+	y = y > 0.008856 ? (y ** (1 / 3)) : (7.787 * y) + (16 / 116);
+	z = z > 0.008856 ? (z ** (1 / 3)) : (7.787 * z) + (16 / 116);
+
+	const l = (116 * y) - 16;
+	const a = 500 * (x - y);
+	const b = 200 * (y - z);
+
+	return [l, a, b];
+};
+
+convert.lab.xyz = function (lab) {
+	const l = lab[0];
+	const a = lab[1];
+	const b = lab[2];
+	let x;
+	let y;
+	let z;
+
+	y = (l + 16) / 116;
+	x = a / 500 + y;
+	z = y - b / 200;
+
+	const y2 = y ** 3;
+	const x2 = x ** 3;
+	const z2 = z ** 3;
+	y = y2 > 0.008856 ? y2 : (y - 16 / 116) / 7.787;
+	x = x2 > 0.008856 ? x2 : (x - 16 / 116) / 7.787;
+	z = z2 > 0.008856 ? z2 : (z - 16 / 116) / 7.787;
+
+	x *= 95.047;
+	y *= 100;
+	z *= 108.883;
+
+	return [x, y, z];
+};
+
+convert.lab.lch = function (lab) {
+	const l = lab[0];
+	const a = lab[1];
+	const b = lab[2];
+	let h;
+
+	const hr = Math.atan2(b, a);
+	h = hr * 360 / 2 / Math.PI;
+
+	if (h < 0) {
+		h += 360;
+	}
+
+	const c = Math.sqrt(a * a + b * b);
+
+	return [l, c, h];
+};
+
+convert.lch.lab = function (lch) {
+	const l = lch[0];
+	const c = lch[1];
+	const h = lch[2];
+
+	const hr = h / 360 * 2 * Math.PI;
+	const a = c * Math.cos(hr);
+	const b = c * Math.sin(hr);
+
+	return [l, a, b];
+};
+
+convert.rgb.ansi16 = function (args, saturation = null) {
+	const [r, g, b] = args;
+	let value = saturation === null ? convert.rgb.hsv(args)[2] : saturation; // Hsv -> ansi16 optimization
+
+	value = Math.round(value / 50);
+
+	if (value === 0) {
+		return 30;
+	}
+
+	let ansi = 30
+		+ ((Math.round(b / 255) << 2)
+		| (Math.round(g / 255) << 1)
+		| Math.round(r / 255));
+
+	if (value === 2) {
+		ansi += 60;
+	}
+
+	return ansi;
+};
+
+convert.hsv.ansi16 = function (args) {
+	// Optimization here; we already know the value and don't need to get
+	// it converted for us.
+	return convert.rgb.ansi16(convert.hsv.rgb(args), args[2]);
+};
+
+convert.rgb.ansi256 = function (args) {
+	const r = args[0];
+	const g = args[1];
+	const b = args[2];
+
+	// We use the extended greyscale palette here, with the exception of
+	// black and white. normal palette only has 4 greyscale shades.
+	if (r === g && g === b) {
+		if (r < 8) {
+			return 16;
+		}
+
+		if (r > 248) {
+			return 231;
+		}
+
+		return Math.round(((r - 8) / 247) * 24) + 232;
+	}
+
+	const ansi = 16
+		+ (36 * Math.round(r / 255 * 5))
+		+ (6 * Math.round(g / 255 * 5))
+		+ Math.round(b / 255 * 5);
+
+	return ansi;
+};
+
+convert.ansi16.rgb = function (args) {
+	let color = args % 10;
+
+	// Handle greyscale
+	if (color === 0 || color === 7) {
+		if (args > 50) {
+			color += 3.5;
+		}
+
+		color = color / 10.5 * 255;
+
+		return [color, color, color];
+	}
+
+	const mult = (~~(args > 50) + 1) * 0.5;
+	const r = ((color & 1) * mult) * 255;
+	const g = (((color >> 1) & 1) * mult) * 255;
+	const b = (((color >> 2) & 1) * mult) * 255;
+
+	return [r, g, b];
+};
+
+convert.ansi256.rgb = function (args) {
+	// Handle greyscale
+	if (args >= 232) {
+		const c = (args - 232) * 10 + 8;
+		return [c, c, c];
+	}
+
+	args -= 16;
+
+	let rem;
+	const r = Math.floor(args / 36) / 5 * 255;
+	const g = Math.floor((rem = args % 36) / 6) / 5 * 255;
+	const b = (rem % 6) / 5 * 255;
+
+	return [r, g, b];
+};
+
+convert.rgb.hex = function (args) {
+	const integer = ((Math.round(args[0]) & 0xFF) << 16)
+		+ ((Math.round(args[1]) & 0xFF) << 8)
+		+ (Math.round(args[2]) & 0xFF);
+
+	const string = integer.toString(16).toUpperCase();
+	return '000000'.substring(string.length) + string;
+};
+
+convert.hex.rgb = function (args) {
+	const match = args.toString(16).match(/[a-f0-9]{6}|[a-f0-9]{3}/i);
+	if (!match) {
+		return [0, 0, 0];
+	}
+
+	let colorString = match[0];
+
+	if (match[0].length === 3) {
+		colorString = colorString.split('').map(char => {
+			return char + char;
+		}).join('');
+	}
+
+	const integer = parseInt(colorString, 16);
+	const r = (integer >> 16) & 0xFF;
+	const g = (integer >> 8) & 0xFF;
+	const b = integer & 0xFF;
+
+	return [r, g, b];
+};
+
+convert.rgb.hcg = function (rgb) {
+	const r = rgb[0] / 255;
+	const g = rgb[1] / 255;
+	const b = rgb[2] / 255;
+	const max = Math.max(Math.max(r, g), b);
+	const min = Math.min(Math.min(r, g), b);
+	const chroma = (max - min);
+	let grayscale;
+	let hue;
+
+	if (chroma < 1) {
+		grayscale = min / (1 - chroma);
+	} else {
+		grayscale = 0;
+	}
+
+	if (chroma <= 0) {
+		hue = 0;
+	} else
+	if (max === r) {
+		hue = ((g - b) / chroma) % 6;
+	} else
+	if (max === g) {
+		hue = 2 + (b - r) / chroma;
+	} else {
+		hue = 4 + (r - g) / chroma;
+	}
+
+	hue /= 6;
+	hue %= 1;
+
+	return [hue * 360, chroma * 100, grayscale * 100];
+};
+
+convert.hsl.hcg = function (hsl) {
+	const s = hsl[1] / 100;
+	const l = hsl[2] / 100;
+
+	const c = l < 0.5 ? (2.0 * s * l) : (2.0 * s * (1.0 - l));
+
+	let f = 0;
+	if (c < 1.0) {
+		f = (l - 0.5 * c) / (1.0 - c);
+	}
+
+	return [hsl[0], c * 100, f * 100];
+};
+
+convert.hsv.hcg = function (hsv) {
+	const s = hsv[1] / 100;
+	const v = hsv[2] / 100;
+
+	const c = s * v;
+	let f = 0;
+
+	if (c < 1.0) {
+		f = (v - c) / (1 - c);
+	}
+
+	return [hsv[0], c * 100, f * 100];
+};
+
+convert.hcg.rgb = function (hcg) {
+	const h = hcg[0] / 360;
+	const c = hcg[1] / 100;
+	const g = hcg[2] / 100;
+
+	if (c === 0.0) {
+		return [g * 255, g * 255, g * 255];
+	}
+
+	const pure = [0, 0, 0];
+	const hi = (h % 1) * 6;
+	const v = hi % 1;
+	const w = 1 - v;
+	let mg = 0;
+
+	/* eslint-disable max-statements-per-line */
+	switch (Math.floor(hi)) {
+		case 0:
+			pure[0] = 1; pure[1] = v; pure[2] = 0; break;
+		case 1:
+			pure[0] = w; pure[1] = 1; pure[2] = 0; break;
+		case 2:
+			pure[0] = 0; pure[1] = 1; pure[2] = v; break;
+		case 3:
+			pure[0] = 0; pure[1] = w; pure[2] = 1; break;
+		case 4:
+			pure[0] = v; pure[1] = 0; pure[2] = 1; break;
+		default:
+			pure[0] = 1; pure[1] = 0; pure[2] = w;
+	}
+	/* eslint-enable max-statements-per-line */
+
+	mg = (1.0 - c) * g;
+
+	return [
+		(c * pure[0] + mg) * 255,
+		(c * pure[1] + mg) * 255,
+		(c * pure[2] + mg) * 255
+	];
+};
+
+convert.hcg.hsv = function (hcg) {
+	const c = hcg[1] / 100;
+	const g = hcg[2] / 100;
+
+	const v = c + g * (1.0 - c);
+	let f = 0;
+
+	if (v > 0.0) {
+		f = c / v;
+	}
+
+	return [hcg[0], f * 100, v * 100];
+};
+
+convert.hcg.hsl = function (hcg) {
+	const c = hcg[1] / 100;
+	const g = hcg[2] / 100;
+
+	const l = g * (1.0 - c) + 0.5 * c;
+	let s = 0;
+
+	if (l > 0.0 && l < 0.5) {
+		s = c / (2 * l);
+	} else
+	if (l >= 0.5 && l < 1.0) {
+		s = c / (2 * (1 - l));
+	}
+
+	return [hcg[0], s * 100, l * 100];
+};
+
+convert.hcg.hwb = function (hcg) {
+	const c = hcg[1] / 100;
+	const g = hcg[2] / 100;
+	const v = c + g * (1.0 - c);
+	return [hcg[0], (v - c) * 100, (1 - v) * 100];
+};
+
+convert.hwb.hcg = function (hwb) {
+	const w = hwb[1] / 100;
+	const b = hwb[2] / 100;
+	const v = 1 - b;
+	const c = v - w;
+	let g = 0;
+
+	if (c < 1) {
+		g = (v - c) / (1 - c);
+	}
+
+	return [hwb[0], c * 100, g * 100];
+};
+
+convert.apple.rgb = function (apple) {
+	return [(apple[0] / 65535) * 255, (apple[1] / 65535) * 255, (apple[2] / 65535) * 255];
+};
+
+convert.rgb.apple = function (rgb) {
+	return [(rgb[0] / 255) * 65535, (rgb[1] / 255) * 65535, (rgb[2] / 255) * 65535];
+};
+
+convert.gray.rgb = function (args) {
+	return [args[0] / 100 * 255, args[0] / 100 * 255, args[0] / 100 * 255];
+};
+
+convert.gray.hsl = function (args) {
+	return [0, 0, args[0]];
+};
+
+convert.gray.hsv = convert.gray.hsl;
+
+convert.gray.hwb = function (gray) {
+	return [0, 100, gray[0]];
+};
+
+convert.gray.cmyk = function (gray) {
+	return [0, 0, 0, gray[0]];
+};
+
+convert.gray.lab = function (gray) {
+	return [gray[0], 0, 0];
+};
+
+convert.gray.hex = function (gray) {
+	const val = Math.round(gray[0] / 100 * 255) & 0xFF;
+	const integer = (val << 16) + (val << 8) + val;
+
+	const string = integer.toString(16).toUpperCase();
+	return '000000'.substring(string.length) + string;
+};
+
+convert.rgb.gray = function (rgb) {
+	const val = (rgb[0] + rgb[1] + rgb[2]) / 3;
+	return [val / 255 * 100];
+};
+
+
+/***/ }),
+
+/***/ 6931:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const conversions = __nccwpck_require__(7391);
+const route = __nccwpck_require__(880);
+
+const convert = {};
+
+const models = Object.keys(conversions);
+
+function wrapRaw(fn) {
+	const wrappedFn = function (...args) {
+		const arg0 = args[0];
+		if (arg0 === undefined || arg0 === null) {
+			return arg0;
+		}
+
+		if (arg0.length > 1) {
+			args = arg0;
+		}
+
+		return fn(args);
+	};
+
+	// Preserve .conversion property if there is one
+	if ('conversion' in fn) {
+		wrappedFn.conversion = fn.conversion;
+	}
+
+	return wrappedFn;
+}
+
+function wrapRounded(fn) {
+	const wrappedFn = function (...args) {
+		const arg0 = args[0];
+
+		if (arg0 === undefined || arg0 === null) {
+			return arg0;
+		}
+
+		if (arg0.length > 1) {
+			args = arg0;
+		}
+
+		const result = fn(args);
+
+		// We're assuming the result is an array here.
+		// see notice in conversions.js; don't use box types
+		// in conversion functions.
+		if (typeof result === 'object') {
+			for (let len = result.length, i = 0; i < len; i++) {
+				result[i] = Math.round(result[i]);
+			}
+		}
+
+		return result;
+	};
+
+	// Preserve .conversion property if there is one
+	if ('conversion' in fn) {
+		wrappedFn.conversion = fn.conversion;
+	}
+
+	return wrappedFn;
+}
+
+models.forEach(fromModel => {
+	convert[fromModel] = {};
+
+	Object.defineProperty(convert[fromModel], 'channels', {value: conversions[fromModel].channels});
+	Object.defineProperty(convert[fromModel], 'labels', {value: conversions[fromModel].labels});
+
+	const routes = route(fromModel);
+	const routeModels = Object.keys(routes);
+
+	routeModels.forEach(toModel => {
+		const fn = routes[toModel];
+
+		convert[fromModel][toModel] = wrapRounded(fn);
+		convert[fromModel][toModel].raw = wrapRaw(fn);
+	});
+});
+
+module.exports = convert;
+
+
+/***/ }),
+
+/***/ 880:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const conversions = __nccwpck_require__(7391);
+
+/*
+	This function routes a model to all other models.
+
+	all functions that are routed have a property `.conversion` attached
+	to the returned synthetic function. This property is an array
+	of strings, each with the steps in between the 'from' and 'to'
+	color models (inclusive).
+
+	conversions that are not possible simply are not included.
+*/
+
+function buildGraph() {
+	const graph = {};
+	// https://jsperf.com/object-keys-vs-for-in-with-closure/3
+	const models = Object.keys(conversions);
+
+	for (let len = models.length, i = 0; i < len; i++) {
+		graph[models[i]] = {
+			// http://jsperf.com/1-vs-infinity
+			// micro-opt, but this is simple.
+			distance: -1,
+			parent: null
+		};
+	}
+
+	return graph;
+}
+
+// https://en.wikipedia.org/wiki/Breadth-first_search
+function deriveBFS(fromModel) {
+	const graph = buildGraph();
+	const queue = [fromModel]; // Unshift -> queue -> pop
+
+	graph[fromModel].distance = 0;
+
+	while (queue.length) {
+		const current = queue.pop();
+		const adjacents = Object.keys(conversions[current]);
+
+		for (let len = adjacents.length, i = 0; i < len; i++) {
+			const adjacent = adjacents[i];
+			const node = graph[adjacent];
+
+			if (node.distance === -1) {
+				node.distance = graph[current].distance + 1;
+				node.parent = current;
+				queue.unshift(adjacent);
+			}
+		}
+	}
+
+	return graph;
+}
+
+function link(from, to) {
+	return function (args) {
+		return to(from(args));
+	};
+}
+
+function wrapConversion(toModel, graph) {
+	const path = [graph[toModel].parent, toModel];
+	let fn = conversions[graph[toModel].parent][toModel];
+
+	let cur = graph[toModel].parent;
+	while (graph[cur].parent) {
+		path.unshift(graph[cur].parent);
+		fn = link(conversions[graph[cur].parent][cur], fn);
+		cur = graph[cur].parent;
+	}
+
+	fn.conversion = path;
+	return fn;
+}
+
+module.exports = function (fromModel) {
+	const graph = deriveBFS(fromModel);
+	const conversion = {};
+
+	const models = Object.keys(graph);
+	for (let len = models.length, i = 0; i < len; i++) {
+		const toModel = models[i];
+		const node = graph[toModel];
+
+		if (node.parent === null) {
+			// No possible conversion, or this node is the source model.
+			continue;
+		}
+
+		conversion[toModel] = wrapConversion(toModel, graph);
+	}
+
+	return conversion;
+};
+
+
+
+/***/ }),
+
+/***/ 8510:
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = {
+	"aliceblue": [240, 248, 255],
+	"antiquewhite": [250, 235, 215],
+	"aqua": [0, 255, 255],
+	"aquamarine": [127, 255, 212],
+	"azure": [240, 255, 255],
+	"beige": [245, 245, 220],
+	"bisque": [255, 228, 196],
+	"black": [0, 0, 0],
+	"blanchedalmond": [255, 235, 205],
+	"blue": [0, 0, 255],
+	"blueviolet": [138, 43, 226],
+	"brown": [165, 42, 42],
+	"burlywood": [222, 184, 135],
+	"cadetblue": [95, 158, 160],
+	"chartreuse": [127, 255, 0],
+	"chocolate": [210, 105, 30],
+	"coral": [255, 127, 80],
+	"cornflowerblue": [100, 149, 237],
+	"cornsilk": [255, 248, 220],
+	"crimson": [220, 20, 60],
+	"cyan": [0, 255, 255],
+	"darkblue": [0, 0, 139],
+	"darkcyan": [0, 139, 139],
+	"darkgoldenrod": [184, 134, 11],
+	"darkgray": [169, 169, 169],
+	"darkgreen": [0, 100, 0],
+	"darkgrey": [169, 169, 169],
+	"darkkhaki": [189, 183, 107],
+	"darkmagenta": [139, 0, 139],
+	"darkolivegreen": [85, 107, 47],
+	"darkorange": [255, 140, 0],
+	"darkorchid": [153, 50, 204],
+	"darkred": [139, 0, 0],
+	"darksalmon": [233, 150, 122],
+	"darkseagreen": [143, 188, 143],
+	"darkslateblue": [72, 61, 139],
+	"darkslategray": [47, 79, 79],
+	"darkslategrey": [47, 79, 79],
+	"darkturquoise": [0, 206, 209],
+	"darkviolet": [148, 0, 211],
+	"deeppink": [255, 20, 147],
+	"deepskyblue": [0, 191, 255],
+	"dimgray": [105, 105, 105],
+	"dimgrey": [105, 105, 105],
+	"dodgerblue": [30, 144, 255],
+	"firebrick": [178, 34, 34],
+	"floralwhite": [255, 250, 240],
+	"forestgreen": [34, 139, 34],
+	"fuchsia": [255, 0, 255],
+	"gainsboro": [220, 220, 220],
+	"ghostwhite": [248, 248, 255],
+	"gold": [255, 215, 0],
+	"goldenrod": [218, 165, 32],
+	"gray": [128, 128, 128],
+	"green": [0, 128, 0],
+	"greenyellow": [173, 255, 47],
+	"grey": [128, 128, 128],
+	"honeydew": [240, 255, 240],
+	"hotpink": [255, 105, 180],
+	"indianred": [205, 92, 92],
+	"indigo": [75, 0, 130],
+	"ivory": [255, 255, 240],
+	"khaki": [240, 230, 140],
+	"lavender": [230, 230, 250],
+	"lavenderblush": [255, 240, 245],
+	"lawngreen": [124, 252, 0],
+	"lemonchiffon": [255, 250, 205],
+	"lightblue": [173, 216, 230],
+	"lightcoral": [240, 128, 128],
+	"lightcyan": [224, 255, 255],
+	"lightgoldenrodyellow": [250, 250, 210],
+	"lightgray": [211, 211, 211],
+	"lightgreen": [144, 238, 144],
+	"lightgrey": [211, 211, 211],
+	"lightpink": [255, 182, 193],
+	"lightsalmon": [255, 160, 122],
+	"lightseagreen": [32, 178, 170],
+	"lightskyblue": [135, 206, 250],
+	"lightslategray": [119, 136, 153],
+	"lightslategrey": [119, 136, 153],
+	"lightsteelblue": [176, 196, 222],
+	"lightyellow": [255, 255, 224],
+	"lime": [0, 255, 0],
+	"limegreen": [50, 205, 50],
+	"linen": [250, 240, 230],
+	"magenta": [255, 0, 255],
+	"maroon": [128, 0, 0],
+	"mediumaquamarine": [102, 205, 170],
+	"mediumblue": [0, 0, 205],
+	"mediumorchid": [186, 85, 211],
+	"mediumpurple": [147, 112, 219],
+	"mediumseagreen": [60, 179, 113],
+	"mediumslateblue": [123, 104, 238],
+	"mediumspringgreen": [0, 250, 154],
+	"mediumturquoise": [72, 209, 204],
+	"mediumvioletred": [199, 21, 133],
+	"midnightblue": [25, 25, 112],
+	"mintcream": [245, 255, 250],
+	"mistyrose": [255, 228, 225],
+	"moccasin": [255, 228, 181],
+	"navajowhite": [255, 222, 173],
+	"navy": [0, 0, 128],
+	"oldlace": [253, 245, 230],
+	"olive": [128, 128, 0],
+	"olivedrab": [107, 142, 35],
+	"orange": [255, 165, 0],
+	"orangered": [255, 69, 0],
+	"orchid": [218, 112, 214],
+	"palegoldenrod": [238, 232, 170],
+	"palegreen": [152, 251, 152],
+	"paleturquoise": [175, 238, 238],
+	"palevioletred": [219, 112, 147],
+	"papayawhip": [255, 239, 213],
+	"peachpuff": [255, 218, 185],
+	"peru": [205, 133, 63],
+	"pink": [255, 192, 203],
+	"plum": [221, 160, 221],
+	"powderblue": [176, 224, 230],
+	"purple": [128, 0, 128],
+	"rebeccapurple": [102, 51, 153],
+	"red": [255, 0, 0],
+	"rosybrown": [188, 143, 143],
+	"royalblue": [65, 105, 225],
+	"saddlebrown": [139, 69, 19],
+	"salmon": [250, 128, 114],
+	"sandybrown": [244, 164, 96],
+	"seagreen": [46, 139, 87],
+	"seashell": [255, 245, 238],
+	"sienna": [160, 82, 45],
+	"silver": [192, 192, 192],
+	"skyblue": [135, 206, 235],
+	"slateblue": [106, 90, 205],
+	"slategray": [112, 128, 144],
+	"slategrey": [112, 128, 144],
+	"snow": [255, 250, 250],
+	"springgreen": [0, 255, 127],
+	"steelblue": [70, 130, 180],
+	"tan": [210, 180, 140],
+	"teal": [0, 128, 128],
+	"thistle": [216, 191, 216],
+	"tomato": [255, 99, 71],
+	"turquoise": [64, 224, 208],
+	"violet": [238, 130, 238],
+	"wheat": [245, 222, 179],
+	"white": [255, 255, 255],
+	"whitesmoke": [245, 245, 245],
+	"yellow": [255, 255, 0],
+	"yellowgreen": [154, 205, 50]
+};
+
+
+/***/ }),
+
 /***/ 6891:
 /***/ ((module) => {
 
@@ -5890,6 +7330,45 @@ module.exports = function (xs, fn) {
 var isArray = Array.isArray || function (xs) {
     return Object.prototype.toString.call(xs) === '[object Array]';
 };
+
+
+/***/ }),
+
+/***/ 8212:
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = function () {
+  // https://mths.be/emoji
+  return /\uD83C\uDFF4\uDB40\uDC67\uDB40\uDC62(?:\uDB40\uDC65\uDB40\uDC6E\uDB40\uDC67|\uDB40\uDC73\uDB40\uDC63\uDB40\uDC74|\uDB40\uDC77\uDB40\uDC6C\uDB40\uDC73)\uDB40\uDC7F|\uD83D\uDC68(?:\uD83C\uDFFC\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFB|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFF\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFE])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFE\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFD])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFD\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFC])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\u200D(?:\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D)?\uD83D\uDC68|(?:\uD83D[\uDC68\uDC69])\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67]))|\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|(?:\uD83D[\uDC68\uDC69])\u200D(?:\uD83D[\uDC66\uDC67])|[\u2695\u2696\u2708]\uFE0F|\uD83D[\uDC66\uDC67]|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|(?:\uD83C\uDFFB\u200D[\u2695\u2696\u2708]|\uD83C\uDFFF\u200D[\u2695\u2696\u2708]|\uD83C\uDFFE\u200D[\u2695\u2696\u2708]|\uD83C\uDFFD\u200D[\u2695\u2696\u2708]|\uD83C\uDFFC\u200D[\u2695\u2696\u2708])\uFE0F|\uD83C\uDFFB\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C[\uDFFB-\uDFFF])|(?:\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)\uD83C\uDFFB|\uD83E\uDDD1(?:\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1(?:\uD83C[\uDFFB-\uDFFF])|\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1)|(?:\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D(?:\uD83D[\uDC68\uDC69]))(?:\uD83C[\uDFFB-\uDFFE])|(?:\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)(?:\uD83C[\uDFFB\uDFFC])|\uD83D\uDC69(?:\uD83C\uDFFE\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFD\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFC\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFD-\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFB\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFC-\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFD\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFC\uDFFE\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\u200D(?:\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D(?:\uD83D[\uDC68\uDC69])|\uD83D[\uDC68\uDC69])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFF\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD]))|\uD83D\uDC69\u200D\uD83D\uDC69\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67]))|(?:\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)(?:\uD83C[\uDFFB-\uDFFD])|\uD83D\uDC69\u200D\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC69\u200D\uD83D\uDC69\u200D(?:\uD83D[\uDC66\uDC67])|(?:\uD83D\uDC41\uFE0F\u200D\uD83D\uDDE8|\uD83D\uDC69(?:\uD83C\uDFFF\u200D[\u2695\u2696\u2708]|\uD83C\uDFFE\u200D[\u2695\u2696\u2708]|\uD83C\uDFFC\u200D[\u2695\u2696\u2708]|\uD83C\uDFFB\u200D[\u2695\u2696\u2708]|\uD83C\uDFFD\u200D[\u2695\u2696\u2708]|\u200D[\u2695\u2696\u2708])|(?:(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)\uFE0F|\uD83D\uDC6F|\uD83E[\uDD3C\uDDDE\uDDDF])\u200D[\u2640\u2642]|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642]|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDB8\uDDB9\uDDCD-\uDDCF\uDDD6-\uDDDD])(?:(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642]|\u200D[\u2640\u2642])|\uD83C\uDFF4\u200D\u2620)\uFE0F|\uD83D\uDC69\u200D\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|\uD83C\uDFF3\uFE0F\u200D\uD83C\uDF08|\uD83D\uDC15\u200D\uD83E\uDDBA|\uD83D\uDC69\u200D\uD83D\uDC66|\uD83D\uDC69\u200D\uD83D\uDC67|\uD83C\uDDFD\uD83C\uDDF0|\uD83C\uDDF4\uD83C\uDDF2|\uD83C\uDDF6\uD83C\uDDE6|[#\*0-9]\uFE0F\u20E3|\uD83C\uDDE7(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEF\uDDF1-\uDDF4\uDDF6-\uDDF9\uDDFB\uDDFC\uDDFE\uDDFF])|\uD83C\uDDF9(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDED\uDDEF-\uDDF4\uDDF7\uDDF9\uDDFB\uDDFC\uDDFF])|\uD83C\uDDEA(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDED\uDDF7-\uDDFA])|\uD83E\uDDD1(?:\uD83C[\uDFFB-\uDFFF])|\uD83C\uDDF7(?:\uD83C[\uDDEA\uDDF4\uDDF8\uDDFA\uDDFC])|\uD83D\uDC69(?:\uD83C[\uDFFB-\uDFFF])|\uD83C\uDDF2(?:\uD83C[\uDDE6\uDDE8-\uDDED\uDDF0-\uDDFF])|\uD83C\uDDE6(?:\uD83C[\uDDE8-\uDDEC\uDDEE\uDDF1\uDDF2\uDDF4\uDDF6-\uDDFA\uDDFC\uDDFD\uDDFF])|\uD83C\uDDF0(?:\uD83C[\uDDEA\uDDEC-\uDDEE\uDDF2\uDDF3\uDDF5\uDDF7\uDDFC\uDDFE\uDDFF])|\uD83C\uDDED(?:\uD83C[\uDDF0\uDDF2\uDDF3\uDDF7\uDDF9\uDDFA])|\uD83C\uDDE9(?:\uD83C[\uDDEA\uDDEC\uDDEF\uDDF0\uDDF2\uDDF4\uDDFF])|\uD83C\uDDFE(?:\uD83C[\uDDEA\uDDF9])|\uD83C\uDDEC(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEE\uDDF1-\uDDF3\uDDF5-\uDDFA\uDDFC\uDDFE])|\uD83C\uDDF8(?:\uD83C[\uDDE6-\uDDEA\uDDEC-\uDDF4\uDDF7-\uDDF9\uDDFB\uDDFD-\uDDFF])|\uD83C\uDDEB(?:\uD83C[\uDDEE-\uDDF0\uDDF2\uDDF4\uDDF7])|\uD83C\uDDF5(?:\uD83C[\uDDE6\uDDEA-\uDDED\uDDF0-\uDDF3\uDDF7-\uDDF9\uDDFC\uDDFE])|\uD83C\uDDFB(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDEE\uDDF3\uDDFA])|\uD83C\uDDF3(?:\uD83C[\uDDE6\uDDE8\uDDEA-\uDDEC\uDDEE\uDDF1\uDDF4\uDDF5\uDDF7\uDDFA\uDDFF])|\uD83C\uDDE8(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDEE\uDDF0-\uDDF5\uDDF7\uDDFA-\uDDFF])|\uD83C\uDDF1(?:\uD83C[\uDDE6-\uDDE8\uDDEE\uDDF0\uDDF7-\uDDFB\uDDFE])|\uD83C\uDDFF(?:\uD83C[\uDDE6\uDDF2\uDDFC])|\uD83C\uDDFC(?:\uD83C[\uDDEB\uDDF8])|\uD83C\uDDFA(?:\uD83C[\uDDE6\uDDEC\uDDF2\uDDF3\uDDF8\uDDFE\uDDFF])|\uD83C\uDDEE(?:\uD83C[\uDDE8-\uDDEA\uDDF1-\uDDF4\uDDF6-\uDDF9])|\uD83C\uDDEF(?:\uD83C[\uDDEA\uDDF2\uDDF4\uDDF5])|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDB8\uDDB9\uDDCD-\uDDCF\uDDD6-\uDDDD])(?:\uD83C[\uDFFB-\uDFFF])|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u261D\u270A-\u270D]|\uD83C[\uDF85\uDFC2\uDFC7]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66\uDC67\uDC6B-\uDC6D\uDC70\uDC72\uDC74-\uDC76\uDC78\uDC7C\uDC83\uDC85\uDCAA\uDD74\uDD7A\uDD90\uDD95\uDD96\uDE4C\uDE4F\uDEC0\uDECC]|\uD83E[\uDD0F\uDD18-\uDD1C\uDD1E\uDD1F\uDD30-\uDD36\uDDB5\uDDB6\uDDBB\uDDD2-\uDDD5])(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u231A\u231B\u23E9-\u23EC\u23F0\u23F3\u25FD\u25FE\u2614\u2615\u2648-\u2653\u267F\u2693\u26A1\u26AA\u26AB\u26BD\u26BE\u26C4\u26C5\u26CE\u26D4\u26EA\u26F2\u26F3\u26F5\u26FA\u26FD\u2705\u270A\u270B\u2728\u274C\u274E\u2753-\u2755\u2757\u2795-\u2797\u27B0\u27BF\u2B1B\u2B1C\u2B50\u2B55]|\uD83C[\uDC04\uDCCF\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE1A\uDE2F\uDE32-\uDE36\uDE38-\uDE3A\uDE50\uDE51\uDF00-\uDF20\uDF2D-\uDF35\uDF37-\uDF7C\uDF7E-\uDF93\uDFA0-\uDFCA\uDFCF-\uDFD3\uDFE0-\uDFF0\uDFF4\uDFF8-\uDFFF]|\uD83D[\uDC00-\uDC3E\uDC40\uDC42-\uDCFC\uDCFF-\uDD3D\uDD4B-\uDD4E\uDD50-\uDD67\uDD7A\uDD95\uDD96\uDDA4\uDDFB-\uDE4F\uDE80-\uDEC5\uDECC\uDED0-\uDED2\uDED5\uDEEB\uDEEC\uDEF4-\uDEFA\uDFE0-\uDFEB]|\uD83E[\uDD0D-\uDD3A\uDD3C-\uDD45\uDD47-\uDD71\uDD73-\uDD76\uDD7A-\uDDA2\uDDA5-\uDDAA\uDDAE-\uDDCA\uDDCD-\uDDFF\uDE70-\uDE73\uDE78-\uDE7A\uDE80-\uDE82\uDE90-\uDE95])|(?:[#\*0-9\xA9\xAE\u203C\u2049\u2122\u2139\u2194-\u2199\u21A9\u21AA\u231A\u231B\u2328\u23CF\u23E9-\u23F3\u23F8-\u23FA\u24C2\u25AA\u25AB\u25B6\u25C0\u25FB-\u25FE\u2600-\u2604\u260E\u2611\u2614\u2615\u2618\u261D\u2620\u2622\u2623\u2626\u262A\u262E\u262F\u2638-\u263A\u2640\u2642\u2648-\u2653\u265F\u2660\u2663\u2665\u2666\u2668\u267B\u267E\u267F\u2692-\u2697\u2699\u269B\u269C\u26A0\u26A1\u26AA\u26AB\u26B0\u26B1\u26BD\u26BE\u26C4\u26C5\u26C8\u26CE\u26CF\u26D1\u26D3\u26D4\u26E9\u26EA\u26F0-\u26F5\u26F7-\u26FA\u26FD\u2702\u2705\u2708-\u270D\u270F\u2712\u2714\u2716\u271D\u2721\u2728\u2733\u2734\u2744\u2747\u274C\u274E\u2753-\u2755\u2757\u2763\u2764\u2795-\u2797\u27A1\u27B0\u27BF\u2934\u2935\u2B05-\u2B07\u2B1B\u2B1C\u2B50\u2B55\u3030\u303D\u3297\u3299]|\uD83C[\uDC04\uDCCF\uDD70\uDD71\uDD7E\uDD7F\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE02\uDE1A\uDE2F\uDE32-\uDE3A\uDE50\uDE51\uDF00-\uDF21\uDF24-\uDF93\uDF96\uDF97\uDF99-\uDF9B\uDF9E-\uDFF0\uDFF3-\uDFF5\uDFF7-\uDFFF]|\uD83D[\uDC00-\uDCFD\uDCFF-\uDD3D\uDD49-\uDD4E\uDD50-\uDD67\uDD6F\uDD70\uDD73-\uDD7A\uDD87\uDD8A-\uDD8D\uDD90\uDD95\uDD96\uDDA4\uDDA5\uDDA8\uDDB1\uDDB2\uDDBC\uDDC2-\uDDC4\uDDD1-\uDDD3\uDDDC-\uDDDE\uDDE1\uDDE3\uDDE8\uDDEF\uDDF3\uDDFA-\uDE4F\uDE80-\uDEC5\uDECB-\uDED2\uDED5\uDEE0-\uDEE5\uDEE9\uDEEB\uDEEC\uDEF0\uDEF3-\uDEFA\uDFE0-\uDFEB]|\uD83E[\uDD0D-\uDD3A\uDD3C-\uDD45\uDD47-\uDD71\uDD73-\uDD76\uDD7A-\uDDA2\uDDA5-\uDDAA\uDDAE-\uDDCA\uDDCD-\uDDFF\uDE70-\uDE73\uDE78-\uDE7A\uDE80-\uDE82\uDE90-\uDE95])\uFE0F|(?:[\u261D\u26F9\u270A-\u270D]|\uD83C[\uDF85\uDFC2-\uDFC4\uDFC7\uDFCA-\uDFCC]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66-\uDC78\uDC7C\uDC81-\uDC83\uDC85-\uDC87\uDC8F\uDC91\uDCAA\uDD74\uDD75\uDD7A\uDD90\uDD95\uDD96\uDE45-\uDE47\uDE4B-\uDE4F\uDEA3\uDEB4-\uDEB6\uDEC0\uDECC]|\uD83E[\uDD0F\uDD18-\uDD1F\uDD26\uDD30-\uDD39\uDD3C-\uDD3E\uDDB5\uDDB6\uDDB8\uDDB9\uDDBB\uDDCD-\uDDCF\uDDD1-\uDDDD])/g;
+};
+
+
+/***/ }),
+
+/***/ 2644:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const { dirname, resolve } = __nccwpck_require__(1017);
+const { readdirSync, statSync } = __nccwpck_require__(7147);
+
+module.exports = function (start, callback) {
+	let dir = resolve('.', start);
+	let tmp, stats = statSync(dir);
+
+	if (!stats.isDirectory()) {
+		dir = dirname(dir);
+	}
+
+	while (true) {
+		tmp = callback(dir, readdirSync(dir));
+		if (tmp) return resolve(dir, tmp);
+		dir = dirname(tmp = dir);
+		if (tmp === dir) break;
+	}
+}
 
 
 /***/ }),
@@ -5948,73 +7427,6 @@ module.exports = function equal(a, b) {
 
 /***/ }),
 
-/***/ 969:
-/***/ ((module) => {
-
-"use strict";
-
-
-module.exports = function (data, opts) {
-    if (!opts) opts = {};
-    if (typeof opts === 'function') opts = { cmp: opts };
-    var cycles = (typeof opts.cycles === 'boolean') ? opts.cycles : false;
-
-    var cmp = opts.cmp && (function (f) {
-        return function (node) {
-            return function (a, b) {
-                var aobj = { key: a, value: node[a] };
-                var bobj = { key: b, value: node[b] };
-                return f(aobj, bobj);
-            };
-        };
-    })(opts.cmp);
-
-    var seen = [];
-    return (function stringify (node) {
-        if (node && node.toJSON && typeof node.toJSON === 'function') {
-            node = node.toJSON();
-        }
-
-        if (node === undefined) return;
-        if (typeof node == 'number') return isFinite(node) ? '' + node : 'null';
-        if (typeof node !== 'object') return JSON.stringify(node);
-
-        var i, out;
-        if (Array.isArray(node)) {
-            out = '[';
-            for (i = 0; i < node.length; i++) {
-                if (i) out += ',';
-                out += stringify(node[i]) || 'null';
-            }
-            return out + ']';
-        }
-
-        if (node === null) return 'null';
-
-        if (seen.indexOf(node) !== -1) {
-            if (cycles) return JSON.stringify('__cycle__');
-            throw new TypeError('Converting circular structure to JSON');
-        }
-
-        var seenIndex = seen.push(node) - 1;
-        var keys = Object.keys(node).sort(cmp && cmp(node));
-        out = '';
-        for (i = 0; i < keys.length; i++) {
-            var key = keys[i];
-            var value = stringify(node[key]);
-
-            if (!value) continue;
-            if (out) out += ',';
-            out += JSON.stringify(key) + ':' + value;
-        }
-        seen.splice(seenIndex, 1);
-        return '{' + out + '}';
-    })(data);
-};
-
-
-/***/ }),
-
 /***/ 6863:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -6025,7 +7437,7 @@ realpath.realpathSync = realpathSync
 realpath.monkeypatch = monkeypatch
 realpath.unmonkeypatch = unmonkeypatch
 
-var fs = __nccwpck_require__(5747)
+var fs = __nccwpck_require__(7147)
 var origRealpath = fs.realpath
 var origRealpathSync = fs.realpathSync
 
@@ -6112,9 +7524,9 @@ function unmonkeypatch () {
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-var pathModule = __nccwpck_require__(5622);
+var pathModule = __nccwpck_require__(1017);
 var isWindows = process.platform === 'win32';
-var fs = __nccwpck_require__(5747);
+var fs = __nccwpck_require__(7147);
 
 // JavaScript implementation of realpath, ported from node pre-v6
 
@@ -6398,6 +7810,35 @@ exports.realpath = function realpath(p, cache, cb) {
 
 /***/ }),
 
+/***/ 351:
+/***/ ((module) => {
+
+"use strict";
+
+// Call this function in a another function to find out the file from
+// which that function was called from. (Inspects the v8 stack trace)
+//
+// Inspired by http://stackoverflow.com/questions/13227489
+module.exports = function getCallerFile(position) {
+    if (position === void 0) { position = 2; }
+    if (position >= Error.stackTraceLimit) {
+        throw new TypeError('getCallerFile(position) requires position be less then Error.stackTraceLimit but position was: `' + position + '` and Error.stackTraceLimit was: `' + Error.stackTraceLimit + '`');
+    }
+    var oldPrepareStackTrace = Error.prepareStackTrace;
+    Error.prepareStackTrace = function (_, stack) { return stack; };
+    var stack = new Error().stack;
+    Error.prepareStackTrace = oldPrepareStackTrace;
+    if (stack !== null && typeof stack === 'object') {
+        // stack[0] holds this file
+        // stack[1] holds where this function was called
+        // stack[2] holds the file we're interested in
+        return stack[position] ? stack[position].getFileName() : undefined;
+    }
+};
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
 /***/ 7625:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -6413,7 +7854,8 @@ function ownProp (obj, field) {
   return Object.prototype.hasOwnProperty.call(obj, field)
 }
 
-var path = __nccwpck_require__(5622)
+var fs = __nccwpck_require__(7147)
+var path = __nccwpck_require__(1017)
 var minimatch = __nccwpck_require__(3973)
 var isAbsolute = __nccwpck_require__(8714)
 var Minimatch = minimatch.Minimatch
@@ -6478,6 +7920,7 @@ function setopts (self, pattern, options) {
   self.stat = !!options.stat
   self.noprocess = !!options.noprocess
   self.absolute = !!options.absolute
+  self.fs = options.fs || fs
 
   self.maxLength = options.maxLength || Infinity
   self.cache = options.cache || Object.create(null)
@@ -6684,21 +8127,20 @@ function childrenIgnored (self, path) {
 
 module.exports = glob
 
-var fs = __nccwpck_require__(5747)
 var rp = __nccwpck_require__(6863)
 var minimatch = __nccwpck_require__(3973)
 var Minimatch = minimatch.Minimatch
 var inherits = __nccwpck_require__(4124)
-var EE = __nccwpck_require__(8614).EventEmitter
-var path = __nccwpck_require__(5622)
-var assert = __nccwpck_require__(2357)
+var EE = (__nccwpck_require__(2361).EventEmitter)
+var path = __nccwpck_require__(1017)
+var assert = __nccwpck_require__(9491)
 var isAbsolute = __nccwpck_require__(8714)
 var globSync = __nccwpck_require__(9010)
 var common = __nccwpck_require__(7625)
 var setopts = common.setopts
 var ownProp = common.ownProp
 var inflight = __nccwpck_require__(2492)
-var util = __nccwpck_require__(1669)
+var util = __nccwpck_require__(3837)
 var childrenIgnored = common.childrenIgnored
 var isIgnored = common.isIgnored
 
@@ -7145,7 +8587,7 @@ Glob.prototype._readdirInGlobStar = function (abs, cb) {
   var lstatcb = inflight(lstatkey, lstatcb_)
 
   if (lstatcb)
-    fs.lstat(abs, lstatcb)
+    self.fs.lstat(abs, lstatcb)
 
   function lstatcb_ (er, lstat) {
     if (er && er.code === 'ENOENT')
@@ -7186,7 +8628,7 @@ Glob.prototype._readdir = function (abs, inGlobStar, cb) {
   }
 
   var self = this
-  fs.readdir(abs, readdirCb(this, abs, cb))
+  self.fs.readdir(abs, readdirCb(this, abs, cb))
 }
 
 function readdirCb (self, abs, cb) {
@@ -7390,13 +8832,13 @@ Glob.prototype._stat = function (f, cb) {
   var self = this
   var statcb = inflight('stat\0' + abs, lstatcb_)
   if (statcb)
-    fs.lstat(abs, statcb)
+    self.fs.lstat(abs, statcb)
 
   function lstatcb_ (er, lstat) {
     if (lstat && lstat.isSymbolicLink()) {
       // If it's a symlink, then treat it as the target, unless
       // the target does not exist, then treat it as a file.
-      return fs.stat(abs, function (er, stat) {
+      return self.fs.stat(abs, function (er, stat) {
         if (er)
           self._stat2(f, abs, null, lstat, cb)
         else
@@ -7440,14 +8882,13 @@ Glob.prototype._stat2 = function (f, abs, er, stat, cb) {
 module.exports = globSync
 globSync.GlobSync = GlobSync
 
-var fs = __nccwpck_require__(5747)
 var rp = __nccwpck_require__(6863)
 var minimatch = __nccwpck_require__(3973)
 var Minimatch = minimatch.Minimatch
-var Glob = __nccwpck_require__(1957).Glob
-var util = __nccwpck_require__(1669)
-var path = __nccwpck_require__(5622)
-var assert = __nccwpck_require__(2357)
+var Glob = (__nccwpck_require__(1957).Glob)
+var util = __nccwpck_require__(3837)
+var path = __nccwpck_require__(1017)
+var assert = __nccwpck_require__(9491)
 var isAbsolute = __nccwpck_require__(8714)
 var common = __nccwpck_require__(7625)
 var setopts = common.setopts
@@ -7685,7 +9126,7 @@ GlobSync.prototype._readdirInGlobStar = function (abs) {
   var lstat
   var stat
   try {
-    lstat = fs.lstatSync(abs)
+    lstat = this.fs.lstatSync(abs)
   } catch (er) {
     if (er.code === 'ENOENT') {
       // lstat failed, doesn't exist
@@ -7722,7 +9163,7 @@ GlobSync.prototype._readdir = function (abs, inGlobStar) {
   }
 
   try {
-    return this._readdirEntries(abs, fs.readdirSync(abs))
+    return this._readdirEntries(abs, this.fs.readdirSync(abs))
   } catch (er) {
     this._readdirError(abs, er)
     return null
@@ -7881,7 +9322,7 @@ GlobSync.prototype._stat = function (f) {
   if (!stat) {
     var lstat
     try {
-      lstat = fs.lstatSync(abs)
+      lstat = this.fs.lstatSync(abs)
     } catch (er) {
       if (er && (er.code === 'ENOENT' || er.code === 'ENOTDIR')) {
         this.statCache[abs] = false
@@ -7891,7 +9332,7 @@ GlobSync.prototype._stat = function (f) {
 
     if (lstat && lstat.isSymbolicLink()) {
       try {
-        stat = fs.statSync(abs)
+        stat = this.fs.statSync(abs)
       } catch (er) {
         stat = lstat
       }
@@ -7990,7 +9431,7 @@ function slice (args) {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 try {
-  var util = __nccwpck_require__(1669);
+  var util = __nccwpck_require__(3837);
   /* istanbul ignore next */
   if (typeof util.inherits !== 'function') throw '';
   module.exports = util.inherits;
@@ -8036,6 +9477,64 @@ if (typeof Object.create === 'function') {
 
 /***/ }),
 
+/***/ 4882:
+/***/ ((module) => {
+
+"use strict";
+/* eslint-disable yoda */
+
+
+const isFullwidthCodePoint = codePoint => {
+	if (Number.isNaN(codePoint)) {
+		return false;
+	}
+
+	// Code points are derived from:
+	// http://www.unix.org/Public/UNIDATA/EastAsianWidth.txt
+	if (
+		codePoint >= 0x1100 && (
+			codePoint <= 0x115F || // Hangul Jamo
+			codePoint === 0x2329 || // LEFT-POINTING ANGLE BRACKET
+			codePoint === 0x232A || // RIGHT-POINTING ANGLE BRACKET
+			// CJK Radicals Supplement .. Enclosed CJK Letters and Months
+			(0x2E80 <= codePoint && codePoint <= 0x3247 && codePoint !== 0x303F) ||
+			// Enclosed CJK Letters and Months .. CJK Unified Ideographs Extension A
+			(0x3250 <= codePoint && codePoint <= 0x4DBF) ||
+			// CJK Unified Ideographs .. Yi Radicals
+			(0x4E00 <= codePoint && codePoint <= 0xA4C6) ||
+			// Hangul Jamo Extended-A
+			(0xA960 <= codePoint && codePoint <= 0xA97C) ||
+			// Hangul Syllables
+			(0xAC00 <= codePoint && codePoint <= 0xD7A3) ||
+			// CJK Compatibility Ideographs
+			(0xF900 <= codePoint && codePoint <= 0xFAFF) ||
+			// Vertical Forms
+			(0xFE10 <= codePoint && codePoint <= 0xFE19) ||
+			// CJK Compatibility Forms .. Small Form Variants
+			(0xFE30 <= codePoint && codePoint <= 0xFE6B) ||
+			// Halfwidth and Fullwidth Forms
+			(0xFF01 <= codePoint && codePoint <= 0xFF60) ||
+			(0xFFE0 <= codePoint && codePoint <= 0xFFE6) ||
+			// Kana Supplement
+			(0x1B000 <= codePoint && codePoint <= 0x1B001) ||
+			// Enclosed Ideographic Supplement
+			(0x1F200 <= codePoint && codePoint <= 0x1F251) ||
+			// CJK Unified Ideographs Extension B .. Tertiary Ideographic Plane
+			(0x20000 <= codePoint && codePoint <= 0x3FFFD)
+		)
+	) {
+		return true;
+	}
+
+	return false;
+};
+
+module.exports = isFullwidthCodePoint;
+module.exports["default"] = isFullwidthCodePoint;
+
+
+/***/ }),
+
 /***/ 2533:
 /***/ ((module) => {
 
@@ -8063,7 +9562,10 @@ traverse.keywords = {
   contains: true,
   additionalProperties: true,
   propertyNames: true,
-  not: true
+  not: true,
+  if: true,
+  then: true,
+  else: true
 };
 
 traverse.arrayKeywords = {
@@ -8074,6 +9576,7 @@ traverse.arrayKeywords = {
 };
 
 traverse.propsKeywords = {
+  $defs: true,
   definitions: true,
   properties: true,
   patternProperties: true,
@@ -8141,7 +9644,7 @@ minimatch.Minimatch = Minimatch
 
 var path = { sep: '/' }
 try {
-  path = __nccwpck_require__(5622)
+  path = __nccwpck_require__(1017)
 } catch (er) {}
 
 var GLOBSTAR = minimatch.GLOBSTAR = Minimatch.GLOBSTAR = {}
@@ -9136,6 +10639,167 @@ function win32(path) {
 module.exports = process.platform === 'win32' ? win32 : posix;
 module.exports.posix = posix;
 module.exports.win32 = win32;
+
+
+/***/ }),
+
+/***/ 9200:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+var fs = __nccwpck_require__(7147),
+  join = (__nccwpck_require__(1017).join),
+  resolve = (__nccwpck_require__(1017).resolve),
+  dirname = (__nccwpck_require__(1017).dirname),
+  defaultOptions = {
+    extensions: ['js', 'json', 'coffee'],
+    recurse: true,
+    rename: function (name) {
+      return name;
+    },
+    visit: function (obj) {
+      return obj;
+    }
+  };
+
+function checkFileInclusion(path, filename, options) {
+  return (
+    // verify file has valid extension
+    (new RegExp('\\.(' + options.extensions.join('|') + ')$', 'i').test(filename)) &&
+
+    // if options.include is a RegExp, evaluate it and make sure the path passes
+    !(options.include && options.include instanceof RegExp && !options.include.test(path)) &&
+
+    // if options.include is a function, evaluate it and make sure the path passes
+    !(options.include && typeof options.include === 'function' && !options.include(path, filename)) &&
+
+    // if options.exclude is a RegExp, evaluate it and make sure the path doesn't pass
+    !(options.exclude && options.exclude instanceof RegExp && options.exclude.test(path)) &&
+
+    // if options.exclude is a function, evaluate it and make sure the path doesn't pass
+    !(options.exclude && typeof options.exclude === 'function' && options.exclude(path, filename))
+  );
+}
+
+function requireDirectory(m, path, options) {
+  var retval = {};
+
+  // path is optional
+  if (path && !options && typeof path !== 'string') {
+    options = path;
+    path = null;
+  }
+
+  // default options
+  options = options || {};
+  for (var prop in defaultOptions) {
+    if (typeof options[prop] === 'undefined') {
+      options[prop] = defaultOptions[prop];
+    }
+  }
+
+  // if no path was passed in, assume the equivelant of __dirname from caller
+  // otherwise, resolve path relative to the equivalent of __dirname
+  path = !path ? dirname(m.filename) : resolve(dirname(m.filename), path);
+
+  // get the path of each file in specified directory, append to current tree node, recurse
+  fs.readdirSync(path).forEach(function (filename) {
+    var joined = join(path, filename),
+      files,
+      key,
+      obj;
+
+    if (fs.statSync(joined).isDirectory() && options.recurse) {
+      // this node is a directory; recurse
+      files = requireDirectory(m, joined, options);
+      // exclude empty directories
+      if (Object.keys(files).length) {
+        retval[options.rename(filename, joined, filename)] = files;
+      }
+    } else {
+      if (joined !== m.filename && checkFileInclusion(joined, filename, options)) {
+        // hash node key shouldn't include file extension
+        key = filename.substring(0, filename.lastIndexOf('.'));
+        obj = m.require(joined);
+        retval[options.rename(key, joined, filename)] = options.visit(obj, joined, filename) || obj;
+      }
+    }
+  });
+
+  return retval;
+}
+
+module.exports = requireDirectory;
+module.exports.defaults = defaultOptions;
+
+
+/***/ }),
+
+/***/ 2577:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+const stripAnsi = __nccwpck_require__(5591);
+const isFullwidthCodePoint = __nccwpck_require__(4882);
+const emojiRegex = __nccwpck_require__(8212);
+
+const stringWidth = string => {
+	if (typeof string !== 'string' || string.length === 0) {
+		return 0;
+	}
+
+	string = stripAnsi(string);
+
+	if (string.length === 0) {
+		return 0;
+	}
+
+	string = string.replace(emojiRegex(), '  ');
+
+	let width = 0;
+
+	for (let i = 0; i < string.length; i++) {
+		const code = string.codePointAt(i);
+
+		// Ignore control characters
+		if (code <= 0x1F || (code >= 0x7F && code <= 0x9F)) {
+			continue;
+		}
+
+		// Ignore combining characters
+		if (code >= 0x300 && code <= 0x36F) {
+			continue;
+		}
+
+		// Surrogates
+		if (code > 0xFFFF) {
+			i++;
+		}
+
+		width += isFullwidthCodePoint(code) ? 2 : 1;
+	}
+
+	return width;
+};
+
+module.exports = stringWidth;
+// TODO: remove this in the next major version
+module.exports["default"] = stringWidth;
+
+
+/***/ }),
+
+/***/ 5591:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+const ansiRegex = __nccwpck_require__(5063);
+
+module.exports = string => typeof string === 'string' ? string.replace(ansiRegex(), '') : string;
 
 
 /***/ }),
@@ -10589,6 +12253,230 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 /***/ }),
 
+/***/ 9824:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+const stringWidth = __nccwpck_require__(2577);
+const stripAnsi = __nccwpck_require__(5591);
+const ansiStyles = __nccwpck_require__(2068);
+
+const ESCAPES = new Set([
+	'\u001B',
+	'\u009B'
+]);
+
+const END_CODE = 39;
+
+const ANSI_ESCAPE_BELL = '\u0007';
+const ANSI_CSI = '[';
+const ANSI_OSC = ']';
+const ANSI_SGR_TERMINATOR = 'm';
+const ANSI_ESCAPE_LINK = `${ANSI_OSC}8;;`;
+
+const wrapAnsi = code => `${ESCAPES.values().next().value}${ANSI_CSI}${code}${ANSI_SGR_TERMINATOR}`;
+const wrapAnsiHyperlink = uri => `${ESCAPES.values().next().value}${ANSI_ESCAPE_LINK}${uri}${ANSI_ESCAPE_BELL}`;
+
+// Calculate the length of words split on ' ', ignoring
+// the extra characters added by ansi escape codes
+const wordLengths = string => string.split(' ').map(character => stringWidth(character));
+
+// Wrap a long word across multiple rows
+// Ansi escape codes do not count towards length
+const wrapWord = (rows, word, columns) => {
+	const characters = [...word];
+
+	let isInsideEscape = false;
+	let isInsideLinkEscape = false;
+	let visible = stringWidth(stripAnsi(rows[rows.length - 1]));
+
+	for (const [index, character] of characters.entries()) {
+		const characterLength = stringWidth(character);
+
+		if (visible + characterLength <= columns) {
+			rows[rows.length - 1] += character;
+		} else {
+			rows.push(character);
+			visible = 0;
+		}
+
+		if (ESCAPES.has(character)) {
+			isInsideEscape = true;
+			isInsideLinkEscape = characters.slice(index + 1).join('').startsWith(ANSI_ESCAPE_LINK);
+		}
+
+		if (isInsideEscape) {
+			if (isInsideLinkEscape) {
+				if (character === ANSI_ESCAPE_BELL) {
+					isInsideEscape = false;
+					isInsideLinkEscape = false;
+				}
+			} else if (character === ANSI_SGR_TERMINATOR) {
+				isInsideEscape = false;
+			}
+
+			continue;
+		}
+
+		visible += characterLength;
+
+		if (visible === columns && index < characters.length - 1) {
+			rows.push('');
+			visible = 0;
+		}
+	}
+
+	// It's possible that the last row we copy over is only
+	// ansi escape characters, handle this edge-case
+	if (!visible && rows[rows.length - 1].length > 0 && rows.length > 1) {
+		rows[rows.length - 2] += rows.pop();
+	}
+};
+
+// Trims spaces from a string ignoring invisible sequences
+const stringVisibleTrimSpacesRight = string => {
+	const words = string.split(' ');
+	let last = words.length;
+
+	while (last > 0) {
+		if (stringWidth(words[last - 1]) > 0) {
+			break;
+		}
+
+		last--;
+	}
+
+	if (last === words.length) {
+		return string;
+	}
+
+	return words.slice(0, last).join(' ') + words.slice(last).join('');
+};
+
+// The wrap-ansi module can be invoked in either 'hard' or 'soft' wrap mode
+//
+// 'hard' will never allow a string to take up more than columns characters
+//
+// 'soft' allows long words to expand past the column length
+const exec = (string, columns, options = {}) => {
+	if (options.trim !== false && string.trim() === '') {
+		return '';
+	}
+
+	let returnValue = '';
+	let escapeCode;
+	let escapeUrl;
+
+	const lengths = wordLengths(string);
+	let rows = [''];
+
+	for (const [index, word] of string.split(' ').entries()) {
+		if (options.trim !== false) {
+			rows[rows.length - 1] = rows[rows.length - 1].trimStart();
+		}
+
+		let rowLength = stringWidth(rows[rows.length - 1]);
+
+		if (index !== 0) {
+			if (rowLength >= columns && (options.wordWrap === false || options.trim === false)) {
+				// If we start with a new word but the current row length equals the length of the columns, add a new row
+				rows.push('');
+				rowLength = 0;
+			}
+
+			if (rowLength > 0 || options.trim === false) {
+				rows[rows.length - 1] += ' ';
+				rowLength++;
+			}
+		}
+
+		// In 'hard' wrap mode, the length of a line is never allowed to extend past 'columns'
+		if (options.hard && lengths[index] > columns) {
+			const remainingColumns = (columns - rowLength);
+			const breaksStartingThisLine = 1 + Math.floor((lengths[index] - remainingColumns - 1) / columns);
+			const breaksStartingNextLine = Math.floor((lengths[index] - 1) / columns);
+			if (breaksStartingNextLine < breaksStartingThisLine) {
+				rows.push('');
+			}
+
+			wrapWord(rows, word, columns);
+			continue;
+		}
+
+		if (rowLength + lengths[index] > columns && rowLength > 0 && lengths[index] > 0) {
+			if (options.wordWrap === false && rowLength < columns) {
+				wrapWord(rows, word, columns);
+				continue;
+			}
+
+			rows.push('');
+		}
+
+		if (rowLength + lengths[index] > columns && options.wordWrap === false) {
+			wrapWord(rows, word, columns);
+			continue;
+		}
+
+		rows[rows.length - 1] += word;
+	}
+
+	if (options.trim !== false) {
+		rows = rows.map(stringVisibleTrimSpacesRight);
+	}
+
+	const pre = [...rows.join('\n')];
+
+	for (const [index, character] of pre.entries()) {
+		returnValue += character;
+
+		if (ESCAPES.has(character)) {
+			const {groups} = new RegExp(`(?:\\${ANSI_CSI}(?<code>\\d+)m|\\${ANSI_ESCAPE_LINK}(?<uri>.*)${ANSI_ESCAPE_BELL})`).exec(pre.slice(index).join('')) || {groups: {}};
+			if (groups.code !== undefined) {
+				const code = Number.parseFloat(groups.code);
+				escapeCode = code === END_CODE ? undefined : code;
+			} else if (groups.uri !== undefined) {
+				escapeUrl = groups.uri.length === 0 ? undefined : groups.uri;
+			}
+		}
+
+		const code = ansiStyles.codes.get(Number(escapeCode));
+
+		if (pre[index + 1] === '\n') {
+			if (escapeUrl) {
+				returnValue += wrapAnsiHyperlink('');
+			}
+
+			if (escapeCode && code) {
+				returnValue += wrapAnsi(code);
+			}
+		} else if (character === '\n') {
+			if (escapeCode && code) {
+				returnValue += wrapAnsi(escapeCode);
+			}
+
+			if (escapeUrl) {
+				returnValue += wrapAnsiHyperlink(escapeUrl);
+			}
+		}
+	}
+
+	return returnValue;
+};
+
+// For each newline, invoke the method separately
+module.exports = (string, columns, options) => {
+	return String(string)
+		.normalize()
+		.replace(/\r\n/g, '\n')
+		.split('\n')
+		.map(line => exec(line, columns, options))
+		.join('\n');
+};
+
+
+/***/ }),
+
 /***/ 2940:
 /***/ ((module) => {
 
@@ -10629,158 +12517,601 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 6835:
-/***/ ((module) => {
+/***/ 3370:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
-module.exports = JSON.parse('{"$schema":"http://json-schema.org/draft-07/schema#","$id":"https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#","description":"Meta-schema for $data reference (JSON Schema extension proposal)","type":"object","required":["$data"],"properties":{"$data":{"type":"string","anyOf":[{"format":"relative-json-pointer"},{"format":"json-pointer"}]}},"additionalProperties":false}');
+
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// Copyright (c) 2011-2020 ETH Zurich.
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const yargs = __importStar(__nccwpck_require__(8822));
+const check_1 = __nccwpck_require__(6409);
+// entry point for the binary version, e.g. when locally running it using `npx`
+// turn no-console es-lint errors off for this file:
+/* eslint no-console: 0 */
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const argv = yargs
+                .usage('Usage: $0 <command> [options]')
+                .command('check', 'Check license headers', function (y) {
+                return y.option('strict', {
+                    description: 'Specifies whether files not covered by the configuration should be treated as errors',
+                    type: 'boolean',
+                    default: false
+                });
+            })
+                .example('$0 check --config config.js', 'Check license headers using configuration stored in config.js')
+                .command('update', 'Update license headers. Currently, only updating "%year%" to the current year is supported')
+                // at least one command is required
+                .demand(1, 'Please specify one of the commands!')
+                .strict()
+                // both command use the following two options:
+                .option('c', {
+                alias: 'config',
+                type: 'string',
+                demand: 'Please specify path to config file',
+                nargs: 1,
+                describe: 'Path to JSON config file',
+                global: true
+            })
+                .option('path', {
+                description: 'Path to working directory',
+                type: 'string',
+                default: process.cwd(),
+                global: true
+            })
+                .help('h')
+                .alias('h', 'help').argv;
+            const path = argv.path;
+            const configPath = argv.c;
+            if (argv._.length === 1 && argv._[0] === 'check') {
+                const strictMode = argv.strict;
+                return check(path, configPath, strictMode);
+            }
+            else {
+                console.error(`unknown command specified, has to be 'check'`);
+                process.exit(1);
+            }
+        }
+        catch (error) {
+            console.error(error);
+            process.exit(1);
+        }
+    });
+}
+function check(path, configPath, strictMode) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const results = yield (0, check_1.checkLicenses)(path, configPath);
+        const errors = (0, check_1.filterFailures)(results);
+        const missedFiles = yield (0, check_1.getUncoveredFiles)(path, configPath);
+        // emit a warning for all missed files:
+        for (const missedFile of missedFiles) {
+            console.warn(`Config does not cover the file '${missedFile}'`);
+        }
+        // emit an error for all erroneous files:
+        for (const error of errors) {
+            console.error(error.message);
+        }
+        if (strictMode) {
+            console.error(`${errors.length} error(s) and ${missedFiles.length} warning(s) found. Warnings are treated as errors.`);
+            process.exit(1);
+        }
+        else if (errors.length !== 0) {
+            console.error(`${errors.length} error(s) found`);
+            process.exit(1);
+        }
+        else {
+            console.info(`${errors.length} error(s) and ${missedFiles.length} warning(s) found.`);
+            process.exit(0);
+        }
+    });
+}
+run();
+
 
 /***/ }),
 
-/***/ 38:
-/***/ ((module) => {
+/***/ 6409:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
-module.exports = JSON.parse('{"$schema":"http://json-schema.org/draft-07/schema#","$id":"http://json-schema.org/draft-07/schema#","title":"Core schema meta-schema","definitions":{"schemaArray":{"type":"array","minItems":1,"items":{"$ref":"#"}},"nonNegativeInteger":{"type":"integer","minimum":0},"nonNegativeIntegerDefault0":{"allOf":[{"$ref":"#/definitions/nonNegativeInteger"},{"default":0}]},"simpleTypes":{"enum":["array","boolean","integer","null","number","object","string"]},"stringArray":{"type":"array","items":{"type":"string"},"uniqueItems":true,"default":[]}},"type":["object","boolean"],"properties":{"$id":{"type":"string","format":"uri-reference"},"$schema":{"type":"string","format":"uri"},"$ref":{"type":"string","format":"uri-reference"},"$comment":{"type":"string"},"title":{"type":"string"},"description":{"type":"string"},"default":true,"readOnly":{"type":"boolean","default":false},"examples":{"type":"array","items":true},"multipleOf":{"type":"number","exclusiveMinimum":0},"maximum":{"type":"number"},"exclusiveMaximum":{"type":"number"},"minimum":{"type":"number"},"exclusiveMinimum":{"type":"number"},"maxLength":{"$ref":"#/definitions/nonNegativeInteger"},"minLength":{"$ref":"#/definitions/nonNegativeIntegerDefault0"},"pattern":{"type":"string","format":"regex"},"additionalItems":{"$ref":"#"},"items":{"anyOf":[{"$ref":"#"},{"$ref":"#/definitions/schemaArray"}],"default":true},"maxItems":{"$ref":"#/definitions/nonNegativeInteger"},"minItems":{"$ref":"#/definitions/nonNegativeIntegerDefault0"},"uniqueItems":{"type":"boolean","default":false},"contains":{"$ref":"#"},"maxProperties":{"$ref":"#/definitions/nonNegativeInteger"},"minProperties":{"$ref":"#/definitions/nonNegativeIntegerDefault0"},"required":{"$ref":"#/definitions/stringArray"},"additionalProperties":{"$ref":"#"},"definitions":{"type":"object","additionalProperties":{"$ref":"#"},"default":{}},"properties":{"type":"object","additionalProperties":{"$ref":"#"},"default":{}},"patternProperties":{"type":"object","additionalProperties":{"$ref":"#"},"propertyNames":{"format":"regex"},"default":{}},"dependencies":{"type":"object","additionalProperties":{"anyOf":[{"$ref":"#"},{"$ref":"#/definitions/stringArray"}]}},"propertyNames":{"$ref":"#"},"const":true,"enum":{"type":"array","items":true,"minItems":1,"uniqueItems":true},"type":{"anyOf":[{"$ref":"#/definitions/simpleTypes"},{"type":"array","items":{"$ref":"#/definitions/simpleTypes"},"minItems":1,"uniqueItems":true}]},"format":{"type":"string"},"contentMediaType":{"type":"string"},"contentEncoding":{"type":"string"},"if":{"$ref":"#"},"then":{"$ref":"#"},"else":{"$ref":"#"},"allOf":{"$ref":"#/definitions/schemaArray"},"anyOf":{"$ref":"#/definitions/schemaArray"},"oneOf":{"$ref":"#/definitions/schemaArray"},"not":{"$ref":"#"}},"default":true}');
+
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// Copyright (c) 2011-2020 ETH Zurich.
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CheckFailure = exports.CheckSuccess = exports.filterFailures = exports.getUncoveredFilesWithConfig = exports.getUncoveredFiles = exports.checkLicensesWithConfig = exports.checkLicenses = void 0;
+const fs = __importStar(__nccwpck_require__(7147));
+const path = __importStar(__nccwpck_require__(1017));
+const find_1 = __nccwpck_require__(3288);
+const parse_1 = __nccwpck_require__(6089);
+const CURRENT_YEAR_IDENTIFIER = '%year%';
+function checkLicenses(cwd, configPath) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const config = yield getConfig(configPath);
+        return checkLicensesWithConfig(cwd, config);
+    });
+}
+exports.checkLicenses = checkLicenses;
+function getConfig(configPath) {
+    const configString = fs.readFileSync(configPath, 'utf8');
+    return (0, parse_1.parseConfig)(configString);
+}
+function checkLicensesWithConfig(cwd, config) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const results = yield Promise.all(config.map(c => checkLicense(cwd, c)));
+        return flatten(results);
+    });
+}
+exports.checkLicensesWithConfig = checkLicensesWithConfig;
+function getUncoveredFiles(cwd, configPath) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const config = yield getConfig(configPath);
+        return getUncoveredFilesWithConfig(cwd, config);
+    });
+}
+exports.getUncoveredFiles = getUncoveredFiles;
+function getUncoveredFilesWithConfig(cwd, config) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // get all files:
+        const allFiles = new Set(yield (0, find_1.findFiles)(cwd, ['**'], []));
+        // get files covered by config:
+        const converedFilesResults = yield Promise.all(config.map(c => getFiles(cwd, c)));
+        const coveredFiles = new Set(flatten(converedFilesResults));
+        const remainingFiles = setminus(allFiles, coveredFiles);
+        return [...remainingFiles];
+    });
+}
+exports.getUncoveredFilesWithConfig = getUncoveredFilesWithConfig;
+function filterFailures(results) {
+    return results.filter(r => !r.success).map(f => f);
+}
+exports.filterFailures = filterFailures;
+function setminus(set1, set2) {
+    const copy = new Set(set1);
+    for (const elem of set2) {
+        copy.delete(elem);
+    }
+    return copy;
+}
+function checkLicense(cwd, licenseConfig) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!licenseConfig.license) {
+            // no license provided
+            return [];
+        }
+        let licensePath;
+        if (path.isAbsolute(licenseConfig.license)) {
+            licensePath = licenseConfig.license;
+        }
+        else {
+            licensePath = path.join(cwd, licenseConfig.license);
+        }
+        const errorMessageGenerator = (file) => `'${file}' does not contain license from '${licensePath}'`;
+        const licenseString = fs.readFileSync(licensePath, 'utf8');
+        const licenseRegex = convertHeaderToRegex(licenseString);
+        const files = yield getFiles(cwd, licenseConfig);
+        return yield Promise.all(files.map(f => contains(f, licenseRegex, errorMessageGenerator)));
+    });
+}
+function getFiles(cwd, licenseConfig) {
+    const excludePatterns = licenseConfig.exclude || [];
+    return (0, find_1.findFiles)(cwd, licenseConfig.include, excludePatterns);
+}
+function convertHeaderToRegex(header) {
+    let modifiedHeader = header;
+    // escape characters that have a special meaning in a regex
+    // taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+    modifiedHeader = modifiedHeader.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+    // replace sequences of the following form to the corresponding regex
+    // "%regexp:\d{x}%" is escaped "%regexp:\\d\{x\}%" where x is a number digits
+    // the corresponding regex to find this escaped sequence is "%regexp:\\\\d\\{(\d+)\\}%"
+    // this character sequence should be replaced by "\d{x}"
+    modifiedHeader = modifiedHeader.replace(/%regexp:\\\\d\\{(\d+)\\}%/g, '\\d{$1}');
+    // replace "%year%" by a regex that matches 4 digits:
+    modifiedHeader = modifiedHeader.replace(CURRENT_YEAR_IDENTIFIER, '\\d{4}');
+    return new RegExp(modifiedHeader);
+}
+function contains(file, regex, errorMessageGenerator) {
+    return new Promise((resolve, reject) => {
+        fs.readFile(file, 'utf8', (err, data) => {
+            if (err == null) {
+                // check whether data contains a match:
+                if (regex.test(data)) {
+                    resolve(new CheckSuccess(file));
+                }
+                else {
+                    resolve(new CheckFailure(file, errorMessageGenerator(file)));
+                }
+            }
+            else {
+                reject(new Error(`Error while reading file '${file}': '${err.message}'`));
+            }
+        });
+    });
+}
+function flatten(matrix) {
+    const res = [];
+    for (const elem of matrix) {
+        res.push(...elem);
+    }
+    return res;
+}
+class CheckSuccess {
+    constructor(filePath) {
+        this.path = filePath;
+    }
+    get success() {
+        return true;
+    }
+    get filePath() {
+        return this.path;
+    }
+}
+exports.CheckSuccess = CheckSuccess;
+class CheckFailure {
+    constructor(filePath, msg) {
+        this.path = filePath;
+        this.msg = msg;
+    }
+    get success() {
+        return false;
+    }
+    get filePath() {
+        return this.path;
+    }
+    get message() {
+        return this.msg;
+    }
+}
+exports.CheckFailure = CheckFailure;
+
 
 /***/ }),
 
-/***/ 2357:
-/***/ ((module) => {
+/***/ 3288:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
-module.exports = require("assert");;
+
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// Copyright (c) 2011-2020 ETH Zurich.
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.findFiles = void 0;
+const path = __importStar(__nccwpck_require__(1017));
+const glob_1 = __nccwpck_require__(1957);
+function findFiles(cwd, includePatterns, excludePatterns) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let includePattern;
+        if (includePatterns.length === 0) {
+            return Promise.resolve([]);
+        }
+        else if (includePatterns.length === 1) {
+            includePattern = includePatterns[0];
+        }
+        else {
+            includePattern = `{${includePatterns.join(',')}}`;
+        }
+        const options = {
+            ignore: excludePatterns,
+            cwd,
+            nodir: true // only return files (no directories)
+        };
+        const files = yield new Promise((resolve, reject) => {
+            (0, glob_1.glob)(includePattern, options, (err, matches) => {
+                if (err == null) {
+                    resolve(matches);
+                }
+                else {
+                    reject(new Error(`scanning files has failed with error '${err.message}'`));
+                }
+            });
+        });
+        // files are relative to cwd, hence join them:
+        return files.map(f => path.join(cwd, f));
+    });
+}
+exports.findFiles = findFiles;
+/*
+async function getFilesRecursively(path: string): Promise<string[]> {
+    const dirContent = await readdir(path);
+    const stats = await Promise.all(dirContent.map(stat));
+    const dirs = stats.filter(stat => stat.isDir);
+    const files = stats.filter(stat => stat.isFile)
+        .map(stat => stat.path);
+
+    const recursiveFiles = await Promise.all(dirs.map(dir => getFilesRecursively(dir.path)))
+        .then(flatten);
+    return files.concat(recursiveFiles);
+}
+
+function readdir(path: string): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+        fs.readdir(path, (err, files) => {
+            if (err == null) {
+                resolve(files);
+            } else {
+                reject(new Error(`reading directory ${path} failed with error ${err.message}`));
+            }
+        });
+    })
+}
+
+function stat(path: string): Promise<Status> {
+    return new Promise((resolve, reject) => {
+        fs.stat(path, (err, stats) => {
+            if (err == null) {
+                resolve({path: path, isDir: stats.isDirectory(), isFile: stats.isFile()});
+            } else {
+                reject(new Error(`getting file status for ${path} failed with error ${err.message}`));
+            }
+        })
+    })
+}
+
+interface Status {
+    path: string;
+    isDir: boolean;
+    isFile: boolean;
+}
+
+function flatten<T>(matrix: T[][]): T[] {
+
+}
+*/
+
 
 /***/ }),
 
-/***/ 8614:
-/***/ ((module) => {
+/***/ 6089:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
-module.exports = require("events");;
+
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// Copyright (c) 2011-2020 ETH Zurich.
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.parseConfig = void 0;
+const ajv_1 = __importDefault(__nccwpck_require__(2426));
+function parseConfig(text) {
+    const ajv = new ajv_1.default();
+    const validate = ajv.compile({
+        type: 'array',
+        items: {
+            type: 'object',
+            required: ['include'],
+            properties: {
+                include: {
+                    type: 'array',
+                    items: {
+                        type: 'string'
+                    }
+                },
+                exclude: {
+                    type: 'array',
+                    items: {
+                        type: 'string'
+                    }
+                },
+                license: {
+                    type: 'string'
+                }
+            }
+        }
+    });
+    let data;
+    try {
+        data = JSON.parse(text);
+    }
+    catch (_a) {
+        return Promise.reject(new Error(`Parsing configuration has failed`));
+    }
+    if (!validate(data)) {
+        return Promise.reject(new Error(`Configuration validation has failed: '${ajv.errorsText(validate.errors)}'`));
+    }
+    return Promise.resolve(data);
+}
+exports.parseConfig = parseConfig;
+
 
 /***/ }),
 
-/***/ 5747:
+/***/ 9167:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("fs");;
+function webpackEmptyContext(req) {
+	var e = new Error("Cannot find module '" + req + "'");
+	e.code = 'MODULE_NOT_FOUND';
+	throw e;
+}
+webpackEmptyContext.keys = () => ([]);
+webpackEmptyContext.resolve = webpackEmptyContext;
+webpackEmptyContext.id = 9167;
+module.exports = webpackEmptyContext;
 
 /***/ }),
 
-/***/ 5622:
+/***/ 5977:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("path");;
+function webpackEmptyContext(req) {
+	var e = new Error("Cannot find module '" + req + "'");
+	e.code = 'MODULE_NOT_FOUND';
+	throw e;
+}
+webpackEmptyContext.keys = () => ([]);
+webpackEmptyContext.resolve = webpackEmptyContext;
+webpackEmptyContext.id = 5977;
+module.exports = webpackEmptyContext;
 
 /***/ }),
 
-/***/ 1669:
+/***/ 4907:
+/***/ ((module) => {
+
+function webpackEmptyContext(req) {
+	var e = new Error("Cannot find module '" + req + "'");
+	e.code = 'MODULE_NOT_FOUND';
+	throw e;
+}
+webpackEmptyContext.keys = () => ([]);
+webpackEmptyContext.resolve = webpackEmptyContext;
+webpackEmptyContext.id = 4907;
+module.exports = webpackEmptyContext;
+
+/***/ }),
+
+/***/ 9491:
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("util");;
+module.exports = require("assert");
 
-/***/ })
+/***/ }),
 
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __nccwpck_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		var threw = true;
-/******/ 		try {
-/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
-/******/ 			threw = false;
-/******/ 		} finally {
-/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
-/******/ 		}
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__nccwpck_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__nccwpck_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__nccwpck_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/compat */
-/******/ 	
-/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";/************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
+/***/ 2361:
+/***/ ((module) => {
+
 "use strict";
-// ESM COMPAT FLAG
-__nccwpck_require__.r(__webpack_exports__);
+module.exports = require("events");
 
-// NAMESPACE OBJECT: ./node_modules/yargs/index.mjs
-var yargs_namespaceObject = {};
-__nccwpck_require__.r(yargs_namespaceObject);
+/***/ }),
 
-// EXTERNAL MODULE: external "assert"
-var external_assert_ = __nccwpck_require__(2357);
-;// CONCATENATED MODULE: ./node_modules/cliui/build/lib/index.js
+/***/ 7147:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs");
+
+/***/ }),
+
+/***/ 1017:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("path");
+
+/***/ }),
+
+/***/ 3837:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("util");
+
+/***/ }),
+
+/***/ 7059:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
 
 const align = {
     right: alignRight,
     center: alignCenter
 };
-const lib_top = 0;
+const top = 0;
 const right = 1;
 const bottom = 2;
 const left = 3;
@@ -10953,7 +13284,7 @@ class UI {
             }
             // add top and bottom padding.
             if (col.padding) {
-                wrapped.unshift(...new Array(col.padding[lib_top] || 0).fill(''));
+                wrapped.unshift(...new Array(col.padding[top] || 0).fill(''));
                 wrapped.push(...new Array(col.padding[bottom] || 0).fill(''));
             }
             wrapped.forEach((str, r) => {
@@ -11063,1313 +13394,33 @@ function cliui(opts, _mixin) {
     });
 }
 
-;// CONCATENATED MODULE: ./node_modules/cliui/build/lib/string-utils.js
-// Minimal replacement for ansi string helpers "wrap-ansi" and "strip-ansi".
-// to facilitate ESM and Deno modules.
-// TODO: look at porting https://www.npmjs.com/package/wrap-ansi to ESM.
-// The npm application
-// Copyright (c) npm, Inc. and Contributors
-// Licensed on the terms of The Artistic License 2.0
-// See: https://github.com/npm/cli/blob/4c65cd952bc8627811735bea76b9b110cc4fc80e/lib/utils/ansi-trim.js
-const ansi = new RegExp('\x1b(?:\\[(?:\\d+[ABCDEFGJKSTm]|\\d+;\\d+[Hfm]|' +
-    '\\d+;\\d+;\\d+m|6n|s|u|\\?25[lh])|\\w)', 'g');
-function stripAnsi(str) {
-    return str.replace(ansi, '');
-}
-function wrap(str, width) {
-    const [start, end] = str.match(ansi) || ['', ''];
-    str = stripAnsi(str);
-    let wrapped = '';
-    for (let i = 0; i < str.length; i++) {
-        if (i !== 0 && (i % width) === 0) {
-            wrapped += '\n';
-        }
-        wrapped += str.charAt(i);
-    }
-    if (start && end) {
-        wrapped = `${start}${wrapped}${end}`;
-    }
-    return wrapped;
-}
-
-;// CONCATENATED MODULE: ./node_modules/cliui/index.mjs
 // Bootstrap cliui with CommonJS dependencies:
-
-
-
-function ui (opts) {
-  return cliui(opts, {
-    stringWidth: (str) => {
-      return [...str].length
-    },
-    stripAnsi: stripAnsi,
-    wrap: wrap
-  })
-}
-
-// EXTERNAL MODULE: external "path"
-var external_path_ = __nccwpck_require__(5622);
-// EXTERNAL MODULE: external "fs"
-var external_fs_ = __nccwpck_require__(5747);
-;// CONCATENATED MODULE: ./node_modules/escalade/sync/index.mjs
-
-
-
-/* harmony default export */ function sync(start, callback) {
-	let dir = (0,external_path_.resolve)('.', start);
-	let tmp, stats = (0,external_fs_.statSync)(dir);
-
-	if (!stats.isDirectory()) {
-		dir = (0,external_path_.dirname)(dir);
-	}
-
-	while (true) {
-		tmp = callback(dir, (0,external_fs_.readdirSync)(dir));
-		if (tmp) return (0,external_path_.resolve)(dir, tmp);
-		dir = (0,external_path_.dirname)(tmp = dir);
-		if (tmp === dir) break;
-	}
-}
-
-// EXTERNAL MODULE: external "util"
-var external_util_ = __nccwpck_require__(1669);
-;// CONCATENATED MODULE: external "url"
-const external_url_namespaceObject = require("url");;
-;// CONCATENATED MODULE: ./node_modules/yargs-parser/build/lib/string-utils.js
-function camelCase(str) {
-    // Handle the case where an argument is provided as camel case, e.g., fooBar.
-    // by ensuring that the string isn't already mixed case:
-    const isCamelCase = str !== str.toLowerCase() && str !== str.toUpperCase();
-    if (!isCamelCase) {
-        str = str.toLocaleLowerCase();
-    }
-    if (str.indexOf('-') === -1 && str.indexOf('_') === -1) {
-        return str;
-    }
-    else {
-        let camelcase = '';
-        let nextChrUpper = false;
-        const leadingHyphens = str.match(/^-+/);
-        for (let i = leadingHyphens ? leadingHyphens[0].length : 0; i < str.length; i++) {
-            let chr = str.charAt(i);
-            if (nextChrUpper) {
-                nextChrUpper = false;
-                chr = chr.toLocaleUpperCase();
-            }
-            if (i !== 0 && (chr === '-' || chr === '_')) {
-                nextChrUpper = true;
-            }
-            else if (chr !== '-' && chr !== '_') {
-                camelcase += chr;
-            }
-        }
-        return camelcase;
-    }
-}
-function decamelize(str, joinString) {
-    const lowercase = str.toLocaleLowerCase();
-    joinString = joinString || '-';
-    let notCamelcase = '';
-    for (let i = 0; i < str.length; i++) {
-        const chrLower = lowercase.charAt(i);
-        const chrString = str.charAt(i);
-        if (chrLower !== chrString && i > 0) {
-            notCamelcase += `${joinString}${lowercase.charAt(i)}`;
-        }
-        else {
-            notCamelcase += chrString;
-        }
-    }
-    return notCamelcase;
-}
-function looksLikeNumber(x) {
-    if (x === null || x === undefined)
-        return false;
-    // if loaded from config, may already be a number.
-    if (typeof x === 'number')
-        return true;
-    // hexadecimal.
-    if (/^0x[0-9a-f]+$/i.test(x))
-        return true;
-    // don't treat 0123 as a number; as it drops the leading '0'.
-    if (x.length > 1 && x[0] === '0')
-        return false;
-    return /^[-]?(?:\d+(?:\.\d*)?|\.\d+)(e[-+]?\d+)?$/.test(x);
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs-parser/build/lib/tokenize-arg-string.js
-// take an un-split argv string and tokenize it.
-function tokenizeArgString(argString) {
-    if (Array.isArray(argString)) {
-        return argString.map(e => typeof e !== 'string' ? e + '' : e);
-    }
-    argString = argString.trim();
-    let i = 0;
-    let prevC = null;
-    let c = null;
-    let opening = null;
-    const args = [];
-    for (let ii = 0; ii < argString.length; ii++) {
-        prevC = c;
-        c = argString.charAt(ii);
-        // split on spaces unless we're in quotes.
-        if (c === ' ' && !opening) {
-            if (!(prevC === ' ')) {
-                i++;
-            }
-            continue;
-        }
-        // don't split the string if we're in matching
-        // opening or closing single and double quotes.
-        if (c === opening) {
-            opening = null;
-        }
-        else if ((c === "'" || c === '"') && !opening) {
-            opening = c;
-        }
-        if (!args[i])
-            args[i] = '';
-        args[i] += c;
-    }
-    return args;
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs-parser/build/lib/yargs-parser.js
-
-
-let yargs_parser_mixin;
-class YargsParser {
-    constructor(_mixin) {
-        yargs_parser_mixin = _mixin;
-    }
-    parse(argsInput, options) {
-        const opts = Object.assign({
-            alias: undefined,
-            array: undefined,
-            boolean: undefined,
-            config: undefined,
-            configObjects: undefined,
-            configuration: undefined,
-            coerce: undefined,
-            count: undefined,
-            default: undefined,
-            envPrefix: undefined,
-            narg: undefined,
-            normalize: undefined,
-            string: undefined,
-            number: undefined,
-            __: undefined,
-            key: undefined
-        }, options);
-        // allow a string argument to be passed in rather
-        // than an argv array.
-        const args = tokenizeArgString(argsInput);
-        // aliases might have transitive relationships, normalize this.
-        const aliases = combineAliases(Object.assign(Object.create(null), opts.alias));
-        const configuration = Object.assign({
-            'boolean-negation': true,
-            'camel-case-expansion': true,
-            'combine-arrays': false,
-            'dot-notation': true,
-            'duplicate-arguments-array': true,
-            'flatten-duplicate-arrays': true,
-            'greedy-arrays': true,
-            'halt-at-non-option': false,
-            'nargs-eats-options': false,
-            'negation-prefix': 'no-',
-            'parse-numbers': true,
-            'parse-positional-numbers': true,
-            'populate--': false,
-            'set-placeholder-key': false,
-            'short-option-groups': true,
-            'strip-aliased': false,
-            'strip-dashed': false,
-            'unknown-options-as-args': false
-        }, opts.configuration);
-        const defaults = Object.assign(Object.create(null), opts.default);
-        const configObjects = opts.configObjects || [];
-        const envPrefix = opts.envPrefix;
-        const notFlagsOption = configuration['populate--'];
-        const notFlagsArgv = notFlagsOption ? '--' : '_';
-        const newAliases = Object.create(null);
-        const defaulted = Object.create(null);
-        // allow a i18n handler to be passed in, default to a fake one (util.format).
-        const __ = opts.__ || yargs_parser_mixin.format;
-        const flags = {
-            aliases: Object.create(null),
-            arrays: Object.create(null),
-            bools: Object.create(null),
-            strings: Object.create(null),
-            numbers: Object.create(null),
-            counts: Object.create(null),
-            normalize: Object.create(null),
-            configs: Object.create(null),
-            nargs: Object.create(null),
-            coercions: Object.create(null),
-            keys: []
-        };
-        const negative = /^-([0-9]+(\.[0-9]+)?|\.[0-9]+)$/;
-        const negatedBoolean = new RegExp('^--' + configuration['negation-prefix'] + '(.+)');
-        [].concat(opts.array || []).filter(Boolean).forEach(function (opt) {
-            const key = typeof opt === 'object' ? opt.key : opt;
-            // assign to flags[bools|strings|numbers]
-            const assignment = Object.keys(opt).map(function (key) {
-                const arrayFlagKeys = {
-                    boolean: 'bools',
-                    string: 'strings',
-                    number: 'numbers'
-                };
-                return arrayFlagKeys[key];
-            }).filter(Boolean).pop();
-            // assign key to be coerced
-            if (assignment) {
-                flags[assignment][key] = true;
-            }
-            flags.arrays[key] = true;
-            flags.keys.push(key);
-        });
-        [].concat(opts.boolean || []).filter(Boolean).forEach(function (key) {
-            flags.bools[key] = true;
-            flags.keys.push(key);
-        });
-        [].concat(opts.string || []).filter(Boolean).forEach(function (key) {
-            flags.strings[key] = true;
-            flags.keys.push(key);
-        });
-        [].concat(opts.number || []).filter(Boolean).forEach(function (key) {
-            flags.numbers[key] = true;
-            flags.keys.push(key);
-        });
-        [].concat(opts.count || []).filter(Boolean).forEach(function (key) {
-            flags.counts[key] = true;
-            flags.keys.push(key);
-        });
-        [].concat(opts.normalize || []).filter(Boolean).forEach(function (key) {
-            flags.normalize[key] = true;
-            flags.keys.push(key);
-        });
-        if (typeof opts.narg === 'object') {
-            Object.entries(opts.narg).forEach(([key, value]) => {
-                if (typeof value === 'number') {
-                    flags.nargs[key] = value;
-                    flags.keys.push(key);
-                }
-            });
-        }
-        if (typeof opts.coerce === 'object') {
-            Object.entries(opts.coerce).forEach(([key, value]) => {
-                if (typeof value === 'function') {
-                    flags.coercions[key] = value;
-                    flags.keys.push(key);
-                }
-            });
-        }
-        if (typeof opts.config !== 'undefined') {
-            if (Array.isArray(opts.config) || typeof opts.config === 'string') {
-                ;
-                [].concat(opts.config).filter(Boolean).forEach(function (key) {
-                    flags.configs[key] = true;
-                });
-            }
-            else if (typeof opts.config === 'object') {
-                Object.entries(opts.config).forEach(([key, value]) => {
-                    if (typeof value === 'boolean' || typeof value === 'function') {
-                        flags.configs[key] = value;
-                    }
-                });
-            }
-        }
-        // create a lookup table that takes into account all
-        // combinations of aliases: {f: ['foo'], foo: ['f']}
-        extendAliases(opts.key, aliases, opts.default, flags.arrays);
-        // apply default values to all aliases.
-        Object.keys(defaults).forEach(function (key) {
-            (flags.aliases[key] || []).forEach(function (alias) {
-                defaults[alias] = defaults[key];
-            });
-        });
-        let error = null;
-        checkConfiguration();
-        let notFlags = [];
-        const argv = Object.assign(Object.create(null), { _: [] });
-        // TODO(bcoe): for the first pass at removing object prototype  we didn't
-        // remove all prototypes from objects returned by this API, we might want
-        // to gradually move towards doing so.
-        const argvReturn = {};
-        for (let i = 0; i < args.length; i++) {
-            const arg = args[i];
-            let broken;
-            let key;
-            let letters;
-            let m;
-            let next;
-            let value;
-            // any unknown option (except for end-of-options, "--")
-            if (arg !== '--' && isUnknownOptionAsArg(arg)) {
-                pushPositional(arg);
-                // ---, ---=, ----, etc,
-            }
-            else if (arg.match(/---+(=|$)/)) {
-                // options without key name are invalid.
-                pushPositional(arg);
-                continue;
-                // -- separated by =
-            }
-            else if (arg.match(/^--.+=/) || (!configuration['short-option-groups'] && arg.match(/^-.+=/))) {
-                // Using [\s\S] instead of . because js doesn't support the
-                // 'dotall' regex modifier. See:
-                // http://stackoverflow.com/a/1068308/13216
-                m = arg.match(/^--?([^=]+)=([\s\S]*)$/);
-                // arrays format = '--f=a b c'
-                if (m !== null && Array.isArray(m) && m.length >= 3) {
-                    if (checkAllAliases(m[1], flags.arrays)) {
-                        i = eatArray(i, m[1], args, m[2]);
-                    }
-                    else if (checkAllAliases(m[1], flags.nargs) !== false) {
-                        // nargs format = '--f=monkey washing cat'
-                        i = eatNargs(i, m[1], args, m[2]);
-                    }
-                    else {
-                        setArg(m[1], m[2]);
-                    }
-                }
-            }
-            else if (arg.match(negatedBoolean) && configuration['boolean-negation']) {
-                m = arg.match(negatedBoolean);
-                if (m !== null && Array.isArray(m) && m.length >= 2) {
-                    key = m[1];
-                    setArg(key, checkAllAliases(key, flags.arrays) ? [false] : false);
-                }
-                // -- separated by space.
-            }
-            else if (arg.match(/^--.+/) || (!configuration['short-option-groups'] && arg.match(/^-[^-]+/))) {
-                m = arg.match(/^--?(.+)/);
-                if (m !== null && Array.isArray(m) && m.length >= 2) {
-                    key = m[1];
-                    if (checkAllAliases(key, flags.arrays)) {
-                        // array format = '--foo a b c'
-                        i = eatArray(i, key, args);
-                    }
-                    else if (checkAllAliases(key, flags.nargs) !== false) {
-                        // nargs format = '--foo a b c'
-                        // should be truthy even if: flags.nargs[key] === 0
-                        i = eatNargs(i, key, args);
-                    }
-                    else {
-                        next = args[i + 1];
-                        if (next !== undefined && (!next.match(/^-/) ||
-                            next.match(negative)) &&
-                            !checkAllAliases(key, flags.bools) &&
-                            !checkAllAliases(key, flags.counts)) {
-                            setArg(key, next);
-                            i++;
-                        }
-                        else if (/^(true|false)$/.test(next)) {
-                            setArg(key, next);
-                            i++;
-                        }
-                        else {
-                            setArg(key, defaultValue(key));
-                        }
-                    }
-                }
-                // dot-notation flag separated by '='.
-            }
-            else if (arg.match(/^-.\..+=/)) {
-                m = arg.match(/^-([^=]+)=([\s\S]*)$/);
-                if (m !== null && Array.isArray(m) && m.length >= 3) {
-                    setArg(m[1], m[2]);
-                }
-                // dot-notation flag separated by space.
-            }
-            else if (arg.match(/^-.\..+/) && !arg.match(negative)) {
-                next = args[i + 1];
-                m = arg.match(/^-(.\..+)/);
-                if (m !== null && Array.isArray(m) && m.length >= 2) {
-                    key = m[1];
-                    if (next !== undefined && !next.match(/^-/) &&
-                        !checkAllAliases(key, flags.bools) &&
-                        !checkAllAliases(key, flags.counts)) {
-                        setArg(key, next);
-                        i++;
-                    }
-                    else {
-                        setArg(key, defaultValue(key));
-                    }
-                }
-            }
-            else if (arg.match(/^-[^-]+/) && !arg.match(negative)) {
-                letters = arg.slice(1, -1).split('');
-                broken = false;
-                for (let j = 0; j < letters.length; j++) {
-                    next = arg.slice(j + 2);
-                    if (letters[j + 1] && letters[j + 1] === '=') {
-                        value = arg.slice(j + 3);
-                        key = letters[j];
-                        if (checkAllAliases(key, flags.arrays)) {
-                            // array format = '-f=a b c'
-                            i = eatArray(i, key, args, value);
-                        }
-                        else if (checkAllAliases(key, flags.nargs) !== false) {
-                            // nargs format = '-f=monkey washing cat'
-                            i = eatNargs(i, key, args, value);
-                        }
-                        else {
-                            setArg(key, value);
-                        }
-                        broken = true;
-                        break;
-                    }
-                    if (next === '-') {
-                        setArg(letters[j], next);
-                        continue;
-                    }
-                    // current letter is an alphabetic character and next value is a number
-                    if (/[A-Za-z]/.test(letters[j]) &&
-                        /^-?\d+(\.\d*)?(e-?\d+)?$/.test(next) &&
-                        checkAllAliases(next, flags.bools) === false) {
-                        setArg(letters[j], next);
-                        broken = true;
-                        break;
-                    }
-                    if (letters[j + 1] && letters[j + 1].match(/\W/)) {
-                        setArg(letters[j], next);
-                        broken = true;
-                        break;
-                    }
-                    else {
-                        setArg(letters[j], defaultValue(letters[j]));
-                    }
-                }
-                key = arg.slice(-1)[0];
-                if (!broken && key !== '-') {
-                    if (checkAllAliases(key, flags.arrays)) {
-                        // array format = '-f a b c'
-                        i = eatArray(i, key, args);
-                    }
-                    else if (checkAllAliases(key, flags.nargs) !== false) {
-                        // nargs format = '-f a b c'
-                        // should be truthy even if: flags.nargs[key] === 0
-                        i = eatNargs(i, key, args);
-                    }
-                    else {
-                        next = args[i + 1];
-                        if (next !== undefined && (!/^(-|--)[^-]/.test(next) ||
-                            next.match(negative)) &&
-                            !checkAllAliases(key, flags.bools) &&
-                            !checkAllAliases(key, flags.counts)) {
-                            setArg(key, next);
-                            i++;
-                        }
-                        else if (/^(true|false)$/.test(next)) {
-                            setArg(key, next);
-                            i++;
-                        }
-                        else {
-                            setArg(key, defaultValue(key));
-                        }
-                    }
-                }
-            }
-            else if (arg.match(/^-[0-9]$/) &&
-                arg.match(negative) &&
-                checkAllAliases(arg.slice(1), flags.bools)) {
-                // single-digit boolean alias, e.g: xargs -0
-                key = arg.slice(1);
-                setArg(key, defaultValue(key));
-            }
-            else if (arg === '--') {
-                notFlags = args.slice(i + 1);
-                break;
-            }
-            else if (configuration['halt-at-non-option']) {
-                notFlags = args.slice(i);
-                break;
-            }
-            else {
-                pushPositional(arg);
-            }
-        }
-        // order of precedence:
-        // 1. command line arg
-        // 2. value from env var
-        // 3. value from config file
-        // 4. value from config objects
-        // 5. configured default value
-        applyEnvVars(argv, true); // special case: check env vars that point to config file
-        applyEnvVars(argv, false);
-        setConfig(argv);
-        setConfigObjects();
-        applyDefaultsAndAliases(argv, flags.aliases, defaults, true);
-        applyCoercions(argv);
-        if (configuration['set-placeholder-key'])
-            setPlaceholderKeys(argv);
-        // for any counts either not in args or without an explicit default, set to 0
-        Object.keys(flags.counts).forEach(function (key) {
-            if (!hasKey(argv, key.split('.')))
-                setArg(key, 0);
-        });
-        // '--' defaults to undefined.
-        if (notFlagsOption && notFlags.length)
-            argv[notFlagsArgv] = [];
-        notFlags.forEach(function (key) {
-            argv[notFlagsArgv].push(key);
-        });
-        if (configuration['camel-case-expansion'] && configuration['strip-dashed']) {
-            Object.keys(argv).filter(key => key !== '--' && key.includes('-')).forEach(key => {
-                delete argv[key];
-            });
-        }
-        if (configuration['strip-aliased']) {
-            ;
-            [].concat(...Object.keys(aliases).map(k => aliases[k])).forEach(alias => {
-                if (configuration['camel-case-expansion'] && alias.includes('-')) {
-                    delete argv[alias.split('.').map(prop => camelCase(prop)).join('.')];
-                }
-                delete argv[alias];
-            });
-        }
-        // Push argument into positional array, applying numeric coercion:
-        function pushPositional(arg) {
-            const maybeCoercedNumber = maybeCoerceNumber('_', arg);
-            if (typeof maybeCoercedNumber === 'string' || typeof maybeCoercedNumber === 'number') {
-                argv._.push(maybeCoercedNumber);
-            }
-        }
-        // how many arguments should we consume, based
-        // on the nargs option?
-        function eatNargs(i, key, args, argAfterEqualSign) {
-            let ii;
-            let toEat = checkAllAliases(key, flags.nargs);
-            // NaN has a special meaning for the array type, indicating that one or
-            // more values are expected.
-            toEat = typeof toEat !== 'number' || isNaN(toEat) ? 1 : toEat;
-            if (toEat === 0) {
-                if (!isUndefined(argAfterEqualSign)) {
-                    error = Error(__('Argument unexpected for: %s', key));
-                }
-                setArg(key, defaultValue(key));
-                return i;
-            }
-            let available = isUndefined(argAfterEqualSign) ? 0 : 1;
-            if (configuration['nargs-eats-options']) {
-                // classic behavior, yargs eats positional and dash arguments.
-                if (args.length - (i + 1) + available < toEat) {
-                    error = Error(__('Not enough arguments following: %s', key));
-                }
-                available = toEat;
-            }
-            else {
-                // nargs will not consume flag arguments, e.g., -abc, --foo,
-                // and terminates when one is observed.
-                for (ii = i + 1; ii < args.length; ii++) {
-                    if (!args[ii].match(/^-[^0-9]/) || args[ii].match(negative) || isUnknownOptionAsArg(args[ii]))
-                        available++;
-                    else
-                        break;
-                }
-                if (available < toEat)
-                    error = Error(__('Not enough arguments following: %s', key));
-            }
-            let consumed = Math.min(available, toEat);
-            if (!isUndefined(argAfterEqualSign) && consumed > 0) {
-                setArg(key, argAfterEqualSign);
-                consumed--;
-            }
-            for (ii = i + 1; ii < (consumed + i + 1); ii++) {
-                setArg(key, args[ii]);
-            }
-            return (i + consumed);
-        }
-        // if an option is an array, eat all non-hyphenated arguments
-        // following it... YUM!
-        // e.g., --foo apple banana cat becomes ["apple", "banana", "cat"]
-        function eatArray(i, key, args, argAfterEqualSign) {
-            let argsToSet = [];
-            let next = argAfterEqualSign || args[i + 1];
-            // If both array and nargs are configured, enforce the nargs count:
-            const nargsCount = checkAllAliases(key, flags.nargs);
-            if (checkAllAliases(key, flags.bools) && !(/^(true|false)$/.test(next))) {
-                argsToSet.push(true);
-            }
-            else if (isUndefined(next) ||
-                (isUndefined(argAfterEqualSign) && /^-/.test(next) && !negative.test(next) && !isUnknownOptionAsArg(next))) {
-                // for keys without value ==> argsToSet remains an empty []
-                // set user default value, if available
-                if (defaults[key] !== undefined) {
-                    const defVal = defaults[key];
-                    argsToSet = Array.isArray(defVal) ? defVal : [defVal];
-                }
-            }
-            else {
-                // value in --option=value is eaten as is
-                if (!isUndefined(argAfterEqualSign)) {
-                    argsToSet.push(processValue(key, argAfterEqualSign));
-                }
-                for (let ii = i + 1; ii < args.length; ii++) {
-                    if ((!configuration['greedy-arrays'] && argsToSet.length > 0) ||
-                        (nargsCount && typeof nargsCount === 'number' && argsToSet.length >= nargsCount))
-                        break;
-                    next = args[ii];
-                    if (/^-/.test(next) && !negative.test(next) && !isUnknownOptionAsArg(next))
-                        break;
-                    i = ii;
-                    argsToSet.push(processValue(key, next));
-                }
-            }
-            // If both array and nargs are configured, create an error if less than
-            // nargs positionals were found. NaN has special meaning, indicating
-            // that at least one value is required (more are okay).
-            if (typeof nargsCount === 'number' && ((nargsCount && argsToSet.length < nargsCount) ||
-                (isNaN(nargsCount) && argsToSet.length === 0))) {
-                error = Error(__('Not enough arguments following: %s', key));
-            }
-            setArg(key, argsToSet);
-            return i;
-        }
-        function setArg(key, val) {
-            if (/-/.test(key) && configuration['camel-case-expansion']) {
-                const alias = key.split('.').map(function (prop) {
-                    return camelCase(prop);
-                }).join('.');
-                addNewAlias(key, alias);
-            }
-            const value = processValue(key, val);
-            const splitKey = key.split('.');
-            setKey(argv, splitKey, value);
-            // handle populating aliases of the full key
-            if (flags.aliases[key]) {
-                flags.aliases[key].forEach(function (x) {
-                    const keyProperties = x.split('.');
-                    setKey(argv, keyProperties, value);
-                });
-            }
-            // handle populating aliases of the first element of the dot-notation key
-            if (splitKey.length > 1 && configuration['dot-notation']) {
-                ;
-                (flags.aliases[splitKey[0]] || []).forEach(function (x) {
-                    let keyProperties = x.split('.');
-                    // expand alias with nested objects in key
-                    const a = [].concat(splitKey);
-                    a.shift(); // nuke the old key.
-                    keyProperties = keyProperties.concat(a);
-                    // populate alias only if is not already an alias of the full key
-                    // (already populated above)
-                    if (!(flags.aliases[key] || []).includes(keyProperties.join('.'))) {
-                        setKey(argv, keyProperties, value);
-                    }
-                });
-            }
-            // Set normalize getter and setter when key is in 'normalize' but isn't an array
-            if (checkAllAliases(key, flags.normalize) && !checkAllAliases(key, flags.arrays)) {
-                const keys = [key].concat(flags.aliases[key] || []);
-                keys.forEach(function (key) {
-                    Object.defineProperty(argvReturn, key, {
-                        enumerable: true,
-                        get() {
-                            return val;
-                        },
-                        set(value) {
-                            val = typeof value === 'string' ? yargs_parser_mixin.normalize(value) : value;
-                        }
-                    });
-                });
-            }
-        }
-        function addNewAlias(key, alias) {
-            if (!(flags.aliases[key] && flags.aliases[key].length)) {
-                flags.aliases[key] = [alias];
-                newAliases[alias] = true;
-            }
-            if (!(flags.aliases[alias] && flags.aliases[alias].length)) {
-                addNewAlias(alias, key);
-            }
-        }
-        function processValue(key, val) {
-            // strings may be quoted, clean this up as we assign values.
-            if (typeof val === 'string' &&
-                (val[0] === "'" || val[0] === '"') &&
-                val[val.length - 1] === val[0]) {
-                val = val.substring(1, val.length - 1);
-            }
-            // handle parsing boolean arguments --foo=true --bar false.
-            if (checkAllAliases(key, flags.bools) || checkAllAliases(key, flags.counts)) {
-                if (typeof val === 'string')
-                    val = val === 'true';
-            }
-            let value = Array.isArray(val)
-                ? val.map(function (v) { return maybeCoerceNumber(key, v); })
-                : maybeCoerceNumber(key, val);
-            // increment a count given as arg (either no value or value parsed as boolean)
-            if (checkAllAliases(key, flags.counts) && (isUndefined(value) || typeof value === 'boolean')) {
-                value = increment();
-            }
-            // Set normalized value when key is in 'normalize' and in 'arrays'
-            if (checkAllAliases(key, flags.normalize) && checkAllAliases(key, flags.arrays)) {
-                if (Array.isArray(val))
-                    value = val.map((val) => { return yargs_parser_mixin.normalize(val); });
-                else
-                    value = yargs_parser_mixin.normalize(val);
-            }
-            return value;
-        }
-        function maybeCoerceNumber(key, value) {
-            if (!configuration['parse-positional-numbers'] && key === '_')
-                return value;
-            if (!checkAllAliases(key, flags.strings) && !checkAllAliases(key, flags.bools) && !Array.isArray(value)) {
-                const shouldCoerceNumber = looksLikeNumber(value) && configuration['parse-numbers'] && (Number.isSafeInteger(Math.floor(parseFloat(`${value}`))));
-                if (shouldCoerceNumber || (!isUndefined(value) && checkAllAliases(key, flags.numbers))) {
-                    value = Number(value);
-                }
-            }
-            return value;
-        }
-        // set args from config.json file, this should be
-        // applied last so that defaults can be applied.
-        function setConfig(argv) {
-            const configLookup = Object.create(null);
-            // expand defaults/aliases, in-case any happen to reference
-            // the config.json file.
-            applyDefaultsAndAliases(configLookup, flags.aliases, defaults);
-            Object.keys(flags.configs).forEach(function (configKey) {
-                const configPath = argv[configKey] || configLookup[configKey];
-                if (configPath) {
-                    try {
-                        let config = null;
-                        const resolvedConfigPath = yargs_parser_mixin.resolve(yargs_parser_mixin.cwd(), configPath);
-                        const resolveConfig = flags.configs[configKey];
-                        if (typeof resolveConfig === 'function') {
-                            try {
-                                config = resolveConfig(resolvedConfigPath);
-                            }
-                            catch (e) {
-                                config = e;
-                            }
-                            if (config instanceof Error) {
-                                error = config;
-                                return;
-                            }
-                        }
-                        else {
-                            config = yargs_parser_mixin.require(resolvedConfigPath);
-                        }
-                        setConfigObject(config);
-                    }
-                    catch (ex) {
-                        // Deno will receive a PermissionDenied error if an attempt is
-                        // made to load config without the --allow-read flag:
-                        if (ex.name === 'PermissionDenied')
-                            error = ex;
-                        else if (argv[configKey])
-                            error = Error(__('Invalid JSON config file: %s', configPath));
-                    }
-                }
-            });
-        }
-        // set args from config object.
-        // it recursively checks nested objects.
-        function setConfigObject(config, prev) {
-            Object.keys(config).forEach(function (key) {
-                const value = config[key];
-                const fullKey = prev ? prev + '.' + key : key;
-                // if the value is an inner object and we have dot-notation
-                // enabled, treat inner objects in config the same as
-                // heavily nested dot notations (foo.bar.apple).
-                if (typeof value === 'object' && value !== null && !Array.isArray(value) && configuration['dot-notation']) {
-                    // if the value is an object but not an array, check nested object
-                    setConfigObject(value, fullKey);
-                }
-                else {
-                    // setting arguments via CLI takes precedence over
-                    // values within the config file.
-                    if (!hasKey(argv, fullKey.split('.')) || (checkAllAliases(fullKey, flags.arrays) && configuration['combine-arrays'])) {
-                        setArg(fullKey, value);
-                    }
-                }
-            });
-        }
-        // set all config objects passed in opts
-        function setConfigObjects() {
-            if (typeof configObjects !== 'undefined') {
-                configObjects.forEach(function (configObject) {
-                    setConfigObject(configObject);
-                });
-            }
-        }
-        function applyEnvVars(argv, configOnly) {
-            if (typeof envPrefix === 'undefined')
-                return;
-            const prefix = typeof envPrefix === 'string' ? envPrefix : '';
-            const env = yargs_parser_mixin.env();
-            Object.keys(env).forEach(function (envVar) {
-                if (prefix === '' || envVar.lastIndexOf(prefix, 0) === 0) {
-                    // get array of nested keys and convert them to camel case
-                    const keys = envVar.split('__').map(function (key, i) {
-                        if (i === 0) {
-                            key = key.substring(prefix.length);
-                        }
-                        return camelCase(key);
-                    });
-                    if (((configOnly && flags.configs[keys.join('.')]) || !configOnly) && !hasKey(argv, keys)) {
-                        setArg(keys.join('.'), env[envVar]);
-                    }
-                }
-            });
-        }
-        function applyCoercions(argv) {
-            let coerce;
-            const applied = new Set();
-            Object.keys(argv).forEach(function (key) {
-                if (!applied.has(key)) { // If we haven't already coerced this option via one of its aliases
-                    coerce = checkAllAliases(key, flags.coercions);
-                    if (typeof coerce === 'function') {
-                        try {
-                            const value = maybeCoerceNumber(key, coerce(argv[key]));
-                            ([].concat(flags.aliases[key] || [], key)).forEach(ali => {
-                                applied.add(ali);
-                                argv[ali] = value;
-                            });
-                        }
-                        catch (err) {
-                            error = err;
-                        }
-                    }
-                }
-            });
-        }
-        function setPlaceholderKeys(argv) {
-            flags.keys.forEach((key) => {
-                // don't set placeholder keys for dot notation options 'foo.bar'.
-                if (~key.indexOf('.'))
-                    return;
-                if (typeof argv[key] === 'undefined')
-                    argv[key] = undefined;
-            });
-            return argv;
-        }
-        function applyDefaultsAndAliases(obj, aliases, defaults, canLog = false) {
-            Object.keys(defaults).forEach(function (key) {
-                if (!hasKey(obj, key.split('.'))) {
-                    setKey(obj, key.split('.'), defaults[key]);
-                    if (canLog)
-                        defaulted[key] = true;
-                    (aliases[key] || []).forEach(function (x) {
-                        if (hasKey(obj, x.split('.')))
-                            return;
-                        setKey(obj, x.split('.'), defaults[key]);
-                    });
-                }
-            });
-        }
-        function hasKey(obj, keys) {
-            let o = obj;
-            if (!configuration['dot-notation'])
-                keys = [keys.join('.')];
-            keys.slice(0, -1).forEach(function (key) {
-                o = (o[key] || {});
-            });
-            const key = keys[keys.length - 1];
-            if (typeof o !== 'object')
-                return false;
-            else
-                return key in o;
-        }
-        function setKey(obj, keys, value) {
-            let o = obj;
-            if (!configuration['dot-notation'])
-                keys = [keys.join('.')];
-            keys.slice(0, -1).forEach(function (key) {
-                // TODO(bcoe): in the next major version of yargs, switch to
-                // Object.create(null) for dot notation:
-                key = sanitizeKey(key);
-                if (typeof o === 'object' && o[key] === undefined) {
-                    o[key] = {};
-                }
-                if (typeof o[key] !== 'object' || Array.isArray(o[key])) {
-                    // ensure that o[key] is an array, and that the last item is an empty object.
-                    if (Array.isArray(o[key])) {
-                        o[key].push({});
-                    }
-                    else {
-                        o[key] = [o[key], {}];
-                    }
-                    // we want to update the empty object at the end of the o[key] array, so set o to that object
-                    o = o[key][o[key].length - 1];
-                }
-                else {
-                    o = o[key];
-                }
-            });
-            // TODO(bcoe): in the next major version of yargs, switch to
-            // Object.create(null) for dot notation:
-            const key = sanitizeKey(keys[keys.length - 1]);
-            const isTypeArray = checkAllAliases(keys.join('.'), flags.arrays);
-            const isValueArray = Array.isArray(value);
-            let duplicate = configuration['duplicate-arguments-array'];
-            // nargs has higher priority than duplicate
-            if (!duplicate && checkAllAliases(key, flags.nargs)) {
-                duplicate = true;
-                if ((!isUndefined(o[key]) && flags.nargs[key] === 1) || (Array.isArray(o[key]) && o[key].length === flags.nargs[key])) {
-                    o[key] = undefined;
-                }
-            }
-            if (value === increment()) {
-                o[key] = increment(o[key]);
-            }
-            else if (Array.isArray(o[key])) {
-                if (duplicate && isTypeArray && isValueArray) {
-                    o[key] = configuration['flatten-duplicate-arrays'] ? o[key].concat(value) : (Array.isArray(o[key][0]) ? o[key] : [o[key]]).concat([value]);
-                }
-                else if (!duplicate && Boolean(isTypeArray) === Boolean(isValueArray)) {
-                    o[key] = value;
-                }
-                else {
-                    o[key] = o[key].concat([value]);
-                }
-            }
-            else if (o[key] === undefined && isTypeArray) {
-                o[key] = isValueArray ? value : [value];
-            }
-            else if (duplicate && !(o[key] === undefined ||
-                checkAllAliases(key, flags.counts) ||
-                checkAllAliases(key, flags.bools))) {
-                o[key] = [o[key], value];
-            }
-            else {
-                o[key] = value;
-            }
-        }
-        // extend the aliases list with inferred aliases.
-        function extendAliases(...args) {
-            args.forEach(function (obj) {
-                Object.keys(obj || {}).forEach(function (key) {
-                    // short-circuit if we've already added a key
-                    // to the aliases array, for example it might
-                    // exist in both 'opts.default' and 'opts.key'.
-                    if (flags.aliases[key])
-                        return;
-                    flags.aliases[key] = [].concat(aliases[key] || []);
-                    // For "--option-name", also set argv.optionName
-                    flags.aliases[key].concat(key).forEach(function (x) {
-                        if (/-/.test(x) && configuration['camel-case-expansion']) {
-                            const c = camelCase(x);
-                            if (c !== key && flags.aliases[key].indexOf(c) === -1) {
-                                flags.aliases[key].push(c);
-                                newAliases[c] = true;
-                            }
-                        }
-                    });
-                    // For "--optionName", also set argv['option-name']
-                    flags.aliases[key].concat(key).forEach(function (x) {
-                        if (x.length > 1 && /[A-Z]/.test(x) && configuration['camel-case-expansion']) {
-                            const c = decamelize(x, '-');
-                            if (c !== key && flags.aliases[key].indexOf(c) === -1) {
-                                flags.aliases[key].push(c);
-                                newAliases[c] = true;
-                            }
-                        }
-                    });
-                    flags.aliases[key].forEach(function (x) {
-                        flags.aliases[x] = [key].concat(flags.aliases[key].filter(function (y) {
-                            return x !== y;
-                        }));
-                    });
-                });
-            });
-        }
-        function checkAllAliases(key, flag) {
-            const toCheck = [].concat(flags.aliases[key] || [], key);
-            const keys = Object.keys(flag);
-            const setAlias = toCheck.find(key => keys.includes(key));
-            return setAlias ? flag[setAlias] : false;
-        }
-        function hasAnyFlag(key) {
-            const flagsKeys = Object.keys(flags);
-            const toCheck = [].concat(flagsKeys.map(k => flags[k]));
-            return toCheck.some(function (flag) {
-                return Array.isArray(flag) ? flag.includes(key) : flag[key];
-            });
-        }
-        function hasFlagsMatching(arg, ...patterns) {
-            const toCheck = [].concat(...patterns);
-            return toCheck.some(function (pattern) {
-                const match = arg.match(pattern);
-                return match && hasAnyFlag(match[1]);
-            });
-        }
-        // based on a simplified version of the short flag group parsing logic
-        function hasAllShortFlags(arg) {
-            // if this is a negative number, or doesn't start with a single hyphen, it's not a short flag group
-            if (arg.match(negative) || !arg.match(/^-[^-]+/)) {
-                return false;
-            }
-            let hasAllFlags = true;
-            let next;
-            const letters = arg.slice(1).split('');
-            for (let j = 0; j < letters.length; j++) {
-                next = arg.slice(j + 2);
-                if (!hasAnyFlag(letters[j])) {
-                    hasAllFlags = false;
-                    break;
-                }
-                if ((letters[j + 1] && letters[j + 1] === '=') ||
-                    next === '-' ||
-                    (/[A-Za-z]/.test(letters[j]) && /^-?\d+(\.\d*)?(e-?\d+)?$/.test(next)) ||
-                    (letters[j + 1] && letters[j + 1].match(/\W/))) {
-                    break;
-                }
-            }
-            return hasAllFlags;
-        }
-        function isUnknownOptionAsArg(arg) {
-            return configuration['unknown-options-as-args'] && isUnknownOption(arg);
-        }
-        function isUnknownOption(arg) {
-            // ignore negative numbers
-            if (arg.match(negative)) {
-                return false;
-            }
-            // if this is a short option group and all of them are configured, it isn't unknown
-            if (hasAllShortFlags(arg)) {
-                return false;
-            }
-            // e.g. '--count=2'
-            const flagWithEquals = /^-+([^=]+?)=[\s\S]*$/;
-            // e.g. '-a' or '--arg'
-            const normalFlag = /^-+([^=]+?)$/;
-            // e.g. '-a-'
-            const flagEndingInHyphen = /^-+([^=]+?)-$/;
-            // e.g. '-abc123'
-            const flagEndingInDigits = /^-+([^=]+?\d+)$/;
-            // e.g. '-a/usr/local'
-            const flagEndingInNonWordCharacters = /^-+([^=]+?)\W+.*$/;
-            // check the different types of flag styles, including negatedBoolean, a pattern defined near the start of the parse method
-            return !hasFlagsMatching(arg, flagWithEquals, negatedBoolean, normalFlag, flagEndingInHyphen, flagEndingInDigits, flagEndingInNonWordCharacters);
-        }
-        // make a best effort to pick a default value
-        // for an option based on name and type.
-        function defaultValue(key) {
-            if (!checkAllAliases(key, flags.bools) &&
-                !checkAllAliases(key, flags.counts) &&
-                `${key}` in defaults) {
-                return defaults[key];
-            }
-            else {
-                return defaultForType(guessType(key));
-            }
-        }
-        // return a default value, given the type of a flag.,
-        function defaultForType(type) {
-            const def = {
-                boolean: true,
-                string: '',
-                number: undefined,
-                array: []
-            };
-            return def[type];
-        }
-        // given a flag, enforce a default type.
-        function guessType(key) {
-            let type = 'boolean';
-            if (checkAllAliases(key, flags.strings))
-                type = 'string';
-            else if (checkAllAliases(key, flags.numbers))
-                type = 'number';
-            else if (checkAllAliases(key, flags.bools))
-                type = 'boolean';
-            else if (checkAllAliases(key, flags.arrays))
-                type = 'array';
-            return type;
-        }
-        function isUndefined(num) {
-            return num === undefined;
-        }
-        // check user configuration settings for inconsistencies
-        function checkConfiguration() {
-            // count keys should not be set as array/narg
-            Object.keys(flags.counts).find(key => {
-                if (checkAllAliases(key, flags.arrays)) {
-                    error = Error(__('Invalid configuration: %s, opts.count excludes opts.array.', key));
-                    return true;
-                }
-                else if (checkAllAliases(key, flags.nargs)) {
-                    error = Error(__('Invalid configuration: %s, opts.count excludes opts.narg.', key));
-                    return true;
-                }
-                return false;
-            });
-        }
-        return {
-            aliases: Object.assign({}, flags.aliases),
-            argv: Object.assign(argvReturn, argv),
-            configuration: configuration,
-            defaulted: Object.assign({}, defaulted),
-            error: error,
-            newAliases: Object.assign({}, newAliases)
-        };
-    }
-}
-// if any aliases reference each other, we should
-// merge them together.
-function combineAliases(aliases) {
-    const aliasArrays = [];
-    const combined = Object.create(null);
-    let change = true;
-    // turn alias lookup hash {key: ['alias1', 'alias2']} into
-    // a simple array ['key', 'alias1', 'alias2']
-    Object.keys(aliases).forEach(function (key) {
-        aliasArrays.push([].concat(aliases[key], key));
+const stringWidth = __nccwpck_require__(2577);
+const stripAnsi = __nccwpck_require__(5591);
+const wrap = __nccwpck_require__(9824);
+function ui(opts) {
+    return cliui(opts, {
+        stringWidth,
+        stripAnsi,
+        wrap
     });
-    // combine arrays until zero changes are
-    // made in an iteration.
-    while (change) {
-        change = false;
-        for (let i = 0; i < aliasArrays.length; i++) {
-            for (let ii = i + 1; ii < aliasArrays.length; ii++) {
-                const intersect = aliasArrays[i].filter(function (v) {
-                    return aliasArrays[ii].indexOf(v) !== -1;
-                });
-                if (intersect.length) {
-                    aliasArrays[i] = aliasArrays[i].concat(aliasArrays[ii]);
-                    aliasArrays.splice(ii, 1);
-                    change = true;
-                    break;
-                }
-            }
-        }
-    }
-    // map arrays back to the hash-lookup (de-dupe while
-    // we're at it).
-    aliasArrays.forEach(function (aliasArray) {
-        aliasArray = aliasArray.filter(function (v, i, self) {
-            return self.indexOf(v) === i;
-        });
-        const lastAlias = aliasArray.pop();
-        if (lastAlias !== undefined && typeof lastAlias === 'string') {
-            combined[lastAlias] = aliasArray;
-        }
-    });
-    return combined;
-}
-// this function should only be called when a count is given as an arg
-// it is NOT called to set a default value
-// thus we can start the count at 1 instead of 0
-function increment(orig) {
-    return orig !== undefined ? orig + 1 : 1;
-}
-// TODO(bcoe): in the next major version of yargs, switch to
-// Object.create(null) for dot notation:
-function sanitizeKey(key) {
-    if (key === '__proto__')
-        return '___proto___';
-    return key;
 }
 
-;// CONCATENATED MODULE: ./node_modules/yargs-parser/build/lib/index.js
-// Main entrypoint for libraries using yargs-parser in Node.js
-// CJS and ESM environments:
+module.exports = ui;
 
 
+/***/ }),
+
+/***/ 452:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
 
 
+var fs = __nccwpck_require__(7147);
+var util = __nccwpck_require__(3837);
+var path = __nccwpck_require__(1017);
 
-// See https://github.com/yargs/yargs-parser#supported-nodejs-versions for our
-// version support policy. The YARGS_MIN_NODE_VERSION is used for testing only.
-const minNodeVersion = (process && process.env && process.env.YARGS_MIN_NODE_VERSION)
-    ? Number(process.env.YARGS_MIN_NODE_VERSION)
-    : 10;
-if (process && process.version) {
-    const major = Number(process.version.match(/v([^.]+)/)[1]);
-    if (major < minNodeVersion) {
-        throw Error(`yargs parser supports a minimum Node.js version of ${minNodeVersion}. Read our version support policy: https://github.com/yargs/yargs-parser#supported-nodejs-versions`);
-    }
-}
-// Creates a yargs-parser instance using Node.js standard libraries:
-const env = process ? process.env : {};
-const parser = new YargsParser({
-    cwd: process.cwd,
-    env: () => {
-        return env;
-    },
-    format: external_util_.format,
-    normalize: external_path_.normalize,
-    resolve: external_path_.resolve,
-    // TODO: figure  out a  way to combine ESM and CJS coverage, such  that
-    // we can exercise all the lines below:
-    require: (path) => {
-        if (typeof require !== 'undefined') {
-            return require(path);
-        }
-        else if (path.match(/\.json$/)) {
-            return (0,external_fs_.readFileSync)(path, 'utf8');
-        }
-        else {
-            throw Error('only .json config files are supported in ESM');
-        }
-    }
-});
-const yargsParser = function Parser(args, opts) {
-    const result = parser.parse(args.slice(), opts);
-    return result.argv;
-};
-yargsParser.detailed = function (args, opts) {
-    return parser.parse(args.slice(), opts);
-};
-yargsParser.camelCase = camelCase;
-yargsParser.decamelize = decamelize;
-yargsParser.looksLikeNumber = looksLikeNumber;
-/* harmony default export */ const lib = (yargsParser);
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/utils/process-argv.js
-function getProcessArgvBinIndex() {
-    if (isBundledElectronApp())
-        return 0;
-    return 1;
-}
-function isBundledElectronApp() {
-    return isElectronApp() && !process.defaultApp;
-}
-function isElectronApp() {
-    return !!process.versions.electron;
-}
-function hideBin(argv) {
-    return argv.slice(getProcessArgvBinIndex() + 1);
-}
-function getProcessArgvBin() {
-    return process.argv[getProcessArgvBinIndex()];
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/yerror.js
-class YError extends Error {
-    constructor(msg) {
-        super(msg || 'yargs error');
-        this.name = 'YError';
-        Error.captureStackTrace(this, YError);
-    }
-}
-
-;// CONCATENATED MODULE: ./node_modules/y18n/build/lib/platform-shims/node.js
-
-
-
-/* harmony default export */ const node = ({
-    fs: {
-        readFileSync: external_fs_.readFileSync,
-        writeFile: external_fs_.writeFile
-    },
-    format: external_util_.format,
-    resolve: external_path_.resolve,
-    exists: (file) => {
-        try {
-            return (0,external_fs_.statSync)(file).isFile();
-        }
-        catch (err) {
-            return false;
-        }
-    }
-});
-
-;// CONCATENATED MODULE: ./node_modules/y18n/build/lib/index.js
 let shim;
 class Y18N {
     constructor(opts) {
@@ -12532,7 +13583,7 @@ class Y18N {
         return shim.exists(file);
     }
 }
-function y18n(opts, _shim) {
+function y18n$1(opts, _shim) {
     shim = _shim;
     const y18n = new Y18N(opts);
     return {
@@ -12545,3362 +13596,1233 @@ function y18n(opts, _shim) {
     };
 }
 
-;// CONCATENATED MODULE: ./node_modules/y18n/index.mjs
-
-
-
-const y18n_y18n = (opts) => {
-  return y18n(opts, node)
-}
-
-/* harmony default export */ const node_modules_y18n = (y18n_y18n);
-
-;// CONCATENATED MODULE: ./node_modules/yargs/lib/platform-shims/esm.mjs
-
-
-;
-
-
-
-
-
-
-
-
-
-
-
-const REQUIRE_ERROR = 'require is not supported by ESM'
-const REQUIRE_DIRECTORY_ERROR = 'loading a directory of commands is not supported yet for ESM'
-
-const mainFilename = (0,external_url_namespaceObject.fileURLToPath)("file:///Users/arquintlinard/ETH/PhD/check-license-header/node_modules/yargs/lib/platform-shims/esm.mjs").split('node_modules')[0]
-const esm_dirname = (0,external_url_namespaceObject.fileURLToPath)("file:///Users/arquintlinard/ETH/PhD/check-license-header/node_modules/yargs/lib/platform-shims/esm.mjs")
-
-/* harmony default export */ const esm = ({
-  assert: {
-    notStrictEqual: external_assert_.notStrictEqual,
-    strictEqual: external_assert_.strictEqual
-  },
-  cliui: ui,
-  findUp: sync,
-  getEnv: (key) => {
-    return process.env[key]
-  },
-  inspect: external_util_.inspect,
-  getCallerFile: () => {
-    throw new YError(REQUIRE_DIRECTORY_ERROR)
-  },
-  getProcessArgvBin: getProcessArgvBin,
-  mainFilename: mainFilename || process.cwd(),
-  Parser: lib,
-  path: {
-    basename: external_path_.basename,
-    dirname: external_path_.dirname,
-    extname: external_path_.extname,
-    relative: external_path_.relative,
-    resolve: external_path_.resolve
-  },
-  process: {
-    argv: () => process.argv,
-    cwd: process.cwd,
-    execPath: () => process.execPath,
-    exit: process.exit,
-    nextTick: process.nextTick,
-    stdColumns: typeof process.stdout.columns !== 'undefined' ? process.stdout.columns : null
-  },
-  readFileSync: external_fs_.readFileSync,
-  require: () => {
-    throw new YError(REQUIRE_ERROR)
-  },
-  requireDirectory: () => {
-    throw new YError(REQUIRE_DIRECTORY_ERROR)
-  },
-  stringWidth: (str) => {
-    return [...str].length
-  },
-  y18n: node_modules_y18n({
-    directory: (0,external_path_.resolve)(esm_dirname, '../../../locales'),
-    updateFiles: false
-  })
-});
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/typings/common-types.js
-function assertNotStrictEqual(actual, expected, shim, message) {
-    shim.assert.notStrictEqual(actual, expected, message);
-}
-function assertSingleKey(actual, shim) {
-    shim.assert.strictEqual(typeof actual, 'string');
-}
-function objectKeys(object) {
-    return Object.keys(object);
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/utils/is-promise.js
-function isPromise(maybePromise) {
-    return (!!maybePromise &&
-        !!maybePromise.then &&
-        typeof maybePromise.then === 'function');
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/parse-command.js
-function parseCommand(cmd) {
-    const extraSpacesStrippedCommand = cmd.replace(/\s{2,}/g, ' ');
-    const splitCommand = extraSpacesStrippedCommand.split(/\s+(?![^[]*]|[^<]*>)/);
-    const bregex = /\.*[\][<>]/g;
-    const firstCommand = splitCommand.shift();
-    if (!firstCommand)
-        throw new Error(`No command found in: ${cmd}`);
-    const parsedCommand = {
-        cmd: firstCommand.replace(bregex, ''),
-        demanded: [],
-        optional: [],
-    };
-    splitCommand.forEach((cmd, i) => {
-        let variadic = false;
-        cmd = cmd.replace(/\s/g, '');
-        if (/\.+[\]>]/.test(cmd) && i === splitCommand.length - 1)
-            variadic = true;
-        if (/^\[/.test(cmd)) {
-            parsedCommand.optional.push({
-                cmd: cmd.replace(bregex, '').split('|'),
-                variadic,
-            });
-        }
-        else {
-            parsedCommand.demanded.push({
-                cmd: cmd.replace(bregex, '').split('|'),
-                variadic,
-            });
-        }
-    });
-    return parsedCommand;
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/argsert.js
-
-
-const positionName = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth'];
-function argsert(arg1, arg2, arg3) {
-    function parseArgs() {
-        return typeof arg1 === 'object'
-            ? [{ demanded: [], optional: [] }, arg1, arg2]
-            : [
-                parseCommand(`cmd ${arg1}`),
-                arg2,
-                arg3,
-            ];
-    }
-    try {
-        let position = 0;
-        const [parsed, callerArguments, _length] = parseArgs();
-        const args = [].slice.call(callerArguments);
-        while (args.length && args[args.length - 1] === undefined)
-            args.pop();
-        const length = _length || args.length;
-        if (length < parsed.demanded.length) {
-            throw new YError(`Not enough arguments provided. Expected ${parsed.demanded.length} but received ${args.length}.`);
-        }
-        const totalCommands = parsed.demanded.length + parsed.optional.length;
-        if (length > totalCommands) {
-            throw new YError(`Too many arguments provided. Expected max ${totalCommands} but received ${length}.`);
-        }
-        parsed.demanded.forEach(demanded => {
-            const arg = args.shift();
-            const observedType = guessType(arg);
-            const matchingTypes = demanded.cmd.filter(type => type === observedType || type === '*');
-            if (matchingTypes.length === 0)
-                argumentTypeError(observedType, demanded.cmd, position);
-            position += 1;
-        });
-        parsed.optional.forEach(optional => {
-            if (args.length === 0)
-                return;
-            const arg = args.shift();
-            const observedType = guessType(arg);
-            const matchingTypes = optional.cmd.filter(type => type === observedType || type === '*');
-            if (matchingTypes.length === 0)
-                argumentTypeError(observedType, optional.cmd, position);
-            position += 1;
-        });
-    }
-    catch (err) {
-        console.warn(err.stack);
-    }
-}
-function guessType(arg) {
-    if (Array.isArray(arg)) {
-        return 'array';
-    }
-    else if (arg === null) {
-        return 'null';
-    }
-    return typeof arg;
-}
-function argumentTypeError(observedType, allowedTypes, position) {
-    throw new YError(`Invalid ${positionName[position] || 'manyith'} argument. Expected ${allowedTypes.join(' or ')} but received ${observedType}.`);
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/middleware.js
-
-
-function globalMiddlewareFactory(globalMiddleware, context) {
-    return function (callback, applyBeforeValidation = false) {
-        argsert('<array|function> [boolean]', [callback, applyBeforeValidation], arguments.length);
-        if (Array.isArray(callback)) {
-            for (let i = 0; i < callback.length; i++) {
-                if (typeof callback[i] !== 'function') {
-                    throw Error('middleware must be a function');
-                }
-                callback[i].applyBeforeValidation = applyBeforeValidation;
-            }
-            Array.prototype.push.apply(globalMiddleware, callback);
-        }
-        else if (typeof callback === 'function') {
-            callback.applyBeforeValidation = applyBeforeValidation;
-            globalMiddleware.push(callback);
-        }
-        return context;
-    };
-}
-function commandMiddlewareFactory(commandMiddleware) {
-    if (!commandMiddleware)
-        return [];
-    return commandMiddleware.map(middleware => {
-        middleware.applyBeforeValidation = false;
-        return middleware;
-    });
-}
-function applyMiddleware(argv, yargs, middlewares, beforeValidation) {
-    const beforeValidationError = new Error('middleware cannot return a promise when applyBeforeValidation is true');
-    return middlewares.reduce((acc, middleware) => {
-        if (middleware.applyBeforeValidation !== beforeValidation) {
-            return acc;
-        }
-        if (isPromise(acc)) {
-            return acc
-                .then(initialObj => Promise.all([
-                initialObj,
-                middleware(initialObj, yargs),
-            ]))
-                .then(([initialObj, middlewareObj]) => Object.assign(initialObj, middlewareObj));
-        }
-        else {
-            const result = middleware(acc, yargs);
-            if (beforeValidation && isPromise(result))
-                throw beforeValidationError;
-            return isPromise(result)
-                ? result.then(middlewareObj => Object.assign(acc, middlewareObj))
-                : Object.assign(acc, result);
-        }
-    }, argv);
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/utils/which-module.js
-function whichModule(exported) {
-    if (typeof require === 'undefined')
-        return null;
-    for (let i = 0, files = Object.keys(require.cache), mod; i < files.length; i++) {
-        mod = require.cache[files[i]];
-        if (mod.exports === exported)
-            return mod;
-    }
-    return null;
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/command.js
-
-
-
-
-
-
-const DEFAULT_MARKER = /(^\*)|(^\$0)/;
-function command_command(yargs, usage, validation, globalMiddleware = [], shim) {
-    const self = {};
-    let handlers = {};
-    let aliasMap = {};
-    let defaultCommand;
-    self.addHandler = function addHandler(cmd, description, builder, handler, commandMiddleware, deprecated) {
-        let aliases = [];
-        const middlewares = commandMiddlewareFactory(commandMiddleware);
-        handler = handler || (() => { });
-        if (Array.isArray(cmd)) {
-            if (isCommandAndAliases(cmd)) {
-                [cmd, ...aliases] = cmd;
-            }
-            else {
-                for (const command of cmd) {
-                    self.addHandler(command);
-                }
-            }
-        }
-        else if (isCommandHandlerDefinition(cmd)) {
-            let command = Array.isArray(cmd.command) || typeof cmd.command === 'string'
-                ? cmd.command
-                : moduleName(cmd);
-            if (cmd.aliases)
-                command = [].concat(command).concat(cmd.aliases);
-            self.addHandler(command, extractDesc(cmd), cmd.builder, cmd.handler, cmd.middlewares, cmd.deprecated);
-            return;
-        }
-        else if (isCommandBuilderDefinition(builder)) {
-            self.addHandler([cmd].concat(aliases), description, builder.builder, builder.handler, builder.middlewares, builder.deprecated);
-            return;
-        }
-        if (typeof cmd === 'string') {
-            const parsedCommand = parseCommand(cmd);
-            aliases = aliases.map(alias => parseCommand(alias).cmd);
-            let isDefault = false;
-            const parsedAliases = [parsedCommand.cmd].concat(aliases).filter(c => {
-                if (DEFAULT_MARKER.test(c)) {
-                    isDefault = true;
-                    return false;
-                }
-                return true;
-            });
-            if (parsedAliases.length === 0 && isDefault)
-                parsedAliases.push('$0');
-            if (isDefault) {
-                parsedCommand.cmd = parsedAliases[0];
-                aliases = parsedAliases.slice(1);
-                cmd = cmd.replace(DEFAULT_MARKER, parsedCommand.cmd);
-            }
-            aliases.forEach(alias => {
-                aliasMap[alias] = parsedCommand.cmd;
-            });
-            if (description !== false) {
-                usage.command(cmd, description, isDefault, aliases, deprecated);
-            }
-            handlers[parsedCommand.cmd] = {
-                original: cmd,
-                description,
-                handler,
-                builder: builder || {},
-                middlewares,
-                deprecated,
-                demanded: parsedCommand.demanded,
-                optional: parsedCommand.optional,
-            };
-            if (isDefault)
-                defaultCommand = handlers[parsedCommand.cmd];
-        }
-    };
-    self.addDirectory = function addDirectory(dir, context, req, callerFile, opts) {
-        opts = opts || {};
-        if (typeof opts.recurse !== 'boolean')
-            opts.recurse = false;
-        if (!Array.isArray(opts.extensions))
-            opts.extensions = ['js'];
-        const parentVisit = typeof opts.visit === 'function' ? opts.visit : (o) => o;
-        opts.visit = function visit(obj, joined, filename) {
-            const visited = parentVisit(obj, joined, filename);
-            if (visited) {
-                if (~context.files.indexOf(joined))
-                    return visited;
-                context.files.push(joined);
-                self.addHandler(visited);
-            }
-            return visited;
-        };
-        shim.requireDirectory({ require: req, filename: callerFile }, dir, opts);
-    };
-    function moduleName(obj) {
-        const mod = whichModule(obj);
-        if (!mod)
-            throw new Error(`No command name given for module: ${shim.inspect(obj)}`);
-        return commandFromFilename(mod.filename);
-    }
-    function commandFromFilename(filename) {
-        return shim.path.basename(filename, shim.path.extname(filename));
-    }
-    function extractDesc({ describe, description, desc, }) {
-        for (const test of [describe, description, desc]) {
-            if (typeof test === 'string' || test === false)
-                return test;
-            assertNotStrictEqual(test, true, shim);
-        }
-        return false;
-    }
-    self.getCommands = () => Object.keys(handlers).concat(Object.keys(aliasMap));
-    self.getCommandHandlers = () => handlers;
-    self.hasDefaultCommand = () => !!defaultCommand;
-    self.runCommand = function runCommand(command, yargs, parsed, commandIndex) {
-        let aliases = parsed.aliases;
-        const commandHandler = handlers[command] || handlers[aliasMap[command]] || defaultCommand;
-        const currentContext = yargs.getContext();
-        let numFiles = currentContext.files.length;
-        const parentCommands = currentContext.commands.slice();
-        let innerArgv = parsed.argv;
-        let positionalMap = {};
-        if (command) {
-            currentContext.commands.push(command);
-            currentContext.fullCommands.push(commandHandler.original);
-        }
-        const builder = commandHandler.builder;
-        if (isCommandBuilderCallback(builder)) {
-            const builderOutput = builder(yargs.reset(parsed.aliases));
-            const innerYargs = isYargsInstance(builderOutput) ? builderOutput : yargs;
-            if (shouldUpdateUsage(innerYargs)) {
-                innerYargs
-                    .getUsageInstance()
-                    .usage(usageFromParentCommandsCommandHandler(parentCommands, commandHandler), commandHandler.description);
-            }
-            innerArgv = innerYargs._parseArgs(null, null, true, commandIndex);
-            aliases = innerYargs.parsed.aliases;
-        }
-        else if (isCommandBuilderOptionDefinitions(builder)) {
-            const innerYargs = yargs.reset(parsed.aliases);
-            if (shouldUpdateUsage(innerYargs)) {
-                innerYargs
-                    .getUsageInstance()
-                    .usage(usageFromParentCommandsCommandHandler(parentCommands, commandHandler), commandHandler.description);
-            }
-            Object.keys(commandHandler.builder).forEach(key => {
-                innerYargs.option(key, builder[key]);
-            });
-            innerArgv = innerYargs._parseArgs(null, null, true, commandIndex);
-            aliases = innerYargs.parsed.aliases;
-        }
-        if (!yargs._hasOutput()) {
-            positionalMap = populatePositionals(commandHandler, innerArgv, currentContext);
-        }
-        const middlewares = globalMiddleware
-            .slice(0)
-            .concat(commandHandler.middlewares);
-        applyMiddleware(innerArgv, yargs, middlewares, true);
-        if (!yargs._hasOutput()) {
-            yargs._runValidation(innerArgv, aliases, positionalMap, yargs.parsed.error, !command);
-        }
-        if (commandHandler.handler && !yargs._hasOutput()) {
-            yargs._setHasOutput();
-            const populateDoubleDash = !!yargs.getOptions().configuration['populate--'];
-            yargs._postProcess(innerArgv, populateDoubleDash);
-            innerArgv = applyMiddleware(innerArgv, yargs, middlewares, false);
-            let handlerResult;
-            if (isPromise(innerArgv)) {
-                handlerResult = innerArgv.then(argv => commandHandler.handler(argv));
-            }
-            else {
-                handlerResult = commandHandler.handler(innerArgv);
-            }
-            const handlerFinishCommand = yargs.getHandlerFinishCommand();
-            if (isPromise(handlerResult)) {
-                yargs.getUsageInstance().cacheHelpMessage();
-                handlerResult
-                    .then(value => {
-                    if (handlerFinishCommand) {
-                        handlerFinishCommand(value);
-                    }
-                })
-                    .catch(error => {
-                    try {
-                        yargs.getUsageInstance().fail(null, error);
-                    }
-                    catch (err) {
-                    }
-                })
-                    .then(() => {
-                    yargs.getUsageInstance().clearCachedHelpMessage();
-                });
-            }
-            else {
-                if (handlerFinishCommand) {
-                    handlerFinishCommand(handlerResult);
-                }
-            }
-        }
-        if (command) {
-            currentContext.commands.pop();
-            currentContext.fullCommands.pop();
-        }
-        numFiles = currentContext.files.length - numFiles;
-        if (numFiles > 0)
-            currentContext.files.splice(numFiles * -1, numFiles);
-        return innerArgv;
-    };
-    function shouldUpdateUsage(yargs) {
-        return (!yargs.getUsageInstance().getUsageDisabled() &&
-            yargs.getUsageInstance().getUsage().length === 0);
-    }
-    function usageFromParentCommandsCommandHandler(parentCommands, commandHandler) {
-        const c = DEFAULT_MARKER.test(commandHandler.original)
-            ? commandHandler.original.replace(DEFAULT_MARKER, '').trim()
-            : commandHandler.original;
-        const pc = parentCommands.filter(c => {
-            return !DEFAULT_MARKER.test(c);
-        });
-        pc.push(c);
-        return `$0 ${pc.join(' ')}`;
-    }
-    self.runDefaultBuilderOn = function (yargs) {
-        assertNotStrictEqual(defaultCommand, undefined, shim);
-        if (shouldUpdateUsage(yargs)) {
-            const commandString = DEFAULT_MARKER.test(defaultCommand.original)
-                ? defaultCommand.original
-                : defaultCommand.original.replace(/^[^[\]<>]*/, '$0 ');
-            yargs.getUsageInstance().usage(commandString, defaultCommand.description);
-        }
-        const builder = defaultCommand.builder;
-        if (isCommandBuilderCallback(builder)) {
-            builder(yargs);
-        }
-        else if (!isCommandBuilderDefinition(builder)) {
-            Object.keys(builder).forEach(key => {
-                yargs.option(key, builder[key]);
-            });
-        }
-    };
-    function populatePositionals(commandHandler, argv, context) {
-        argv._ = argv._.slice(context.commands.length);
-        const demanded = commandHandler.demanded.slice(0);
-        const optional = commandHandler.optional.slice(0);
-        const positionalMap = {};
-        validation.positionalCount(demanded.length, argv._.length);
-        while (demanded.length) {
-            const demand = demanded.shift();
-            populatePositional(demand, argv, positionalMap);
-        }
-        while (optional.length) {
-            const maybe = optional.shift();
-            populatePositional(maybe, argv, positionalMap);
-        }
-        argv._ = context.commands.concat(argv._.map(a => '' + a));
-        postProcessPositionals(argv, positionalMap, self.cmdToParseOptions(commandHandler.original));
-        return positionalMap;
-    }
-    function populatePositional(positional, argv, positionalMap) {
-        const cmd = positional.cmd[0];
-        if (positional.variadic) {
-            positionalMap[cmd] = argv._.splice(0).map(String);
-        }
-        else {
-            if (argv._.length)
-                positionalMap[cmd] = [String(argv._.shift())];
-        }
-    }
-    function postProcessPositionals(argv, positionalMap, parseOptions) {
-        const options = Object.assign({}, yargs.getOptions());
-        options.default = Object.assign(parseOptions.default, options.default);
-        for (const key of Object.keys(parseOptions.alias)) {
-            options.alias[key] = (options.alias[key] || []).concat(parseOptions.alias[key]);
-        }
-        options.array = options.array.concat(parseOptions.array);
-        options.config = {};
-        const unparsed = [];
-        Object.keys(positionalMap).forEach(key => {
-            positionalMap[key].map(value => {
-                if (options.configuration['unknown-options-as-args'])
-                    options.key[key] = true;
-                unparsed.push(`--${key}`);
-                unparsed.push(value);
-            });
-        });
-        if (!unparsed.length)
-            return;
-        const config = Object.assign({}, options.configuration, {
-            'populate--': true,
-        });
-        const parsed = shim.Parser.detailed(unparsed, Object.assign({}, options, {
-            configuration: config,
-        }));
-        if (parsed.error) {
-            yargs.getUsageInstance().fail(parsed.error.message, parsed.error);
-        }
-        else {
-            const positionalKeys = Object.keys(positionalMap);
-            Object.keys(positionalMap).forEach(key => {
-                positionalKeys.push(...parsed.aliases[key]);
-            });
-            Object.keys(parsed.argv).forEach(key => {
-                if (positionalKeys.indexOf(key) !== -1) {
-                    if (!positionalMap[key])
-                        positionalMap[key] = parsed.argv[key];
-                    argv[key] = parsed.argv[key];
-                }
-            });
-        }
-    }
-    self.cmdToParseOptions = function (cmdString) {
-        const parseOptions = {
-            array: [],
-            default: {},
-            alias: {},
-            demand: {},
-        };
-        const parsed = parseCommand(cmdString);
-        parsed.demanded.forEach(d => {
-            const [cmd, ...aliases] = d.cmd;
-            if (d.variadic) {
-                parseOptions.array.push(cmd);
-                parseOptions.default[cmd] = [];
-            }
-            parseOptions.alias[cmd] = aliases;
-            parseOptions.demand[cmd] = true;
-        });
-        parsed.optional.forEach(o => {
-            const [cmd, ...aliases] = o.cmd;
-            if (o.variadic) {
-                parseOptions.array.push(cmd);
-                parseOptions.default[cmd] = [];
-            }
-            parseOptions.alias[cmd] = aliases;
-        });
-        return parseOptions;
-    };
-    self.reset = () => {
-        handlers = {};
-        aliasMap = {};
-        defaultCommand = undefined;
-        return self;
-    };
-    const frozens = [];
-    self.freeze = () => {
-        frozens.push({
-            handlers,
-            aliasMap,
-            defaultCommand,
-        });
-    };
-    self.unfreeze = () => {
-        const frozen = frozens.pop();
-        assertNotStrictEqual(frozen, undefined, shim);
-        ({ handlers, aliasMap, defaultCommand } = frozen);
-    };
-    return self;
-}
-function isCommandBuilderDefinition(builder) {
-    return (typeof builder === 'object' &&
-        !!builder.builder &&
-        typeof builder.handler === 'function');
-}
-function isCommandAndAliases(cmd) {
-    if (cmd.every(c => typeof c === 'string')) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-function isCommandBuilderCallback(builder) {
-    return typeof builder === 'function';
-}
-function isCommandBuilderOptionDefinitions(builder) {
-    return typeof builder === 'object';
-}
-function isCommandHandlerDefinition(cmd) {
-    return typeof cmd === 'object' && !Array.isArray(cmd);
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/utils/obj-filter.js
-
-function objFilter(original = {}, filter = () => true) {
-    const obj = {};
-    objectKeys(original).forEach(key => {
-        if (filter(key, original[key])) {
-            obj[key] = original[key];
-        }
-    });
-    return obj;
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/utils/set-blocking.js
-function setBlocking(blocking) {
-    if (typeof process === 'undefined')
-        return;
-    [process.stdout, process.stderr].forEach(_stream => {
-        const stream = _stream;
-        if (stream._handle &&
-            stream.isTTY &&
-            typeof stream._handle.setBlocking === 'function') {
-            stream._handle.setBlocking(blocking);
-        }
-    });
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/usage.js
-
-
-
-
-function usage_usage(yargs, y18n, shim) {
-    const __ = y18n.__;
-    const self = {};
-    const fails = [];
-    self.failFn = function failFn(f) {
-        fails.push(f);
-    };
-    let failMessage = null;
-    let showHelpOnFail = true;
-    self.showHelpOnFail = function showHelpOnFailFn(arg1 = true, arg2) {
-        function parseFunctionArgs() {
-            return typeof arg1 === 'string' ? [true, arg1] : [arg1, arg2];
-        }
-        const [enabled, message] = parseFunctionArgs();
-        failMessage = message;
-        showHelpOnFail = enabled;
-        return self;
-    };
-    let failureOutput = false;
-    self.fail = function fail(msg, err) {
-        const logger = yargs._getLoggerInstance();
-        if (fails.length) {
-            for (let i = fails.length - 1; i >= 0; --i) {
-                fails[i](msg, err, self);
-            }
-        }
-        else {
-            if (yargs.getExitProcess())
-                setBlocking(true);
-            if (!failureOutput) {
-                failureOutput = true;
-                if (showHelpOnFail) {
-                    yargs.showHelp('error');
-                    logger.error();
-                }
-                if (msg || err)
-                    logger.error(msg || err);
-                if (failMessage) {
-                    if (msg || err)
-                        logger.error('');
-                    logger.error(failMessage);
-                }
-            }
-            err = err || new YError(msg);
-            if (yargs.getExitProcess()) {
-                return yargs.exit(1);
-            }
-            else if (yargs._hasParseCallback()) {
-                return yargs.exit(1, err);
-            }
-            else {
-                throw err;
-            }
-        }
-    };
-    let usages = [];
-    let usageDisabled = false;
-    self.usage = (msg, description) => {
-        if (msg === null) {
-            usageDisabled = true;
-            usages = [];
-            return self;
-        }
-        usageDisabled = false;
-        usages.push([msg, description || '']);
-        return self;
-    };
-    self.getUsage = () => {
-        return usages;
-    };
-    self.getUsageDisabled = () => {
-        return usageDisabled;
-    };
-    self.getPositionalGroupName = () => {
-        return __('Positionals:');
-    };
-    let examples = [];
-    self.example = (cmd, description) => {
-        examples.push([cmd, description || '']);
-    };
-    let commands = [];
-    self.command = function command(cmd, description, isDefault, aliases, deprecated = false) {
-        if (isDefault) {
-            commands = commands.map(cmdArray => {
-                cmdArray[2] = false;
-                return cmdArray;
-            });
-        }
-        commands.push([cmd, description || '', isDefault, aliases, deprecated]);
-    };
-    self.getCommands = () => commands;
-    let descriptions = {};
-    self.describe = function describe(keyOrKeys, desc) {
-        if (Array.isArray(keyOrKeys)) {
-            keyOrKeys.forEach(k => {
-                self.describe(k, desc);
-            });
-        }
-        else if (typeof keyOrKeys === 'object') {
-            Object.keys(keyOrKeys).forEach(k => {
-                self.describe(k, keyOrKeys[k]);
-            });
-        }
-        else {
-            descriptions[keyOrKeys] = desc;
-        }
-    };
-    self.getDescriptions = () => descriptions;
-    let epilogs = [];
-    self.epilog = msg => {
-        epilogs.push(msg);
-    };
-    let wrapSet = false;
-    let wrap;
-    self.wrap = cols => {
-        wrapSet = true;
-        wrap = cols;
-    };
-    function getWrap() {
-        if (!wrapSet) {
-            wrap = windowWidth();
-            wrapSet = true;
-        }
-        return wrap;
-    }
-    const deferY18nLookupPrefix = '__yargsString__:';
-    self.deferY18nLookup = str => deferY18nLookupPrefix + str;
-    self.help = function help() {
-        if (cachedHelpMessage)
-            return cachedHelpMessage;
-        normalizeAliases();
-        const base$0 = yargs.customScriptName
-            ? yargs.$0
-            : shim.path.basename(yargs.$0);
-        const demandedOptions = yargs.getDemandedOptions();
-        const demandedCommands = yargs.getDemandedCommands();
-        const deprecatedOptions = yargs.getDeprecatedOptions();
-        const groups = yargs.getGroups();
-        const options = yargs.getOptions();
-        let keys = [];
-        keys = keys.concat(Object.keys(descriptions));
-        keys = keys.concat(Object.keys(demandedOptions));
-        keys = keys.concat(Object.keys(demandedCommands));
-        keys = keys.concat(Object.keys(options.default));
-        keys = keys.filter(filterHiddenOptions);
-        keys = Object.keys(keys.reduce((acc, key) => {
-            if (key !== '_')
-                acc[key] = true;
-            return acc;
-        }, {}));
-        const theWrap = getWrap();
-        const ui = shim.cliui({
-            width: theWrap,
-            wrap: !!theWrap,
-        });
-        if (!usageDisabled) {
-            if (usages.length) {
-                usages.forEach(usage => {
-                    ui.div(`${usage[0].replace(/\$0/g, base$0)}`);
-                    if (usage[1]) {
-                        ui.div({ text: `${usage[1]}`, padding: [1, 0, 0, 0] });
-                    }
-                });
-                ui.div();
-            }
-            else if (commands.length) {
-                let u = null;
-                if (demandedCommands._) {
-                    u = `${base$0} <${__('command')}>\n`;
-                }
-                else {
-                    u = `${base$0} [${__('command')}]\n`;
-                }
-                ui.div(`${u}`);
-            }
-        }
-        if (commands.length) {
-            ui.div(__('Commands:'));
-            const context = yargs.getContext();
-            const parentCommands = context.commands.length
-                ? `${context.commands.join(' ')} `
-                : '';
-            if (yargs.getParserConfiguration()['sort-commands'] === true) {
-                commands = commands.sort((a, b) => a[0].localeCompare(b[0]));
-            }
-            commands.forEach(command => {
-                const commandString = `${base$0} ${parentCommands}${command[0].replace(/^\$0 ?/, '')}`;
-                ui.span({
-                    text: commandString,
-                    padding: [0, 2, 0, 2],
-                    width: maxWidth(commands, theWrap, `${base$0}${parentCommands}`) + 4,
-                }, { text: command[1] });
-                const hints = [];
-                if (command[2])
-                    hints.push(`[${__('default')}]`);
-                if (command[3] && command[3].length) {
-                    hints.push(`[${__('aliases:')} ${command[3].join(', ')}]`);
-                }
-                if (command[4]) {
-                    if (typeof command[4] === 'string') {
-                        hints.push(`[${__('deprecated: %s', command[4])}]`);
-                    }
-                    else {
-                        hints.push(`[${__('deprecated')}]`);
-                    }
-                }
-                if (hints.length) {
-                    ui.div({
-                        text: hints.join(' '),
-                        padding: [0, 0, 0, 2],
-                        align: 'right',
-                    });
-                }
-                else {
-                    ui.div();
-                }
-            });
-            ui.div();
-        }
-        const aliasKeys = (Object.keys(options.alias) || []).concat(Object.keys(yargs.parsed.newAliases) || []);
-        keys = keys.filter(key => !yargs.parsed.newAliases[key] &&
-            aliasKeys.every(alias => (options.alias[alias] || []).indexOf(key) === -1));
-        const defaultGroup = __('Options:');
-        if (!groups[defaultGroup])
-            groups[defaultGroup] = [];
-        addUngroupedKeys(keys, options.alias, groups, defaultGroup);
-        const isLongSwitch = (sw) => /^--/.test(getText(sw));
-        const displayedGroups = Object.keys(groups)
-            .filter(groupName => groups[groupName].length > 0)
-            .map(groupName => {
-            const normalizedKeys = groups[groupName]
-                .filter(filterHiddenOptions)
-                .map(key => {
-                if (~aliasKeys.indexOf(key))
-                    return key;
-                for (let i = 0, aliasKey; (aliasKey = aliasKeys[i]) !== undefined; i++) {
-                    if (~(options.alias[aliasKey] || []).indexOf(key))
-                        return aliasKey;
-                }
-                return key;
-            });
-            return { groupName, normalizedKeys };
-        })
-            .filter(({ normalizedKeys }) => normalizedKeys.length > 0)
-            .map(({ groupName, normalizedKeys }) => {
-            const switches = normalizedKeys.reduce((acc, key) => {
-                acc[key] = [key]
-                    .concat(options.alias[key] || [])
-                    .map(sw => {
-                    if (groupName === self.getPositionalGroupName())
-                        return sw;
-                    else {
-                        return ((/^[0-9]$/.test(sw)
-                            ? ~options.boolean.indexOf(key)
-                                ? '-'
-                                : '--'
-                            : sw.length > 1
-                                ? '--'
-                                : '-') + sw);
-                    }
-                })
-                    .sort((sw1, sw2) => isLongSwitch(sw1) === isLongSwitch(sw2)
-                    ? 0
-                    : isLongSwitch(sw1)
-                        ? 1
-                        : -1)
-                    .join(', ');
-                return acc;
-            }, {});
-            return { groupName, normalizedKeys, switches };
-        });
-        const shortSwitchesUsed = displayedGroups
-            .filter(({ groupName }) => groupName !== self.getPositionalGroupName())
-            .some(({ normalizedKeys, switches }) => !normalizedKeys.every(key => isLongSwitch(switches[key])));
-        if (shortSwitchesUsed) {
-            displayedGroups
-                .filter(({ groupName }) => groupName !== self.getPositionalGroupName())
-                .forEach(({ normalizedKeys, switches }) => {
-                normalizedKeys.forEach(key => {
-                    if (isLongSwitch(switches[key])) {
-                        switches[key] = addIndentation(switches[key], '-x, '.length);
-                    }
-                });
-            });
-        }
-        displayedGroups.forEach(({ groupName, normalizedKeys, switches }) => {
-            ui.div(groupName);
-            normalizedKeys.forEach(key => {
-                const kswitch = switches[key];
-                let desc = descriptions[key] || '';
-                let type = null;
-                if (~desc.lastIndexOf(deferY18nLookupPrefix))
-                    desc = __(desc.substring(deferY18nLookupPrefix.length));
-                if (~options.boolean.indexOf(key))
-                    type = `[${__('boolean')}]`;
-                if (~options.count.indexOf(key))
-                    type = `[${__('count')}]`;
-                if (~options.string.indexOf(key))
-                    type = `[${__('string')}]`;
-                if (~options.normalize.indexOf(key))
-                    type = `[${__('string')}]`;
-                if (~options.array.indexOf(key))
-                    type = `[${__('array')}]`;
-                if (~options.number.indexOf(key))
-                    type = `[${__('number')}]`;
-                const deprecatedExtra = (deprecated) => typeof deprecated === 'string'
-                    ? `[${__('deprecated: %s', deprecated)}]`
-                    : `[${__('deprecated')}]`;
-                const extra = [
-                    key in deprecatedOptions
-                        ? deprecatedExtra(deprecatedOptions[key])
-                        : null,
-                    type,
-                    key in demandedOptions ? `[${__('required')}]` : null,
-                    options.choices && options.choices[key]
-                        ? `[${__('choices:')} ${self.stringifiedValues(options.choices[key])}]`
-                        : null,
-                    defaultString(options.default[key], options.defaultDescription[key]),
-                ]
-                    .filter(Boolean)
-                    .join(' ');
-                ui.span({
-                    text: getText(kswitch),
-                    padding: [0, 2, 0, 2 + getIndentation(kswitch)],
-                    width: maxWidth(switches, theWrap) + 4,
-                }, desc);
-                if (extra)
-                    ui.div({ text: extra, padding: [0, 0, 0, 2], align: 'right' });
-                else
-                    ui.div();
-            });
-            ui.div();
-        });
-        if (examples.length) {
-            ui.div(__('Examples:'));
-            examples.forEach(example => {
-                example[0] = example[0].replace(/\$0/g, base$0);
-            });
-            examples.forEach(example => {
-                if (example[1] === '') {
-                    ui.div({
-                        text: example[0],
-                        padding: [0, 2, 0, 2],
-                    });
-                }
-                else {
-                    ui.div({
-                        text: example[0],
-                        padding: [0, 2, 0, 2],
-                        width: maxWidth(examples, theWrap) + 4,
-                    }, {
-                        text: example[1],
-                    });
-                }
-            });
-            ui.div();
-        }
-        if (epilogs.length > 0) {
-            const e = epilogs
-                .map(epilog => epilog.replace(/\$0/g, base$0))
-                .join('\n');
-            ui.div(`${e}\n`);
-        }
-        return ui.toString().replace(/\s*$/, '');
-    };
-    function maxWidth(table, theWrap, modifier) {
-        let width = 0;
-        if (!Array.isArray(table)) {
-            table = Object.values(table).map(v => [v]);
-        }
-        table.forEach(v => {
-            width = Math.max(shim.stringWidth(modifier ? `${modifier} ${getText(v[0])}` : getText(v[0])) + getIndentation(v[0]), width);
-        });
-        if (theWrap)
-            width = Math.min(width, parseInt((theWrap * 0.5).toString(), 10));
-        return width;
-    }
-    function normalizeAliases() {
-        const demandedOptions = yargs.getDemandedOptions();
-        const options = yargs.getOptions();
-        (Object.keys(options.alias) || []).forEach(key => {
-            options.alias[key].forEach(alias => {
-                if (descriptions[alias])
-                    self.describe(key, descriptions[alias]);
-                if (alias in demandedOptions)
-                    yargs.demandOption(key, demandedOptions[alias]);
-                if (~options.boolean.indexOf(alias))
-                    yargs.boolean(key);
-                if (~options.count.indexOf(alias))
-                    yargs.count(key);
-                if (~options.string.indexOf(alias))
-                    yargs.string(key);
-                if (~options.normalize.indexOf(alias))
-                    yargs.normalize(key);
-                if (~options.array.indexOf(alias))
-                    yargs.array(key);
-                if (~options.number.indexOf(alias))
-                    yargs.number(key);
-            });
-        });
-    }
-    let cachedHelpMessage;
-    self.cacheHelpMessage = function () {
-        cachedHelpMessage = this.help();
-    };
-    self.clearCachedHelpMessage = function () {
-        cachedHelpMessage = undefined;
-    };
-    function addUngroupedKeys(keys, aliases, groups, defaultGroup) {
-        let groupedKeys = [];
-        let toCheck = null;
-        Object.keys(groups).forEach(group => {
-            groupedKeys = groupedKeys.concat(groups[group]);
-        });
-        keys.forEach(key => {
-            toCheck = [key].concat(aliases[key]);
-            if (!toCheck.some(k => groupedKeys.indexOf(k) !== -1)) {
-                groups[defaultGroup].push(key);
-            }
-        });
-        return groupedKeys;
-    }
-    function filterHiddenOptions(key) {
-        return (yargs.getOptions().hiddenOptions.indexOf(key) < 0 ||
-            yargs.parsed.argv[yargs.getOptions().showHiddenOpt]);
-    }
-    self.showHelp = (level) => {
-        const logger = yargs._getLoggerInstance();
-        if (!level)
-            level = 'error';
-        const emit = typeof level === 'function' ? level : logger[level];
-        emit(self.help());
-    };
-    self.functionDescription = fn => {
-        const description = fn.name
-            ? shim.Parser.decamelize(fn.name, '-')
-            : __('generated-value');
-        return ['(', description, ')'].join('');
-    };
-    self.stringifiedValues = function stringifiedValues(values, separator) {
-        let string = '';
-        const sep = separator || ', ';
-        const array = [].concat(values);
-        if (!values || !array.length)
-            return string;
-        array.forEach(value => {
-            if (string.length)
-                string += sep;
-            string += JSON.stringify(value);
-        });
-        return string;
-    };
-    function defaultString(value, defaultDescription) {
-        let string = `[${__('default:')} `;
-        if (value === undefined && !defaultDescription)
-            return null;
-        if (defaultDescription) {
-            string += defaultDescription;
-        }
-        else {
-            switch (typeof value) {
-                case 'string':
-                    string += `"${value}"`;
-                    break;
-                case 'object':
-                    string += JSON.stringify(value);
-                    break;
-                default:
-                    string += value;
-            }
-        }
-        return `${string}]`;
-    }
-    function windowWidth() {
-        const maxWidth = 80;
-        if (shim.process.stdColumns) {
-            return Math.min(maxWidth, shim.process.stdColumns);
-        }
-        else {
-            return maxWidth;
-        }
-    }
-    let version = null;
-    self.version = ver => {
-        version = ver;
-    };
-    self.showVersion = () => {
-        const logger = yargs._getLoggerInstance();
-        logger.log(version);
-    };
-    self.reset = function reset(localLookup) {
-        failMessage = null;
-        failureOutput = false;
-        usages = [];
-        usageDisabled = false;
-        epilogs = [];
-        examples = [];
-        commands = [];
-        descriptions = objFilter(descriptions, k => !localLookup[k]);
-        return self;
-    };
-    const frozens = [];
-    self.freeze = function freeze() {
-        frozens.push({
-            failMessage,
-            failureOutput,
-            usages,
-            usageDisabled,
-            epilogs,
-            examples,
-            commands,
-            descriptions,
-        });
-    };
-    self.unfreeze = function unfreeze() {
-        const frozen = frozens.pop();
-        assertNotStrictEqual(frozen, undefined, shim);
-        ({
-            failMessage,
-            failureOutput,
-            usages,
-            usageDisabled,
-            epilogs,
-            examples,
-            commands,
-            descriptions,
-        } = frozen);
-    };
-    return self;
-}
-function isIndentedText(text) {
-    return typeof text === 'object';
-}
-function addIndentation(text, indent) {
-    return isIndentedText(text)
-        ? { text: text.text, indentation: text.indentation + indent }
-        : { text, indentation: indent };
-}
-function getIndentation(text) {
-    return isIndentedText(text) ? text.indentation : 0;
-}
-function getText(text) {
-    return isIndentedText(text) ? text.text : text;
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/completion-templates.js
-const completionShTemplate = `###-begin-{{app_name}}-completions-###
-#
-# yargs command completion script
-#
-# Installation: {{app_path}} {{completion_command}} >> ~/.bashrc
-#    or {{app_path}} {{completion_command}} >> ~/.bash_profile on OSX.
-#
-_yargs_completions()
-{
-    local cur_word args type_list
-
-    cur_word="\${COMP_WORDS[COMP_CWORD]}"
-    args=("\${COMP_WORDS[@]}")
-
-    # ask yargs to generate completions.
-    type_list=$({{app_path}} --get-yargs-completions "\${args[@]}")
-
-    COMPREPLY=( $(compgen -W "\${type_list}" -- \${cur_word}) )
-
-    # if no match was found, fall back to filename completion
-    if [ \${#COMPREPLY[@]} -eq 0 ]; then
-      COMPREPLY=()
-    fi
-
-    return 0
-}
-complete -o default -F _yargs_completions {{app_name}}
-###-end-{{app_name}}-completions-###
-`;
-const completionZshTemplate = `###-begin-{{app_name}}-completions-###
-#
-# yargs command completion script
-#
-# Installation: {{app_path}} {{completion_command}} >> ~/.zshrc
-#    or {{app_path}} {{completion_command}} >> ~/.zsh_profile on OSX.
-#
-_{{app_name}}_yargs_completions()
-{
-  local reply
-  local si=$IFS
-  IFS=$'\n' reply=($(COMP_CWORD="$((CURRENT-1))" COMP_LINE="$BUFFER" COMP_POINT="$CURSOR" {{app_path}} --get-yargs-completions "\${words[@]}"))
-  IFS=$si
-  _describe 'values' reply
-}
-compdef _{{app_name}}_yargs_completions {{app_name}}
-###-end-{{app_name}}-completions-###
-`;
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/completion.js
-
-
-
-
-
-function completion_completion(yargs, usage, command, shim) {
-    const self = {
-        completionKey: 'get-yargs-completions',
-    };
-    let aliases;
-    self.setParsed = function setParsed(parsed) {
-        aliases = parsed.aliases;
-    };
-    const zshShell = (shim.getEnv('SHELL') && shim.getEnv('SHELL').indexOf('zsh') !== -1) ||
-        (shim.getEnv('ZSH_NAME') && shim.getEnv('ZSH_NAME').indexOf('zsh') !== -1);
-    self.getCompletion = function getCompletion(args, done) {
-        const completions = [];
-        const current = args.length ? args[args.length - 1] : '';
-        const argv = yargs.parse(args, true);
-        const parentCommands = yargs.getContext().commands;
-        function runCompletionFunction(argv) {
-            assertNotStrictEqual(completionFunction, null, shim);
-            if (isSyncCompletionFunction(completionFunction)) {
-                const result = completionFunction(current, argv);
-                if (isPromise(result)) {
-                    return result
-                        .then(list => {
-                        shim.process.nextTick(() => {
-                            done(list);
-                        });
-                    })
-                        .catch(err => {
-                        shim.process.nextTick(() => {
-                            throw err;
-                        });
-                    });
-                }
-                return done(result);
-            }
-            else {
-                return completionFunction(current, argv, completions => {
-                    done(completions);
-                });
-            }
-        }
-        if (completionFunction) {
-            return isPromise(argv)
-                ? argv.then(runCompletionFunction)
-                : runCompletionFunction(argv);
-        }
-        const handlers = command.getCommandHandlers();
-        for (let i = 0, ii = args.length; i < ii; ++i) {
-            if (handlers[args[i]] && handlers[args[i]].builder) {
-                const builder = handlers[args[i]].builder;
-                if (isCommandBuilderCallback(builder)) {
-                    const y = yargs.reset();
-                    builder(y);
-                    return y.argv;
-                }
-            }
-        }
-        if (!current.match(/^-/) &&
-            parentCommands[parentCommands.length - 1] !== current) {
-            usage.getCommands().forEach(usageCommand => {
-                const commandName = parseCommand(usageCommand[0]).cmd;
-                if (args.indexOf(commandName) === -1) {
-                    if (!zshShell) {
-                        completions.push(commandName);
-                    }
-                    else {
-                        const desc = usageCommand[1] || '';
-                        completions.push(commandName.replace(/:/g, '\\:') + ':' + desc);
-                    }
-                }
-            });
-        }
-        if (current.match(/^-/) || (current === '' && completions.length === 0)) {
-            const descs = usage.getDescriptions();
-            const options = yargs.getOptions();
-            Object.keys(options.key).forEach(key => {
-                const negable = !!options.configuration['boolean-negation'] &&
-                    options.boolean.includes(key);
-                let keyAndAliases = [key].concat(aliases[key] || []);
-                if (negable)
-                    keyAndAliases = keyAndAliases.concat(keyAndAliases.map(key => `no-${key}`));
-                function completeOptionKey(key) {
-                    const notInArgs = keyAndAliases.every(val => args.indexOf(`--${val}`) === -1);
-                    if (notInArgs) {
-                        const startsByTwoDashes = (s) => /^--/.test(s);
-                        const isShortOption = (s) => /^[^0-9]$/.test(s);
-                        const dashes = !startsByTwoDashes(current) && isShortOption(key) ? '-' : '--';
-                        if (!zshShell) {
-                            completions.push(dashes + key);
-                        }
-                        else {
-                            const desc = descs[key] || '';
-                            completions.push(dashes +
-                                `${key.replace(/:/g, '\\:')}:${desc.replace('__yargsString__:', '')}`);
-                        }
-                    }
-                }
-                completeOptionKey(key);
-                if (negable && !!options.default[key])
-                    completeOptionKey(`no-${key}`);
-            });
-        }
-        done(completions);
-    };
-    self.generateCompletionScript = function generateCompletionScript($0, cmd) {
-        let script = zshShell
-            ? completionZshTemplate
-            : completionShTemplate;
-        const name = shim.path.basename($0);
-        if ($0.match(/\.js$/))
-            $0 = `./${$0}`;
-        script = script.replace(/{{app_name}}/g, name);
-        script = script.replace(/{{completion_command}}/g, cmd);
-        return script.replace(/{{app_path}}/g, $0);
-    };
-    let completionFunction = null;
-    self.registerFunction = fn => {
-        completionFunction = fn;
-    };
-    return self;
-}
-function isSyncCompletionFunction(completionFunction) {
-    return completionFunction.length < 3;
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/utils/levenshtein.js
-function levenshtein(a, b) {
-    if (a.length === 0)
-        return b.length;
-    if (b.length === 0)
-        return a.length;
-    const matrix = [];
-    let i;
-    for (i = 0; i <= b.length; i++) {
-        matrix[i] = [i];
-    }
-    let j;
-    for (j = 0; j <= a.length; j++) {
-        matrix[0][j] = j;
-    }
-    for (i = 1; i <= b.length; i++) {
-        for (j = 1; j <= a.length; j++) {
-            if (b.charAt(i - 1) === a.charAt(j - 1)) {
-                matrix[i][j] = matrix[i - 1][j - 1];
-            }
-            else {
-                matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
-            }
-        }
-    }
-    return matrix[b.length][a.length];
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/validation.js
-
-
-
-
-const specialKeys = ['$0', '--', '_'];
-function validation_validation(yargs, usage, y18n, shim) {
-    const __ = y18n.__;
-    const __n = y18n.__n;
-    const self = {};
-    self.nonOptionCount = function nonOptionCount(argv) {
-        const demandedCommands = yargs.getDemandedCommands();
-        const positionalCount = argv._.length + (argv['--'] ? argv['--'].length : 0);
-        const _s = positionalCount - yargs.getContext().commands.length;
-        if (demandedCommands._ &&
-            (_s < demandedCommands._.min || _s > demandedCommands._.max)) {
-            if (_s < demandedCommands._.min) {
-                if (demandedCommands._.minMsg !== undefined) {
-                    usage.fail(demandedCommands._.minMsg
-                        ? demandedCommands._.minMsg
-                            .replace(/\$0/g, _s.toString())
-                            .replace(/\$1/, demandedCommands._.min.toString())
-                        : null);
-                }
-                else {
-                    usage.fail(__n('Not enough non-option arguments: got %s, need at least %s', 'Not enough non-option arguments: got %s, need at least %s', _s, _s.toString(), demandedCommands._.min.toString()));
-                }
-            }
-            else if (_s > demandedCommands._.max) {
-                if (demandedCommands._.maxMsg !== undefined) {
-                    usage.fail(demandedCommands._.maxMsg
-                        ? demandedCommands._.maxMsg
-                            .replace(/\$0/g, _s.toString())
-                            .replace(/\$1/, demandedCommands._.max.toString())
-                        : null);
-                }
-                else {
-                    usage.fail(__n('Too many non-option arguments: got %s, maximum of %s', 'Too many non-option arguments: got %s, maximum of %s', _s, _s.toString(), demandedCommands._.max.toString()));
-                }
-            }
-        }
-    };
-    self.positionalCount = function positionalCount(required, observed) {
-        if (observed < required) {
-            usage.fail(__n('Not enough non-option arguments: got %s, need at least %s', 'Not enough non-option arguments: got %s, need at least %s', observed, observed + '', required + ''));
-        }
-    };
-    self.requiredArguments = function requiredArguments(argv) {
-        const demandedOptions = yargs.getDemandedOptions();
-        let missing = null;
-        for (const key of Object.keys(demandedOptions)) {
-            if (!Object.prototype.hasOwnProperty.call(argv, key) ||
-                typeof argv[key] === 'undefined') {
-                missing = missing || {};
-                missing[key] = demandedOptions[key];
-            }
-        }
-        if (missing) {
-            const customMsgs = [];
-            for (const key of Object.keys(missing)) {
-                const msg = missing[key];
-                if (msg && customMsgs.indexOf(msg) < 0) {
-                    customMsgs.push(msg);
-                }
-            }
-            const customMsg = customMsgs.length ? `\n${customMsgs.join('\n')}` : '';
-            usage.fail(__n('Missing required argument: %s', 'Missing required arguments: %s', Object.keys(missing).length, Object.keys(missing).join(', ') + customMsg));
-        }
-    };
-    self.unknownArguments = function unknownArguments(argv, aliases, positionalMap, isDefaultCommand, checkPositionals = true) {
-        const commandKeys = yargs.getCommandInstance().getCommands();
-        const unknown = [];
-        const currentContext = yargs.getContext();
-        Object.keys(argv).forEach(key => {
-            if (specialKeys.indexOf(key) === -1 &&
-                !Object.prototype.hasOwnProperty.call(positionalMap, key) &&
-                !Object.prototype.hasOwnProperty.call(yargs._getParseContext(), key) &&
-                !self.isValidAndSomeAliasIsNotNew(key, aliases)) {
-                unknown.push(key);
-            }
-        });
-        if (checkPositionals &&
-            (currentContext.commands.length > 0 ||
-                commandKeys.length > 0 ||
-                isDefaultCommand)) {
-            argv._.slice(currentContext.commands.length).forEach(key => {
-                if (commandKeys.indexOf('' + key) === -1) {
-                    unknown.push('' + key);
-                }
-            });
-        }
-        if (unknown.length > 0) {
-            usage.fail(__n('Unknown argument: %s', 'Unknown arguments: %s', unknown.length, unknown.join(', ')));
-        }
-    };
-    self.unknownCommands = function unknownCommands(argv) {
-        const commandKeys = yargs.getCommandInstance().getCommands();
-        const unknown = [];
-        const currentContext = yargs.getContext();
-        if (currentContext.commands.length > 0 || commandKeys.length > 0) {
-            argv._.slice(currentContext.commands.length).forEach(key => {
-                if (commandKeys.indexOf('' + key) === -1) {
-                    unknown.push('' + key);
-                }
-            });
-        }
-        if (unknown.length > 0) {
-            usage.fail(__n('Unknown command: %s', 'Unknown commands: %s', unknown.length, unknown.join(', ')));
-            return true;
-        }
-        else {
-            return false;
-        }
-    };
-    self.isValidAndSomeAliasIsNotNew = function isValidAndSomeAliasIsNotNew(key, aliases) {
-        if (!Object.prototype.hasOwnProperty.call(aliases, key)) {
-            return false;
-        }
-        const newAliases = yargs.parsed.newAliases;
-        for (const a of [key, ...aliases[key]]) {
-            if (!Object.prototype.hasOwnProperty.call(newAliases, a) ||
-                !newAliases[key]) {
-                return true;
-            }
-        }
-        return false;
-    };
-    self.limitedChoices = function limitedChoices(argv) {
-        const options = yargs.getOptions();
-        const invalid = {};
-        if (!Object.keys(options.choices).length)
-            return;
-        Object.keys(argv).forEach(key => {
-            if (specialKeys.indexOf(key) === -1 &&
-                Object.prototype.hasOwnProperty.call(options.choices, key)) {
-                [].concat(argv[key]).forEach(value => {
-                    if (options.choices[key].indexOf(value) === -1 &&
-                        value !== undefined) {
-                        invalid[key] = (invalid[key] || []).concat(value);
-                    }
-                });
-            }
-        });
-        const invalidKeys = Object.keys(invalid);
-        if (!invalidKeys.length)
-            return;
-        let msg = __('Invalid values:');
-        invalidKeys.forEach(key => {
-            msg += `\n  ${__('Argument: %s, Given: %s, Choices: %s', key, usage.stringifiedValues(invalid[key]), usage.stringifiedValues(options.choices[key]))}`;
-        });
-        usage.fail(msg);
-    };
-    let checks = [];
-    self.check = function check(f, global) {
-        checks.push({
-            func: f,
-            global,
-        });
-    };
-    self.customChecks = function customChecks(argv, aliases) {
-        for (let i = 0, f; (f = checks[i]) !== undefined; i++) {
-            const func = f.func;
-            let result = null;
-            try {
-                result = func(argv, aliases);
-            }
-            catch (err) {
-                usage.fail(err.message ? err.message : err, err);
-                continue;
-            }
-            if (!result) {
-                usage.fail(__('Argument check failed: %s', func.toString()));
-            }
-            else if (typeof result === 'string' || result instanceof Error) {
-                usage.fail(result.toString(), result);
-            }
-        }
-    };
-    let implied = {};
-    self.implies = function implies(key, value) {
-        argsert('<string|object> [array|number|string]', [key, value], arguments.length);
-        if (typeof key === 'object') {
-            Object.keys(key).forEach(k => {
-                self.implies(k, key[k]);
-            });
-        }
-        else {
-            yargs.global(key);
-            if (!implied[key]) {
-                implied[key] = [];
-            }
-            if (Array.isArray(value)) {
-                value.forEach(i => self.implies(key, i));
-            }
-            else {
-                assertNotStrictEqual(value, undefined, shim);
-                implied[key].push(value);
-            }
-        }
-    };
-    self.getImplied = function getImplied() {
-        return implied;
-    };
-    function keyExists(argv, val) {
-        const num = Number(val);
-        val = isNaN(num) ? val : num;
-        if (typeof val === 'number') {
-            val = argv._.length >= val;
-        }
-        else if (val.match(/^--no-.+/)) {
-            val = val.match(/^--no-(.+)/)[1];
-            val = !argv[val];
-        }
-        else {
-            val = argv[val];
-        }
-        return val;
-    }
-    self.implications = function implications(argv) {
-        const implyFail = [];
-        Object.keys(implied).forEach(key => {
-            const origKey = key;
-            (implied[key] || []).forEach(value => {
-                let key = origKey;
-                const origValue = value;
-                key = keyExists(argv, key);
-                value = keyExists(argv, value);
-                if (key && !value) {
-                    implyFail.push(` ${origKey} -> ${origValue}`);
-                }
-            });
-        });
-        if (implyFail.length) {
-            let msg = `${__('Implications failed:')}\n`;
-            implyFail.forEach(value => {
-                msg += value;
-            });
-            usage.fail(msg);
-        }
-    };
-    let conflicting = {};
-    self.conflicts = function conflicts(key, value) {
-        argsert('<string|object> [array|string]', [key, value], arguments.length);
-        if (typeof key === 'object') {
-            Object.keys(key).forEach(k => {
-                self.conflicts(k, key[k]);
-            });
-        }
-        else {
-            yargs.global(key);
-            if (!conflicting[key]) {
-                conflicting[key] = [];
-            }
-            if (Array.isArray(value)) {
-                value.forEach(i => self.conflicts(key, i));
-            }
-            else {
-                conflicting[key].push(value);
-            }
-        }
-    };
-    self.getConflicting = () => conflicting;
-    self.conflicting = function conflictingFn(argv) {
-        Object.keys(argv).forEach(key => {
-            if (conflicting[key]) {
-                conflicting[key].forEach(value => {
-                    if (value && argv[key] !== undefined && argv[value] !== undefined) {
-                        usage.fail(__('Arguments %s and %s are mutually exclusive', key, value));
-                    }
-                });
-            }
-        });
-    };
-    self.recommendCommands = function recommendCommands(cmd, potentialCommands) {
-        const threshold = 3;
-        potentialCommands = potentialCommands.sort((a, b) => b.length - a.length);
-        let recommended = null;
-        let bestDistance = Infinity;
-        for (let i = 0, candidate; (candidate = potentialCommands[i]) !== undefined; i++) {
-            const d = levenshtein(cmd, candidate);
-            if (d <= threshold && d < bestDistance) {
-                bestDistance = d;
-                recommended = candidate;
-            }
-        }
-        if (recommended)
-            usage.fail(__('Did you mean %s?', recommended));
-    };
-    self.reset = function reset(localLookup) {
-        implied = objFilter(implied, k => !localLookup[k]);
-        conflicting = objFilter(conflicting, k => !localLookup[k]);
-        checks = checks.filter(c => c.global);
-        return self;
-    };
-    const frozens = [];
-    self.freeze = function freeze() {
-        frozens.push({
-            implied,
-            checks,
-            conflicting,
-        });
-    };
-    self.unfreeze = function unfreeze() {
-        const frozen = frozens.pop();
-        assertNotStrictEqual(frozen, undefined, shim);
-        ({ implied, checks, conflicting } = frozen);
-    };
-    return self;
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/utils/apply-extends.js
-
-let previouslyVisitedConfigs = [];
-let apply_extends_shim;
-function applyExtends(config, cwd, mergeExtends, _shim) {
-    apply_extends_shim = _shim;
-    let defaultConfig = {};
-    if (Object.prototype.hasOwnProperty.call(config, 'extends')) {
-        if (typeof config.extends !== 'string')
-            return defaultConfig;
-        const isPath = /\.json|\..*rc$/.test(config.extends);
-        let pathToDefault = null;
-        if (!isPath) {
-            try {
-                pathToDefault = require.resolve(config.extends);
-            }
-            catch (_err) {
-                return config;
-            }
-        }
-        else {
-            pathToDefault = getPathToDefaultConfig(cwd, config.extends);
-        }
-        checkForCircularExtends(pathToDefault);
-        previouslyVisitedConfigs.push(pathToDefault);
-        defaultConfig = isPath
-            ? JSON.parse(apply_extends_shim.readFileSync(pathToDefault, 'utf8'))
-            : require(config.extends);
-        delete config.extends;
-        defaultConfig = applyExtends(defaultConfig, apply_extends_shim.path.dirname(pathToDefault), mergeExtends, apply_extends_shim);
-    }
-    previouslyVisitedConfigs = [];
-    return mergeExtends
-        ? mergeDeep(defaultConfig, config)
-        : Object.assign({}, defaultConfig, config);
-}
-function checkForCircularExtends(cfgPath) {
-    if (previouslyVisitedConfigs.indexOf(cfgPath) > -1) {
-        throw new YError(`Circular extended configurations: '${cfgPath}'.`);
-    }
-}
-function getPathToDefaultConfig(cwd, pathToExtend) {
-    return apply_extends_shim.path.resolve(cwd, pathToExtend);
-}
-function mergeDeep(config1, config2) {
-    const target = {};
-    function isObject(obj) {
-        return obj && typeof obj === 'object' && !Array.isArray(obj);
-    }
-    Object.assign(target, config1);
-    for (const key of Object.keys(config2)) {
-        if (isObject(config2[key]) && isObject(target[key])) {
-            target[key] = mergeDeep(config1[key], config2[key]);
-        }
-        else {
-            target[key] = config2[key];
-        }
-    }
-    return target;
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs/build/lib/yargs-factory.js
-
-
-
-
-
-
-
-
-
-
-
-
-let yargs_factory_shim;
-function YargsWithShim(_shim) {
-    yargs_factory_shim = _shim;
-    return Yargs;
-}
-function Yargs(processArgs = [], cwd = yargs_factory_shim.process.cwd(), parentRequire) {
-    const self = {};
-    let command;
-    let completion = null;
-    let groups = {};
-    const globalMiddleware = [];
-    let output = '';
-    const preservedGroups = {};
-    let usage;
-    let validation;
-    let handlerFinishCommand = null;
-    const y18n = yargs_factory_shim.y18n;
-    self.middleware = globalMiddlewareFactory(globalMiddleware, self);
-    self.scriptName = function (scriptName) {
-        self.customScriptName = true;
-        self.$0 = scriptName;
-        return self;
-    };
-    let default$0;
-    if (/\b(node|iojs|electron)(\.exe)?$/.test(yargs_factory_shim.process.argv()[0])) {
-        default$0 = yargs_factory_shim.process.argv().slice(1, 2);
-    }
-    else {
-        default$0 = yargs_factory_shim.process.argv().slice(0, 1);
-    }
-    self.$0 = default$0
-        .map(x => {
-        const b = rebase(cwd, x);
-        return x.match(/^(\/|([a-zA-Z]:)?\\)/) && b.length < x.length ? b : x;
-    })
-        .join(' ')
-        .trim();
-    if (yargs_factory_shim.getEnv('_') && yargs_factory_shim.getProcessArgvBin() === yargs_factory_shim.getEnv('_')) {
-        self.$0 = yargs_factory_shim
-            .getEnv('_')
-            .replace(`${yargs_factory_shim.path.dirname(yargs_factory_shim.process.execPath())}/`, '');
-    }
-    const context = { resets: -1, commands: [], fullCommands: [], files: [] };
-    self.getContext = () => context;
-    let hasOutput = false;
-    let exitError = null;
-    self.exit = (code, err) => {
-        hasOutput = true;
-        exitError = err;
-        if (exitProcess)
-            yargs_factory_shim.process.exit(code);
-    };
-    let completionCommand = null;
-    self.completion = function (cmd, desc, fn) {
-        argsert('[string] [string|boolean|function] [function]', [cmd, desc, fn], arguments.length);
-        if (typeof desc === 'function') {
-            fn = desc;
-            desc = undefined;
-        }
-        completionCommand = cmd || completionCommand || 'completion';
-        if (!desc && desc !== false) {
-            desc = 'generate completion script';
-        }
-        self.command(completionCommand, desc);
-        if (fn)
-            completion.registerFunction(fn);
-        return self;
-    };
-    let options;
-    self.resetOptions = self.reset = function resetOptions(aliases = {}) {
-        context.resets++;
-        options = options || {};
-        const tmpOptions = {};
-        tmpOptions.local = options.local ? options.local : [];
-        tmpOptions.configObjects = options.configObjects
-            ? options.configObjects
-            : [];
-        const localLookup = {};
-        tmpOptions.local.forEach(l => {
-            localLookup[l] = true;
-            (aliases[l] || []).forEach(a => {
-                localLookup[a] = true;
-            });
-        });
-        Object.assign(preservedGroups, Object.keys(groups).reduce((acc, groupName) => {
-            const keys = groups[groupName].filter(key => !(key in localLookup));
-            if (keys.length > 0) {
-                acc[groupName] = keys;
-            }
-            return acc;
-        }, {}));
-        groups = {};
-        const arrayOptions = [
-            'array',
-            'boolean',
-            'string',
-            'skipValidation',
-            'count',
-            'normalize',
-            'number',
-            'hiddenOptions',
-        ];
-        const objectOptions = [
-            'narg',
-            'key',
-            'alias',
-            'default',
-            'defaultDescription',
-            'config',
-            'choices',
-            'demandedOptions',
-            'demandedCommands',
-            'coerce',
-            'deprecatedOptions',
-        ];
-        arrayOptions.forEach(k => {
-            tmpOptions[k] = (options[k] || []).filter((k) => !localLookup[k]);
-        });
-        objectOptions.forEach((k) => {
-            tmpOptions[k] = objFilter(options[k], k => !localLookup[k]);
-        });
-        tmpOptions.envPrefix = options.envPrefix;
-        options = tmpOptions;
-        usage = usage ? usage.reset(localLookup) : usage_usage(self, y18n, yargs_factory_shim);
-        validation = validation
-            ? validation.reset(localLookup)
-            : validation_validation(self, usage, y18n, yargs_factory_shim);
-        command = command
-            ? command.reset()
-            : command_command(self, usage, validation, globalMiddleware, yargs_factory_shim);
-        if (!completion)
-            completion = completion_completion(self, usage, command, yargs_factory_shim);
-        completionCommand = null;
-        output = '';
-        exitError = null;
-        hasOutput = false;
-        self.parsed = false;
-        return self;
-    };
-    self.resetOptions();
-    const frozens = [];
-    function freeze() {
-        frozens.push({
-            options,
-            configObjects: options.configObjects.slice(0),
-            exitProcess,
-            groups,
-            strict,
-            strictCommands,
-            strictOptions,
-            completionCommand,
-            output,
-            exitError,
-            hasOutput,
-            parsed: self.parsed,
-            parseFn,
-            parseContext,
-            handlerFinishCommand,
-        });
-        usage.freeze();
-        validation.freeze();
-        command.freeze();
-    }
-    function unfreeze() {
-        const frozen = frozens.pop();
-        assertNotStrictEqual(frozen, undefined, yargs_factory_shim);
-        let configObjects;
-        ({
-            options,
-            configObjects,
-            exitProcess,
-            groups,
-            output,
-            exitError,
-            hasOutput,
-            parsed: self.parsed,
-            strict,
-            strictCommands,
-            strictOptions,
-            completionCommand,
-            parseFn,
-            parseContext,
-            handlerFinishCommand,
-        } = frozen);
-        options.configObjects = configObjects;
-        usage.unfreeze();
-        validation.unfreeze();
-        command.unfreeze();
-    }
-    self.boolean = function (keys) {
-        argsert('<array|string>', [keys], arguments.length);
-        populateParserHintArray('boolean', keys);
-        return self;
-    };
-    self.array = function (keys) {
-        argsert('<array|string>', [keys], arguments.length);
-        populateParserHintArray('array', keys);
-        return self;
-    };
-    self.number = function (keys) {
-        argsert('<array|string>', [keys], arguments.length);
-        populateParserHintArray('number', keys);
-        return self;
-    };
-    self.normalize = function (keys) {
-        argsert('<array|string>', [keys], arguments.length);
-        populateParserHintArray('normalize', keys);
-        return self;
-    };
-    self.count = function (keys) {
-        argsert('<array|string>', [keys], arguments.length);
-        populateParserHintArray('count', keys);
-        return self;
-    };
-    self.string = function (keys) {
-        argsert('<array|string>', [keys], arguments.length);
-        populateParserHintArray('string', keys);
-        return self;
-    };
-    self.requiresArg = function (keys) {
-        argsert('<array|string|object> [number]', [keys], arguments.length);
-        if (typeof keys === 'string' && options.narg[keys]) {
-            return self;
-        }
-        else {
-            populateParserHintSingleValueDictionary(self.requiresArg, 'narg', keys, NaN);
-        }
-        return self;
-    };
-    self.skipValidation = function (keys) {
-        argsert('<array|string>', [keys], arguments.length);
-        populateParserHintArray('skipValidation', keys);
-        return self;
-    };
-    function populateParserHintArray(type, keys) {
-        keys = [].concat(keys);
-        keys.forEach(key => {
-            key = sanitizeKey(key);
-            options[type].push(key);
-        });
-    }
-    self.nargs = function (key, value) {
-        argsert('<string|object|array> [number]', [key, value], arguments.length);
-        populateParserHintSingleValueDictionary(self.nargs, 'narg', key, value);
-        return self;
-    };
-    self.choices = function (key, value) {
-        argsert('<object|string|array> [string|array]', [key, value], arguments.length);
-        populateParserHintArrayDictionary(self.choices, 'choices', key, value);
-        return self;
-    };
-    self.alias = function (key, value) {
-        argsert('<object|string|array> [string|array]', [key, value], arguments.length);
-        populateParserHintArrayDictionary(self.alias, 'alias', key, value);
-        return self;
-    };
-    self.default = self.defaults = function (key, value, defaultDescription) {
-        argsert('<object|string|array> [*] [string]', [key, value, defaultDescription], arguments.length);
-        if (defaultDescription) {
-            assertSingleKey(key, yargs_factory_shim);
-            options.defaultDescription[key] = defaultDescription;
-        }
-        if (typeof value === 'function') {
-            assertSingleKey(key, yargs_factory_shim);
-            if (!options.defaultDescription[key])
-                options.defaultDescription[key] = usage.functionDescription(value);
-            value = value.call();
-        }
-        populateParserHintSingleValueDictionary(self.default, 'default', key, value);
-        return self;
-    };
-    self.describe = function (key, desc) {
-        argsert('<object|string|array> [string]', [key, desc], arguments.length);
-        setKey(key, true);
-        usage.describe(key, desc);
-        return self;
-    };
-    function setKey(key, set) {
-        populateParserHintSingleValueDictionary(setKey, 'key', key, set);
-        return self;
-    }
-    function demandOption(keys, msg) {
-        argsert('<object|string|array> [string]', [keys, msg], arguments.length);
-        populateParserHintSingleValueDictionary(self.demandOption, 'demandedOptions', keys, msg);
-        return self;
-    }
-    self.demandOption = demandOption;
-    self.coerce = function (keys, value) {
-        argsert('<object|string|array> [function]', [keys, value], arguments.length);
-        populateParserHintSingleValueDictionary(self.coerce, 'coerce', keys, value);
-        return self;
-    };
-    function populateParserHintSingleValueDictionary(builder, type, key, value) {
-        populateParserHintDictionary(builder, type, key, value, (type, key, value) => {
-            options[type][key] = value;
-        });
-    }
-    function populateParserHintArrayDictionary(builder, type, key, value) {
-        populateParserHintDictionary(builder, type, key, value, (type, key, value) => {
-            options[type][key] = (options[type][key] || []).concat(value);
-        });
-    }
-    function populateParserHintDictionary(builder, type, key, value, singleKeyHandler) {
-        if (Array.isArray(key)) {
-            key.forEach(k => {
-                builder(k, value);
-            });
-        }
-        else if (((key) => typeof key === 'object')(key)) {
-            for (const k of objectKeys(key)) {
-                builder(k, key[k]);
-            }
-        }
-        else {
-            singleKeyHandler(type, sanitizeKey(key), value);
-        }
-    }
-    function sanitizeKey(key) {
-        if (key === '__proto__')
-            return '___proto___';
-        return key;
-    }
-    function deleteFromParserHintObject(optionKey) {
-        objectKeys(options).forEach((hintKey) => {
-            if (((key) => key === 'configObjects')(hintKey))
-                return;
-            const hint = options[hintKey];
-            if (Array.isArray(hint)) {
-                if (~hint.indexOf(optionKey))
-                    hint.splice(hint.indexOf(optionKey), 1);
-            }
-            else if (typeof hint === 'object') {
-                delete hint[optionKey];
-            }
-        });
-        delete usage.getDescriptions()[optionKey];
-    }
-    self.config = function config(key = 'config', msg, parseFn) {
-        argsert('[object|string] [string|function] [function]', [key, msg, parseFn], arguments.length);
-        if (typeof key === 'object' && !Array.isArray(key)) {
-            key = applyExtends(key, cwd, self.getParserConfiguration()['deep-merge-config'] || false, yargs_factory_shim);
-            options.configObjects = (options.configObjects || []).concat(key);
-            return self;
-        }
-        if (typeof msg === 'function') {
-            parseFn = msg;
-            msg = undefined;
-        }
-        self.describe(key, msg || usage.deferY18nLookup('Path to JSON config file'));
-        (Array.isArray(key) ? key : [key]).forEach(k => {
-            options.config[k] = parseFn || true;
-        });
-        return self;
-    };
-    self.example = function (cmd, description) {
-        argsert('<string|array> [string]', [cmd, description], arguments.length);
-        if (Array.isArray(cmd)) {
-            cmd.forEach(exampleParams => self.example(...exampleParams));
-        }
-        else {
-            usage.example(cmd, description);
-        }
-        return self;
-    };
-    self.command = function (cmd, description, builder, handler, middlewares, deprecated) {
-        argsert('<string|array|object> [string|boolean] [function|object] [function] [array] [boolean|string]', [cmd, description, builder, handler, middlewares, deprecated], arguments.length);
-        command.addHandler(cmd, description, builder, handler, middlewares, deprecated);
-        return self;
-    };
-    self.commandDir = function (dir, opts) {
-        argsert('<string> [object]', [dir, opts], arguments.length);
-        const req = parentRequire || yargs_factory_shim.require;
-        command.addDirectory(dir, self.getContext(), req, yargs_factory_shim.getCallerFile(), opts);
-        return self;
-    };
-    self.demand = self.required = self.require = function demand(keys, max, msg) {
-        if (Array.isArray(max)) {
-            max.forEach(key => {
-                assertNotStrictEqual(msg, true, yargs_factory_shim);
-                demandOption(key, msg);
-            });
-            max = Infinity;
-        }
-        else if (typeof max !== 'number') {
-            msg = max;
-            max = Infinity;
-        }
-        if (typeof keys === 'number') {
-            assertNotStrictEqual(msg, true, yargs_factory_shim);
-            self.demandCommand(keys, max, msg, msg);
-        }
-        else if (Array.isArray(keys)) {
-            keys.forEach(key => {
-                assertNotStrictEqual(msg, true, yargs_factory_shim);
-                demandOption(key, msg);
-            });
-        }
-        else {
-            if (typeof msg === 'string') {
-                demandOption(keys, msg);
-            }
-            else if (msg === true || typeof msg === 'undefined') {
-                demandOption(keys);
-            }
-        }
-        return self;
-    };
-    self.demandCommand = function demandCommand(min = 1, max, minMsg, maxMsg) {
-        argsert('[number] [number|string] [string|null|undefined] [string|null|undefined]', [min, max, minMsg, maxMsg], arguments.length);
-        if (typeof max !== 'number') {
-            minMsg = max;
-            max = Infinity;
-        }
-        self.global('_', false);
-        options.demandedCommands._ = {
-            min,
-            max,
-            minMsg,
-            maxMsg,
-        };
-        return self;
-    };
-    self.getDemandedOptions = () => {
-        argsert([], 0);
-        return options.demandedOptions;
-    };
-    self.getDemandedCommands = () => {
-        argsert([], 0);
-        return options.demandedCommands;
-    };
-    self.deprecateOption = function deprecateOption(option, message) {
-        argsert('<string> [string|boolean]', [option, message], arguments.length);
-        options.deprecatedOptions[option] = message;
-        return self;
-    };
-    self.getDeprecatedOptions = () => {
-        argsert([], 0);
-        return options.deprecatedOptions;
-    };
-    self.implies = function (key, value) {
-        argsert('<string|object> [number|string|array]', [key, value], arguments.length);
-        validation.implies(key, value);
-        return self;
-    };
-    self.conflicts = function (key1, key2) {
-        argsert('<string|object> [string|array]', [key1, key2], arguments.length);
-        validation.conflicts(key1, key2);
-        return self;
-    };
-    self.usage = function (msg, description, builder, handler) {
-        argsert('<string|null|undefined> [string|boolean] [function|object] [function]', [msg, description, builder, handler], arguments.length);
-        if (description !== undefined) {
-            assertNotStrictEqual(msg, null, yargs_factory_shim);
-            if ((msg || '').match(/^\$0( |$)/)) {
-                return self.command(msg, description, builder, handler);
-            }
-            else {
-                throw new YError('.usage() description must start with $0 if being used as alias for .command()');
-            }
-        }
-        else {
-            usage.usage(msg);
-            return self;
-        }
-    };
-    self.epilogue = self.epilog = function (msg) {
-        argsert('<string>', [msg], arguments.length);
-        usage.epilog(msg);
-        return self;
-    };
-    self.fail = function (f) {
-        argsert('<function>', [f], arguments.length);
-        usage.failFn(f);
-        return self;
-    };
-    self.onFinishCommand = function (f) {
-        argsert('<function>', [f], arguments.length);
-        handlerFinishCommand = f;
-        return self;
-    };
-    self.getHandlerFinishCommand = () => handlerFinishCommand;
-    self.check = function (f, _global) {
-        argsert('<function> [boolean]', [f, _global], arguments.length);
-        validation.check(f, _global !== false);
-        return self;
-    };
-    self.global = function global(globals, global) {
-        argsert('<string|array> [boolean]', [globals, global], arguments.length);
-        globals = [].concat(globals);
-        if (global !== false) {
-            options.local = options.local.filter(l => globals.indexOf(l) === -1);
-        }
-        else {
-            globals.forEach(g => {
-                if (options.local.indexOf(g) === -1)
-                    options.local.push(g);
-            });
-        }
-        return self;
-    };
-    self.pkgConf = function pkgConf(key, rootPath) {
-        argsert('<string> [string]', [key, rootPath], arguments.length);
-        let conf = null;
-        const obj = pkgUp(rootPath || cwd);
-        if (obj[key] && typeof obj[key] === 'object') {
-            conf = applyExtends(obj[key], rootPath || cwd, self.getParserConfiguration()['deep-merge-config'] || false, yargs_factory_shim);
-            options.configObjects = (options.configObjects || []).concat(conf);
-        }
-        return self;
-    };
-    const pkgs = {};
-    function pkgUp(rootPath) {
-        const npath = rootPath || '*';
-        if (pkgs[npath])
-            return pkgs[npath];
-        let obj = {};
+var nodePlatformShim = {
+    fs: {
+        readFileSync: fs.readFileSync,
+        writeFile: fs.writeFile
+    },
+    format: util.format,
+    resolve: path.resolve,
+    exists: (file) => {
         try {
-            let startDir = rootPath || yargs_factory_shim.mainFilename;
-            if (!rootPath && yargs_factory_shim.path.extname(startDir)) {
-                startDir = yargs_factory_shim.path.dirname(startDir);
-            }
-            const pkgJsonPath = yargs_factory_shim.findUp(startDir, (dir, names) => {
-                if (names.includes('package.json')) {
-                    return 'package.json';
-                }
-                else {
-                    return undefined;
-                }
-            });
-            assertNotStrictEqual(pkgJsonPath, undefined, yargs_factory_shim);
-            obj = JSON.parse(yargs_factory_shim.readFileSync(pkgJsonPath, 'utf8'));
-        }
-        catch (_noop) { }
-        pkgs[npath] = obj || {};
-        return pkgs[npath];
-    }
-    let parseFn = null;
-    let parseContext = null;
-    self.parse = function parse(args, shortCircuit, _parseFn) {
-        argsert('[string|array] [function|boolean|object] [function]', [args, shortCircuit, _parseFn], arguments.length);
-        freeze();
-        if (typeof args === 'undefined') {
-            const argv = self._parseArgs(processArgs);
-            const tmpParsed = self.parsed;
-            unfreeze();
-            self.parsed = tmpParsed;
-            return argv;
-        }
-        if (typeof shortCircuit === 'object') {
-            parseContext = shortCircuit;
-            shortCircuit = _parseFn;
-        }
-        if (typeof shortCircuit === 'function') {
-            parseFn = shortCircuit;
-            shortCircuit = false;
-        }
-        if (!shortCircuit)
-            processArgs = args;
-        if (parseFn)
-            exitProcess = false;
-        const parsed = self._parseArgs(args, !!shortCircuit);
-        completion.setParsed(self.parsed);
-        if (parseFn)
-            parseFn(exitError, parsed, output);
-        unfreeze();
-        return parsed;
-    };
-    self._getParseContext = () => parseContext || {};
-    self._hasParseCallback = () => !!parseFn;
-    self.option = self.options = function option(key, opt) {
-        argsert('<string|object> [object]', [key, opt], arguments.length);
-        if (typeof key === 'object') {
-            Object.keys(key).forEach(k => {
-                self.options(k, key[k]);
-            });
-        }
-        else {
-            if (typeof opt !== 'object') {
-                opt = {};
-            }
-            options.key[key] = true;
-            if (opt.alias)
-                self.alias(key, opt.alias);
-            const deprecate = opt.deprecate || opt.deprecated;
-            if (deprecate) {
-                self.deprecateOption(key, deprecate);
-            }
-            const demand = opt.demand || opt.required || opt.require;
-            if (demand) {
-                self.demand(key, demand);
-            }
-            if (opt.demandOption) {
-                self.demandOption(key, typeof opt.demandOption === 'string' ? opt.demandOption : undefined);
-            }
-            if (opt.conflicts) {
-                self.conflicts(key, opt.conflicts);
-            }
-            if ('default' in opt) {
-                self.default(key, opt.default);
-            }
-            if (opt.implies !== undefined) {
-                self.implies(key, opt.implies);
-            }
-            if (opt.nargs !== undefined) {
-                self.nargs(key, opt.nargs);
-            }
-            if (opt.config) {
-                self.config(key, opt.configParser);
-            }
-            if (opt.normalize) {
-                self.normalize(key);
-            }
-            if (opt.choices) {
-                self.choices(key, opt.choices);
-            }
-            if (opt.coerce) {
-                self.coerce(key, opt.coerce);
-            }
-            if (opt.group) {
-                self.group(key, opt.group);
-            }
-            if (opt.boolean || opt.type === 'boolean') {
-                self.boolean(key);
-                if (opt.alias)
-                    self.boolean(opt.alias);
-            }
-            if (opt.array || opt.type === 'array') {
-                self.array(key);
-                if (opt.alias)
-                    self.array(opt.alias);
-            }
-            if (opt.number || opt.type === 'number') {
-                self.number(key);
-                if (opt.alias)
-                    self.number(opt.alias);
-            }
-            if (opt.string || opt.type === 'string') {
-                self.string(key);
-                if (opt.alias)
-                    self.string(opt.alias);
-            }
-            if (opt.count || opt.type === 'count') {
-                self.count(key);
-            }
-            if (typeof opt.global === 'boolean') {
-                self.global(key, opt.global);
-            }
-            if (opt.defaultDescription) {
-                options.defaultDescription[key] = opt.defaultDescription;
-            }
-            if (opt.skipValidation) {
-                self.skipValidation(key);
-            }
-            const desc = opt.describe || opt.description || opt.desc;
-            self.describe(key, desc);
-            if (opt.hidden) {
-                self.hide(key);
-            }
-            if (opt.requiresArg) {
-                self.requiresArg(key);
-            }
-        }
-        return self;
-    };
-    self.getOptions = () => options;
-    self.positional = function (key, opts) {
-        argsert('<string> <object>', [key, opts], arguments.length);
-        if (context.resets === 0) {
-            throw new YError(".positional() can only be called in a command's builder function");
-        }
-        const supportedOpts = [
-            'default',
-            'defaultDescription',
-            'implies',
-            'normalize',
-            'choices',
-            'conflicts',
-            'coerce',
-            'type',
-            'describe',
-            'desc',
-            'description',
-            'alias',
-        ];
-        opts = objFilter(opts, (k, v) => {
-            let accept = supportedOpts.indexOf(k) !== -1;
-            if (k === 'type' && ['string', 'number', 'boolean'].indexOf(v) === -1)
-                accept = false;
-            return accept;
-        });
-        const fullCommand = context.fullCommands[context.fullCommands.length - 1];
-        const parseOptions = fullCommand
-            ? command.cmdToParseOptions(fullCommand)
-            : {
-                array: [],
-                alias: {},
-                default: {},
-                demand: {},
-            };
-        objectKeys(parseOptions).forEach(pk => {
-            const parseOption = parseOptions[pk];
-            if (Array.isArray(parseOption)) {
-                if (parseOption.indexOf(key) !== -1)
-                    opts[pk] = true;
-            }
-            else {
-                if (parseOption[key] && !(pk in opts))
-                    opts[pk] = parseOption[key];
-            }
-        });
-        self.group(key, usage.getPositionalGroupName());
-        return self.option(key, opts);
-    };
-    self.group = function group(opts, groupName) {
-        argsert('<string|array> <string>', [opts, groupName], arguments.length);
-        const existing = preservedGroups[groupName] || groups[groupName];
-        if (preservedGroups[groupName]) {
-            delete preservedGroups[groupName];
-        }
-        const seen = {};
-        groups[groupName] = (existing || []).concat(opts).filter(key => {
-            if (seen[key])
-                return false;
-            return (seen[key] = true);
-        });
-        return self;
-    };
-    self.getGroups = () => Object.assign({}, groups, preservedGroups);
-    self.env = function (prefix) {
-        argsert('[string|boolean]', [prefix], arguments.length);
-        if (prefix === false)
-            delete options.envPrefix;
-        else
-            options.envPrefix = prefix || '';
-        return self;
-    };
-    self.wrap = function (cols) {
-        argsert('<number|null|undefined>', [cols], arguments.length);
-        usage.wrap(cols);
-        return self;
-    };
-    let strict = false;
-    self.strict = function (enabled) {
-        argsert('[boolean]', [enabled], arguments.length);
-        strict = enabled !== false;
-        return self;
-    };
-    self.getStrict = () => strict;
-    let strictCommands = false;
-    self.strictCommands = function (enabled) {
-        argsert('[boolean]', [enabled], arguments.length);
-        strictCommands = enabled !== false;
-        return self;
-    };
-    self.getStrictCommands = () => strictCommands;
-    let strictOptions = false;
-    self.strictOptions = function (enabled) {
-        argsert('[boolean]', [enabled], arguments.length);
-        strictOptions = enabled !== false;
-        return self;
-    };
-    self.getStrictOptions = () => strictOptions;
-    let parserConfig = {};
-    self.parserConfiguration = function parserConfiguration(config) {
-        argsert('<object>', [config], arguments.length);
-        parserConfig = config;
-        return self;
-    };
-    self.getParserConfiguration = () => parserConfig;
-    self.showHelp = function (level) {
-        argsert('[string|function]', [level], arguments.length);
-        if (!self.parsed)
-            self._parseArgs(processArgs);
-        if (command.hasDefaultCommand()) {
-            context.resets++;
-            command.runDefaultBuilderOn(self);
-        }
-        usage.showHelp(level);
-        return self;
-    };
-    let versionOpt = null;
-    self.version = function version(opt, msg, ver) {
-        const defaultVersionOpt = 'version';
-        argsert('[boolean|string] [string] [string]', [opt, msg, ver], arguments.length);
-        if (versionOpt) {
-            deleteFromParserHintObject(versionOpt);
-            usage.version(undefined);
-            versionOpt = null;
-        }
-        if (arguments.length === 0) {
-            ver = guessVersion();
-            opt = defaultVersionOpt;
-        }
-        else if (arguments.length === 1) {
-            if (opt === false) {
-                return self;
-            }
-            ver = opt;
-            opt = defaultVersionOpt;
-        }
-        else if (arguments.length === 2) {
-            ver = msg;
-            msg = undefined;
-        }
-        versionOpt = typeof opt === 'string' ? opt : defaultVersionOpt;
-        msg = msg || usage.deferY18nLookup('Show version number');
-        usage.version(ver || undefined);
-        self.boolean(versionOpt);
-        self.describe(versionOpt, msg);
-        return self;
-    };
-    function guessVersion() {
-        const obj = pkgUp();
-        return obj.version || 'unknown';
-    }
-    let helpOpt = null;
-    self.addHelpOpt = self.help = function addHelpOpt(opt, msg) {
-        const defaultHelpOpt = 'help';
-        argsert('[string|boolean] [string]', [opt, msg], arguments.length);
-        if (helpOpt) {
-            deleteFromParserHintObject(helpOpt);
-            helpOpt = null;
-        }
-        if (arguments.length === 1) {
-            if (opt === false)
-                return self;
-        }
-        helpOpt = typeof opt === 'string' ? opt : defaultHelpOpt;
-        self.boolean(helpOpt);
-        self.describe(helpOpt, msg || usage.deferY18nLookup('Show help'));
-        return self;
-    };
-    const defaultShowHiddenOpt = 'show-hidden';
-    options.showHiddenOpt = defaultShowHiddenOpt;
-    self.addShowHiddenOpt = self.showHidden = function addShowHiddenOpt(opt, msg) {
-        argsert('[string|boolean] [string]', [opt, msg], arguments.length);
-        if (arguments.length === 1) {
-            if (opt === false)
-                return self;
-        }
-        const showHiddenOpt = typeof opt === 'string' ? opt : defaultShowHiddenOpt;
-        self.boolean(showHiddenOpt);
-        self.describe(showHiddenOpt, msg || usage.deferY18nLookup('Show hidden options'));
-        options.showHiddenOpt = showHiddenOpt;
-        return self;
-    };
-    self.hide = function hide(key) {
-        argsert('<string>', [key], arguments.length);
-        options.hiddenOptions.push(key);
-        return self;
-    };
-    self.showHelpOnFail = function showHelpOnFail(enabled, message) {
-        argsert('[boolean|string] [string]', [enabled, message], arguments.length);
-        usage.showHelpOnFail(enabled, message);
-        return self;
-    };
-    let exitProcess = true;
-    self.exitProcess = function (enabled = true) {
-        argsert('[boolean]', [enabled], arguments.length);
-        exitProcess = enabled;
-        return self;
-    };
-    self.getExitProcess = () => exitProcess;
-    self.showCompletionScript = function ($0, cmd) {
-        argsert('[string] [string]', [$0, cmd], arguments.length);
-        $0 = $0 || self.$0;
-        _logger.log(completion.generateCompletionScript($0, cmd || completionCommand || 'completion'));
-        return self;
-    };
-    self.getCompletion = function (args, done) {
-        argsert('<array> <function>', [args, done], arguments.length);
-        completion.getCompletion(args, done);
-    };
-    self.locale = function (locale) {
-        argsert('[string]', [locale], arguments.length);
-        if (!locale) {
-            guessLocale();
-            return y18n.getLocale();
-        }
-        detectLocale = false;
-        y18n.setLocale(locale);
-        return self;
-    };
-    self.updateStrings = self.updateLocale = function (obj) {
-        argsert('<object>', [obj], arguments.length);
-        detectLocale = false;
-        y18n.updateLocale(obj);
-        return self;
-    };
-    let detectLocale = true;
-    self.detectLocale = function (detect) {
-        argsert('<boolean>', [detect], arguments.length);
-        detectLocale = detect;
-        return self;
-    };
-    self.getDetectLocale = () => detectLocale;
-    const _logger = {
-        log(...args) {
-            if (!self._hasParseCallback())
-                console.log(...args);
-            hasOutput = true;
-            if (output.length)
-                output += '\n';
-            output += args.join(' ');
-        },
-        error(...args) {
-            if (!self._hasParseCallback())
-                console.error(...args);
-            hasOutput = true;
-            if (output.length)
-                output += '\n';
-            output += args.join(' ');
-        },
-    };
-    self._getLoggerInstance = () => _logger;
-    self._hasOutput = () => hasOutput;
-    self._setHasOutput = () => {
-        hasOutput = true;
-    };
-    let recommendCommands;
-    self.recommendCommands = function (recommend = true) {
-        argsert('[boolean]', [recommend], arguments.length);
-        recommendCommands = recommend;
-        return self;
-    };
-    self.getUsageInstance = () => usage;
-    self.getValidationInstance = () => validation;
-    self.getCommandInstance = () => command;
-    self.terminalWidth = () => {
-        argsert([], 0);
-        return yargs_factory_shim.process.stdColumns;
-    };
-    Object.defineProperty(self, 'argv', {
-        get: () => self._parseArgs(processArgs),
-        enumerable: true,
-    });
-    self._parseArgs = function parseArgs(args, shortCircuit, _calledFromCommand, commandIndex) {
-        let skipValidation = !!_calledFromCommand;
-        args = args || processArgs;
-        options.__ = y18n.__;
-        options.configuration = self.getParserConfiguration();
-        const populateDoubleDash = !!options.configuration['populate--'];
-        const config = Object.assign({}, options.configuration, {
-            'populate--': true,
-        });
-        const parsed = yargs_factory_shim.Parser.detailed(args, Object.assign({}, options, {
-            configuration: Object.assign({ 'parse-positional-numbers': false }, config),
-        }));
-        let argv = parsed.argv;
-        if (parseContext)
-            argv = Object.assign({}, argv, parseContext);
-        const aliases = parsed.aliases;
-        argv.$0 = self.$0;
-        self.parsed = parsed;
-        try {
-            guessLocale();
-            if (shortCircuit) {
-                return self._postProcess(argv, populateDoubleDash, _calledFromCommand);
-            }
-            if (helpOpt) {
-                const helpCmds = [helpOpt]
-                    .concat(aliases[helpOpt] || [])
-                    .filter(k => k.length > 1);
-                if (~helpCmds.indexOf('' + argv._[argv._.length - 1])) {
-                    argv._.pop();
-                    argv[helpOpt] = true;
-                }
-            }
-            const handlerKeys = command.getCommands();
-            const requestCompletions = completion.completionKey in argv;
-            const skipRecommendation = argv[helpOpt] || requestCompletions;
-            const skipDefaultCommand = skipRecommendation &&
-                (handlerKeys.length > 1 || handlerKeys[0] !== '$0');
-            if (argv._.length) {
-                if (handlerKeys.length) {
-                    let firstUnknownCommand;
-                    for (let i = commandIndex || 0, cmd; argv._[i] !== undefined; i++) {
-                        cmd = String(argv._[i]);
-                        if (~handlerKeys.indexOf(cmd) && cmd !== completionCommand) {
-                            const innerArgv = command.runCommand(cmd, self, parsed, i + 1);
-                            return self._postProcess(innerArgv, populateDoubleDash);
-                        }
-                        else if (!firstUnknownCommand && cmd !== completionCommand) {
-                            firstUnknownCommand = cmd;
-                            break;
-                        }
-                    }
-                    if (command.hasDefaultCommand() && !skipDefaultCommand) {
-                        const innerArgv = command.runCommand(null, self, parsed);
-                        return self._postProcess(innerArgv, populateDoubleDash);
-                    }
-                    if (recommendCommands && firstUnknownCommand && !skipRecommendation) {
-                        validation.recommendCommands(firstUnknownCommand, handlerKeys);
-                    }
-                }
-                if (completionCommand &&
-                    ~argv._.indexOf(completionCommand) &&
-                    !requestCompletions) {
-                    if (exitProcess)
-                        setBlocking(true);
-                    self.showCompletionScript();
-                    self.exit(0);
-                }
-            }
-            else if (command.hasDefaultCommand() && !skipDefaultCommand) {
-                const innerArgv = command.runCommand(null, self, parsed);
-                return self._postProcess(innerArgv, populateDoubleDash);
-            }
-            if (requestCompletions) {
-                if (exitProcess)
-                    setBlocking(true);
-                args = [].concat(args);
-                const completionArgs = args.slice(args.indexOf(`--${completion.completionKey}`) + 1);
-                completion.getCompletion(completionArgs, completions => {
-                    (completions || []).forEach(completion => {
-                        _logger.log(completion);
-                    });
-                    self.exit(0);
-                });
-                return self._postProcess(argv, !populateDoubleDash, _calledFromCommand);
-            }
-            if (!hasOutput) {
-                Object.keys(argv).forEach(key => {
-                    if (key === helpOpt && argv[key]) {
-                        if (exitProcess)
-                            setBlocking(true);
-                        skipValidation = true;
-                        self.showHelp('log');
-                        self.exit(0);
-                    }
-                    else if (key === versionOpt && argv[key]) {
-                        if (exitProcess)
-                            setBlocking(true);
-                        skipValidation = true;
-                        usage.showVersion();
-                        self.exit(0);
-                    }
-                });
-            }
-            if (!skipValidation && options.skipValidation.length > 0) {
-                skipValidation = Object.keys(argv).some(key => options.skipValidation.indexOf(key) >= 0 && argv[key] === true);
-            }
-            if (!skipValidation) {
-                if (parsed.error)
-                    throw new YError(parsed.error.message);
-                if (!requestCompletions) {
-                    self._runValidation(argv, aliases, {}, parsed.error);
-                }
-            }
+            return fs.statSync(file).isFile();
         }
         catch (err) {
-            if (err instanceof YError)
-                usage.fail(err.message, err);
-            else
-                throw err;
+            return false;
         }
-        return self._postProcess(argv, populateDoubleDash, _calledFromCommand);
-    };
-    self._postProcess = function (argv, populateDoubleDash, calledFromCommand = false) {
-        if (isPromise(argv))
-            return argv;
-        if (calledFromCommand)
-            return argv;
-        if (!populateDoubleDash) {
-            argv = self._copyDoubleDash(argv);
-        }
-        const parsePositionalNumbers = self.getParserConfiguration()['parse-positional-numbers'] ||
-            self.getParserConfiguration()['parse-positional-numbers'] === undefined;
-        if (parsePositionalNumbers) {
-            argv = self._parsePositionalNumbers(argv);
-        }
-        return argv;
-    };
-    self._copyDoubleDash = function (argv) {
-        if (!argv._ || !argv['--'])
-            return argv;
-        argv._.push.apply(argv._, argv['--']);
-        try {
-            delete argv['--'];
-        }
-        catch (_err) { }
-        return argv;
-    };
-    self._parsePositionalNumbers = function (argv) {
-        const args = argv['--'] ? argv['--'] : argv._;
-        for (let i = 0, arg; (arg = args[i]) !== undefined; i++) {
-            if (yargs_factory_shim.Parser.looksLikeNumber(arg) &&
-                Number.isSafeInteger(Math.floor(parseFloat(`${arg}`)))) {
-                args[i] = Number(arg);
-            }
-        }
-        return argv;
-    };
-    self._runValidation = function runValidation(argv, aliases, positionalMap, parseErrors, isDefaultCommand = false) {
-        if (parseErrors)
-            throw new YError(parseErrors.message);
-        validation.nonOptionCount(argv);
-        validation.requiredArguments(argv);
-        let failedStrictCommands = false;
-        if (strictCommands) {
-            failedStrictCommands = validation.unknownCommands(argv);
-        }
-        if (strict && !failedStrictCommands) {
-            validation.unknownArguments(argv, aliases, positionalMap, isDefaultCommand);
-        }
-        else if (strictOptions) {
-            validation.unknownArguments(argv, aliases, {}, false, false);
-        }
-        validation.customChecks(argv, aliases);
-        validation.limitedChoices(argv);
-        validation.implications(argv);
-        validation.conflicting(argv);
-    };
-    function guessLocale() {
-        if (!detectLocale)
-            return;
-        const locale = yargs_factory_shim.getEnv('LC_ALL') ||
-            yargs_factory_shim.getEnv('LC_MESSAGES') ||
-            yargs_factory_shim.getEnv('LANG') ||
-            yargs_factory_shim.getEnv('LANGUAGE') ||
-            'en_US';
-        self.locale(locale.replace(/[.:].*/, ''));
     }
-    self.help();
-    self.version();
-    return self;
-}
-const rebase = (base, dir) => yargs_factory_shim.path.relative(base, dir);
-function isYargsInstance(y) {
-    return !!y && typeof y._parseArgs === 'function';
-}
-
-;// CONCATENATED MODULE: ./node_modules/yargs/index.mjs
-
-
-// Bootstraps yargs for ESM:
-
-
-
-const yargs_Yargs = YargsWithShim(esm);
-/* harmony default export */ const yargs = ((/* unused pure expression or super */ null && (yargs_Yargs)));
-
-// EXTERNAL MODULE: ./node_modules/ajv/lib/ajv.js
-var lib_ajv = __nccwpck_require__(4941);
-var ajv_default = /*#__PURE__*/__nccwpck_require__.n(lib_ajv);
-;// CONCATENATED MODULE: ./src/parse.ts
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-//
-// Copyright (c) 2011-2020 ETH Zurich.
-
-function parseConfig(text) {
-    const ajv = new (ajv_default())();
-    const validate = ajv.compile({
-        type: 'array',
-        items: {
-            type: 'object',
-            required: ['include'],
-            properties: {
-                include: {
-                    type: 'array',
-                    items: {
-                        type: 'string'
-                    }
-                },
-                exclude: {
-                    type: 'array',
-                    items: {
-                        type: 'string'
-                    }
-                },
-                license: {
-                    type: 'string'
-                }
-            }
-        }
-    });
-    let data;
-    try {
-        data = JSON.parse(text);
-    }
-    catch (_a) {
-        return Promise.reject(new Error(`Parsing configuration has failed`));
-    }
-    if (!validate(data)) {
-        return Promise.reject(new Error(`Configuration validation has failed: '${ajv.errorsText(validate.errors)}'`));
-    }
-    return Promise.resolve(data);
-}
-
-// EXTERNAL MODULE: ./node_modules/glob/glob.js
-var glob = __nccwpck_require__(1957);
-;// CONCATENATED MODULE: ./src/find.ts
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-//
-// Copyright (c) 2011-2020 ETH Zurich.
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
 };
 
+const y18n = (opts) => {
+    return y18n$1(opts, nodePlatformShim);
+};
 
-function findFiles(cwd, includePatterns, excludePatterns) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let includePattern;
-        if (includePatterns.length === 0) {
-            return Promise.resolve([]);
+module.exports = y18n;
+
+
+/***/ }),
+
+/***/ 9562:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+var t=__nccwpck_require__(9491);class e extends Error{constructor(t){super(t||"yargs error"),this.name="YError",Error.captureStackTrace(this,e)}}let s,i=[];function n(t,o,a,h){s=h;let l={};if(Object.prototype.hasOwnProperty.call(t,"extends")){if("string"!=typeof t.extends)return l;const r=/\.json|\..*rc$/.test(t.extends);let h=null;if(r)h=function(t,e){return s.path.resolve(t,e)}(o,t.extends);else try{h=/*require.resolve*/(__nccwpck_require__(9167).resolve(t.extends))}catch(e){return t}!function(t){if(i.indexOf(t)>-1)throw new e(`Circular extended configurations: '${t}'.`)}(h),i.push(h),l=r?JSON.parse(s.readFileSync(h,"utf8")):__nccwpck_require__(9167)(t.extends),delete t.extends,l=n(l,s.path.dirname(h),a,s)}return i=[],a?r(l,t):Object.assign({},l,t)}function r(t,e){const s={};function i(t){return t&&"object"==typeof t&&!Array.isArray(t)}Object.assign(s,t);for(const n of Object.keys(e))i(e[n])&&i(s[n])?s[n]=r(t[n],e[n]):s[n]=e[n];return s}function o(t){const e=t.replace(/\s{2,}/g," ").split(/\s+(?![^[]*]|[^<]*>)/),s=/\.*[\][<>]/g,i=e.shift();if(!i)throw new Error(`No command found in: ${t}`);const n={cmd:i.replace(s,""),demanded:[],optional:[]};return e.forEach(((t,i)=>{let r=!1;t=t.replace(/\s/g,""),/\.+[\]>]/.test(t)&&i===e.length-1&&(r=!0),/^\[/.test(t)?n.optional.push({cmd:t.replace(s,"").split("|"),variadic:r}):n.demanded.push({cmd:t.replace(s,"").split("|"),variadic:r})})),n}const a=["first","second","third","fourth","fifth","sixth"];function h(t,s,i){try{let n=0;const[r,a,h]="object"==typeof t?[{demanded:[],optional:[]},t,s]:[o(`cmd ${t}`),s,i],f=[].slice.call(a);for(;f.length&&void 0===f[f.length-1];)f.pop();const d=h||f.length;if(d<r.demanded.length)throw new e(`Not enough arguments provided. Expected ${r.demanded.length} but received ${f.length}.`);const u=r.demanded.length+r.optional.length;if(d>u)throw new e(`Too many arguments provided. Expected max ${u} but received ${d}.`);r.demanded.forEach((t=>{const e=l(f.shift());0===t.cmd.filter((t=>t===e||"*"===t)).length&&c(e,t.cmd,n),n+=1})),r.optional.forEach((t=>{if(0===f.length)return;const e=l(f.shift());0===t.cmd.filter((t=>t===e||"*"===t)).length&&c(e,t.cmd,n),n+=1}))}catch(t){console.warn(t.stack)}}function l(t){return Array.isArray(t)?"array":null===t?"null":typeof t}function c(t,s,i){throw new e(`Invalid ${a[i]||"manyith"} argument. Expected ${s.join(" or ")} but received ${t}.`)}function f(t){return!!t&&!!t.then&&"function"==typeof t.then}function d(t,e,s,i){s.assert.notStrictEqual(t,e,i)}function u(t,e){e.assert.strictEqual(typeof t,"string")}function p(t){return Object.keys(t)}function g(t={},e=(()=>!0)){const s={};return p(t).forEach((i=>{e(i,t[i])&&(s[i]=t[i])})),s}function m(){return process.versions.electron&&!process.defaultApp?0:1}function y(){return process.argv[m()]}var b=Object.freeze({__proto__:null,hideBin:function(t){return t.slice(m()+1)},getProcessArgvBin:y});function v(t,e,s,i){if("a"===s&&!i)throw new TypeError("Private accessor was defined without a getter");if("function"==typeof e?t!==e||!i:!e.has(t))throw new TypeError("Cannot read private member from an object whose class did not declare it");return"m"===s?i:"a"===s?i.call(t):i?i.value:e.get(t)}function O(t,e,s,i,n){if("m"===i)throw new TypeError("Private method is not writable");if("a"===i&&!n)throw new TypeError("Private accessor was defined without a setter");if("function"==typeof e?t!==e||!n:!e.has(t))throw new TypeError("Cannot write private member to an object whose class did not declare it");return"a"===i?n.call(t,s):n?n.value=s:e.set(t,s),s}class w{constructor(t){this.globalMiddleware=[],this.frozens=[],this.yargs=t}addMiddleware(t,e,s=!0,i=!1){if(h("<array|function> [boolean] [boolean] [boolean]",[t,e,s],arguments.length),Array.isArray(t)){for(let i=0;i<t.length;i++){if("function"!=typeof t[i])throw Error("middleware must be a function");const n=t[i];n.applyBeforeValidation=e,n.global=s}Array.prototype.push.apply(this.globalMiddleware,t)}else if("function"==typeof t){const n=t;n.applyBeforeValidation=e,n.global=s,n.mutates=i,this.globalMiddleware.push(t)}return this.yargs}addCoerceMiddleware(t,e){const s=this.yargs.getAliases();return this.globalMiddleware=this.globalMiddleware.filter((t=>{const i=[...s[e]||[],e];return!t.option||!i.includes(t.option)})),t.option=e,this.addMiddleware(t,!0,!0,!0)}getMiddleware(){return this.globalMiddleware}freeze(){this.frozens.push([...this.globalMiddleware])}unfreeze(){const t=this.frozens.pop();void 0!==t&&(this.globalMiddleware=t)}reset(){this.globalMiddleware=this.globalMiddleware.filter((t=>t.global))}}function C(t,e,s,i){return s.reduce(((t,s)=>{if(s.applyBeforeValidation!==i)return t;if(s.mutates){if(s.applied)return t;s.applied=!0}if(f(t))return t.then((t=>Promise.all([t,s(t,e)]))).then((([t,e])=>Object.assign(t,e)));{const i=s(t,e);return f(i)?i.then((e=>Object.assign(t,e))):Object.assign(t,i)}}),t)}function j(t,e,s=(t=>{throw t})){try{const s="function"==typeof t?t():t;return f(s)?s.then((t=>e(t))):e(s)}catch(t){return s(t)}}const _=/(^\*)|(^\$0)/;class M{constructor(t,e,s,i){this.requireCache=new Set,this.handlers={},this.aliasMap={},this.frozens=[],this.shim=i,this.usage=t,this.globalMiddleware=s,this.validation=e}addDirectory(t,e,s,i){"boolean"!=typeof(i=i||{}).recurse&&(i.recurse=!1),Array.isArray(i.extensions)||(i.extensions=["js"]);const n="function"==typeof i.visit?i.visit:t=>t;i.visit=(t,e,s)=>{const i=n(t,e,s);if(i){if(this.requireCache.has(e))return i;this.requireCache.add(e),this.addHandler(i)}return i},this.shim.requireDirectory({require:e,filename:s},t,i)}addHandler(t,e,s,i,n,r){let a=[];const h=function(t){return t?t.map((t=>(t.applyBeforeValidation=!1,t))):[]}(n);if(i=i||(()=>{}),Array.isArray(t))if(function(t){return t.every((t=>"string"==typeof t))}(t))[t,...a]=t;else for(const e of t)this.addHandler(e);else{if(function(t){return"object"==typeof t&&!Array.isArray(t)}(t)){let e=Array.isArray(t.command)||"string"==typeof t.command?t.command:this.moduleName(t);return t.aliases&&(e=[].concat(e).concat(t.aliases)),void this.addHandler(e,this.extractDesc(t),t.builder,t.handler,t.middlewares,t.deprecated)}if(k(s))return void this.addHandler([t].concat(a),e,s.builder,s.handler,s.middlewares,s.deprecated)}if("string"==typeof t){const n=o(t);a=a.map((t=>o(t).cmd));let l=!1;const c=[n.cmd].concat(a).filter((t=>!_.test(t)||(l=!0,!1)));0===c.length&&l&&c.push("$0"),l&&(n.cmd=c[0],a=c.slice(1),t=t.replace(_,n.cmd)),a.forEach((t=>{this.aliasMap[t]=n.cmd})),!1!==e&&this.usage.command(t,e,l,a,r),this.handlers[n.cmd]={original:t,description:e,handler:i,builder:s||{},middlewares:h,deprecated:r,demanded:n.demanded,optional:n.optional},l&&(this.defaultCommand=this.handlers[n.cmd])}}getCommandHandlers(){return this.handlers}getCommands(){return Object.keys(this.handlers).concat(Object.keys(this.aliasMap))}hasDefaultCommand(){return!!this.defaultCommand}runCommand(t,e,s,i,n,r){const o=this.handlers[t]||this.handlers[this.aliasMap[t]]||this.defaultCommand,a=e.getInternalMethods().getContext(),h=a.commands.slice(),l=!t;t&&(a.commands.push(t),a.fullCommands.push(o.original));const c=this.applyBuilderUpdateUsageAndParse(l,o,e,s.aliases,h,i,n,r);return f(c)?c.then((t=>this.applyMiddlewareAndGetResult(l,o,t.innerArgv,a,n,t.aliases,e))):this.applyMiddlewareAndGetResult(l,o,c.innerArgv,a,n,c.aliases,e)}applyBuilderUpdateUsageAndParse(t,e,s,i,n,r,o,a){const h=e.builder;let l=s;if(E(h)){const c=h(s.getInternalMethods().reset(i),a);if(f(c))return c.then((i=>{var a;return l=(a=i)&&"function"==typeof a.getInternalMethods?i:s,this.parseAndUpdateUsage(t,e,l,n,r,o)}))}else(function(t){return"object"==typeof t})(h)&&(l=s.getInternalMethods().reset(i),Object.keys(e.builder).forEach((t=>{l.option(t,h[t])})));return this.parseAndUpdateUsage(t,e,l,n,r,o)}parseAndUpdateUsage(t,e,s,i,n,r){t&&s.getInternalMethods().getUsageInstance().unfreeze(),this.shouldUpdateUsage(s)&&s.getInternalMethods().getUsageInstance().usage(this.usageFromParentCommandsCommandHandler(i,e),e.description);const o=s.getInternalMethods().runYargsParserAndExecuteCommands(null,void 0,!0,n,r);return f(o)?o.then((t=>({aliases:s.parsed.aliases,innerArgv:t}))):{aliases:s.parsed.aliases,innerArgv:o}}shouldUpdateUsage(t){return!t.getInternalMethods().getUsageInstance().getUsageDisabled()&&0===t.getInternalMethods().getUsageInstance().getUsage().length}usageFromParentCommandsCommandHandler(t,e){const s=_.test(e.original)?e.original.replace(_,"").trim():e.original,i=t.filter((t=>!_.test(t)));return i.push(s),`$0 ${i.join(" ")}`}applyMiddlewareAndGetResult(t,e,s,i,n,r,o){let a={};if(n)return s;o.getInternalMethods().getHasOutput()||(a=this.populatePositionals(e,s,i,o));const h=this.globalMiddleware.getMiddleware().slice(0).concat(e.middlewares);if(s=C(s,o,h,!0),!o.getInternalMethods().getHasOutput()){const e=o.getInternalMethods().runValidation(r,a,o.parsed.error,t);s=j(s,(t=>(e(t),t)))}if(e.handler&&!o.getInternalMethods().getHasOutput()){o.getInternalMethods().setHasOutput();const i=!!o.getOptions().configuration["populate--"];o.getInternalMethods().postProcess(s,i,!1,!1),s=j(s=C(s,o,h,!1),(t=>{const s=e.handler(t);return f(s)?s.then((()=>t)):t})),t||o.getInternalMethods().getUsageInstance().cacheHelpMessage(),f(s)&&!o.getInternalMethods().hasParseCallback()&&s.catch((t=>{try{o.getInternalMethods().getUsageInstance().fail(null,t)}catch(t){}}))}return t||(i.commands.pop(),i.fullCommands.pop()),s}populatePositionals(t,e,s,i){e._=e._.slice(s.commands.length);const n=t.demanded.slice(0),r=t.optional.slice(0),o={};for(this.validation.positionalCount(n.length,e._.length);n.length;){const t=n.shift();this.populatePositional(t,e,o)}for(;r.length;){const t=r.shift();this.populatePositional(t,e,o)}return e._=s.commands.concat(e._.map((t=>""+t))),this.postProcessPositionals(e,o,this.cmdToParseOptions(t.original),i),o}populatePositional(t,e,s){const i=t.cmd[0];t.variadic?s[i]=e._.splice(0).map(String):e._.length&&(s[i]=[String(e._.shift())])}cmdToParseOptions(t){const e={array:[],default:{},alias:{},demand:{}},s=o(t);return s.demanded.forEach((t=>{const[s,...i]=t.cmd;t.variadic&&(e.array.push(s),e.default[s]=[]),e.alias[s]=i,e.demand[s]=!0})),s.optional.forEach((t=>{const[s,...i]=t.cmd;t.variadic&&(e.array.push(s),e.default[s]=[]),e.alias[s]=i})),e}postProcessPositionals(t,e,s,i){const n=Object.assign({},i.getOptions());n.default=Object.assign(s.default,n.default);for(const t of Object.keys(s.alias))n.alias[t]=(n.alias[t]||[]).concat(s.alias[t]);n.array=n.array.concat(s.array),n.config={};const r=[];if(Object.keys(e).forEach((t=>{e[t].map((e=>{n.configuration["unknown-options-as-args"]&&(n.key[t]=!0),r.push(`--${t}`),r.push(e)}))})),!r.length)return;const o=Object.assign({},n.configuration,{"populate--":!1}),a=this.shim.Parser.detailed(r,Object.assign({},n,{configuration:o}));if(a.error)i.getInternalMethods().getUsageInstance().fail(a.error.message,a.error);else{const s=Object.keys(e);Object.keys(e).forEach((t=>{s.push(...a.aliases[t])}));const n=i.getOptions().default;Object.keys(a.argv).forEach((i=>{s.includes(i)&&(e[i]||(e[i]=a.argv[i]),!Object.prototype.hasOwnProperty.call(n,i)&&Object.prototype.hasOwnProperty.call(t,i)&&Object.prototype.hasOwnProperty.call(a.argv,i)&&(Array.isArray(t[i])||Array.isArray(a.argv[i]))?t[i]=[].concat(t[i],a.argv[i]):t[i]=a.argv[i])}))}}runDefaultBuilderOn(t){if(!this.defaultCommand)return;if(this.shouldUpdateUsage(t)){const e=_.test(this.defaultCommand.original)?this.defaultCommand.original:this.defaultCommand.original.replace(/^[^[\]<>]*/,"$0 ");t.getInternalMethods().getUsageInstance().usage(e,this.defaultCommand.description)}const e=this.defaultCommand.builder;if(E(e))return e(t,!0);k(e)||Object.keys(e).forEach((s=>{t.option(s,e[s])}))}moduleName(t){const e=function(t){if(false){}for(let e,s=0,i=Object.keys(__nccwpck_require__.c);s<i.length;s++)if(e=__nccwpck_require__.c[i[s]],e.exports===t)return e;return null}(t);if(!e)throw new Error(`No command name given for module: ${this.shim.inspect(t)}`);return this.commandFromFilename(e.filename)}commandFromFilename(t){return this.shim.path.basename(t,this.shim.path.extname(t))}extractDesc({describe:t,description:e,desc:s}){for(const i of[t,e,s]){if("string"==typeof i||!1===i)return i;d(i,!0,this.shim)}return!1}freeze(){this.frozens.push({handlers:this.handlers,aliasMap:this.aliasMap,defaultCommand:this.defaultCommand})}unfreeze(){const t=this.frozens.pop();d(t,void 0,this.shim),({handlers:this.handlers,aliasMap:this.aliasMap,defaultCommand:this.defaultCommand}=t)}reset(){return this.handlers={},this.aliasMap={},this.defaultCommand=void 0,this.requireCache=new Set,this}}function k(t){return"object"==typeof t&&!!t.builder&&"function"==typeof t.handler}function E(t){return"function"==typeof t}function x(t){"undefined"!=typeof process&&[process.stdout,process.stderr].forEach((e=>{const s=e;s._handle&&s.isTTY&&"function"==typeof s._handle.setBlocking&&s._handle.setBlocking(t)}))}function A(t){return"boolean"==typeof t}function S(t,s){const i=s.y18n.__,n={},r=[];n.failFn=function(t){r.push(t)};let o=null,a=!0;n.showHelpOnFail=function(t=!0,e){const[s,i]="string"==typeof t?[!0,t]:[t,e];return o=i,a=s,n};let h=!1;n.fail=function(s,i){const l=t.getInternalMethods().getLoggerInstance();if(!r.length){if(t.getExitProcess()&&x(!0),h||(h=!0,a&&(t.showHelp("error"),l.error()),(s||i)&&l.error(s||i),o&&((s||i)&&l.error(""),l.error(o))),i=i||new e(s),t.getExitProcess())return t.exit(1);if(t.getInternalMethods().hasParseCallback())return t.exit(1,i);throw i}for(let t=r.length-1;t>=0;--t){const e=r[t];if(A(e)){if(i)throw i;if(s)throw Error(s)}else e(s,i,n)}};let l=[],c=!1;n.usage=(t,e)=>null===t?(c=!0,l=[],n):(c=!1,l.push([t,e||""]),n),n.getUsage=()=>l,n.getUsageDisabled=()=>c,n.getPositionalGroupName=()=>i("Positionals:");let f=[];n.example=(t,e)=>{f.push([t,e||""])};let d=[];n.command=function(t,e,s,i,n=!1){s&&(d=d.map((t=>(t[2]=!1,t)))),d.push([t,e||"",s,i,n])},n.getCommands=()=>d;let u={};n.describe=function(t,e){Array.isArray(t)?t.forEach((t=>{n.describe(t,e)})):"object"==typeof t?Object.keys(t).forEach((e=>{n.describe(e,t[e])})):u[t]=e},n.getDescriptions=()=>u;let p=[];n.epilog=t=>{p.push(t)};let m,y=!1;function b(){return y||(m=function(){const t=80;return s.process.stdColumns?Math.min(t,s.process.stdColumns):t}(),y=!0),m}n.wrap=t=>{y=!0,m=t};const v="__yargsString__:";function O(t,e,i){let n=0;return Array.isArray(t)||(t=Object.values(t).map((t=>[t]))),t.forEach((t=>{n=Math.max(s.stringWidth(i?`${i} ${I(t[0])}`:I(t[0]))+$(t[0]),n)})),e&&(n=Math.min(n,parseInt((.5*e).toString(),10))),n}let w;function C(e){return t.getOptions().hiddenOptions.indexOf(e)<0||t.parsed.argv[t.getOptions().showHiddenOpt]}function j(t,e){let s=`[${i("default:")} `;if(void 0===t&&!e)return null;if(e)s+=e;else switch(typeof t){case"string":s+=`"${t}"`;break;case"object":s+=JSON.stringify(t);break;default:s+=t}return`${s}]`}n.deferY18nLookup=t=>v+t,n.help=function(){if(w)return w;!function(){const e=t.getDemandedOptions(),s=t.getOptions();(Object.keys(s.alias)||[]).forEach((i=>{s.alias[i].forEach((r=>{u[r]&&n.describe(i,u[r]),r in e&&t.demandOption(i,e[r]),s.boolean.includes(r)&&t.boolean(i),s.count.includes(r)&&t.count(i),s.string.includes(r)&&t.string(i),s.normalize.includes(r)&&t.normalize(i),s.array.includes(r)&&t.array(i),s.number.includes(r)&&t.number(i)}))}))}();const e=t.customScriptName?t.$0:s.path.basename(t.$0),r=t.getDemandedOptions(),o=t.getDemandedCommands(),a=t.getDeprecatedOptions(),h=t.getGroups(),g=t.getOptions();let m=[];m=m.concat(Object.keys(u)),m=m.concat(Object.keys(r)),m=m.concat(Object.keys(o)),m=m.concat(Object.keys(g.default)),m=m.filter(C),m=Object.keys(m.reduce(((t,e)=>("_"!==e&&(t[e]=!0),t)),{}));const y=b(),_=s.cliui({width:y,wrap:!!y});if(!c)if(l.length)l.forEach((t=>{_.div({text:`${t[0].replace(/\$0/g,e)}`}),t[1]&&_.div({text:`${t[1]}`,padding:[1,0,0,0]})})),_.div();else if(d.length){let t=null;t=o._?`${e} <${i("command")}>\n`:`${e} [${i("command")}]\n`,_.div(`${t}`)}if(d.length>1||1===d.length&&!d[0][2]){_.div(i("Commands:"));const s=t.getInternalMethods().getContext(),n=s.commands.length?`${s.commands.join(" ")} `:"";!0===t.getInternalMethods().getParserConfiguration()["sort-commands"]&&(d=d.sort(((t,e)=>t[0].localeCompare(e[0]))));const r=e?`${e} `:"";d.forEach((t=>{const s=`${r}${n}${t[0].replace(/^\$0 ?/,"")}`;_.span({text:s,padding:[0,2,0,2],width:O(d,y,`${e}${n}`)+4},{text:t[1]});const o=[];t[2]&&o.push(`[${i("default")}]`),t[3]&&t[3].length&&o.push(`[${i("aliases:")} ${t[3].join(", ")}]`),t[4]&&("string"==typeof t[4]?o.push(`[${i("deprecated: %s",t[4])}]`):o.push(`[${i("deprecated")}]`)),o.length?_.div({text:o.join(" "),padding:[0,0,0,2],align:"right"}):_.div()})),_.div()}const M=(Object.keys(g.alias)||[]).concat(Object.keys(t.parsed.newAliases)||[]);m=m.filter((e=>!t.parsed.newAliases[e]&&M.every((t=>-1===(g.alias[t]||[]).indexOf(e)))));const k=i("Options:");h[k]||(h[k]=[]),function(t,e,s,i){let n=[],r=null;Object.keys(s).forEach((t=>{n=n.concat(s[t])})),t.forEach((t=>{r=[t].concat(e[t]),r.some((t=>-1!==n.indexOf(t)))||s[i].push(t)}))}(m,g.alias,h,k);const E=t=>/^--/.test(I(t)),x=Object.keys(h).filter((t=>h[t].length>0)).map((t=>({groupName:t,normalizedKeys:h[t].filter(C).map((t=>{if(M.includes(t))return t;for(let e,s=0;void 0!==(e=M[s]);s++)if((g.alias[e]||[]).includes(t))return e;return t}))}))).filter((({normalizedKeys:t})=>t.length>0)).map((({groupName:t,normalizedKeys:e})=>{const s=e.reduce(((e,s)=>(e[s]=[s].concat(g.alias[s]||[]).map((e=>t===n.getPositionalGroupName()?e:(/^[0-9]$/.test(e)?g.boolean.includes(s)?"-":"--":e.length>1?"--":"-")+e)).sort(((t,e)=>E(t)===E(e)?0:E(t)?1:-1)).join(", "),e)),{});return{groupName:t,normalizedKeys:e,switches:s}}));if(x.filter((({groupName:t})=>t!==n.getPositionalGroupName())).some((({normalizedKeys:t,switches:e})=>!t.every((t=>E(e[t])))))&&x.filter((({groupName:t})=>t!==n.getPositionalGroupName())).forEach((({normalizedKeys:t,switches:e})=>{t.forEach((t=>{var s,i;E(e[t])&&(e[t]=(s=e[t],i="-x, ".length,P(s)?{text:s.text,indentation:s.indentation+i}:{text:s,indentation:i}))}))})),x.forEach((({groupName:t,normalizedKeys:e,switches:s})=>{_.div(t),e.forEach((t=>{const e=s[t];let o=u[t]||"",h=null;o.includes(v)&&(o=i(o.substring(v.length))),g.boolean.includes(t)&&(h=`[${i("boolean")}]`),g.count.includes(t)&&(h=`[${i("count")}]`),g.string.includes(t)&&(h=`[${i("string")}]`),g.normalize.includes(t)&&(h=`[${i("string")}]`),g.array.includes(t)&&(h=`[${i("array")}]`),g.number.includes(t)&&(h=`[${i("number")}]`);const l=[t in a?(c=a[t],"string"==typeof c?`[${i("deprecated: %s",c)}]`:`[${i("deprecated")}]`):null,h,t in r?`[${i("required")}]`:null,g.choices&&g.choices[t]?`[${i("choices:")} ${n.stringifiedValues(g.choices[t])}]`:null,j(g.default[t],g.defaultDescription[t])].filter(Boolean).join(" ");var c;_.span({text:I(e),padding:[0,2,0,2+$(e)],width:O(s,y)+4},o),l?_.div({text:l,padding:[0,0,0,2],align:"right"}):_.div()})),_.div()})),f.length&&(_.div(i("Examples:")),f.forEach((t=>{t[0]=t[0].replace(/\$0/g,e)})),f.forEach((t=>{""===t[1]?_.div({text:t[0],padding:[0,2,0,2]}):_.div({text:t[0],padding:[0,2,0,2],width:O(f,y)+4},{text:t[1]})})),_.div()),p.length>0){const t=p.map((t=>t.replace(/\$0/g,e))).join("\n");_.div(`${t}\n`)}return _.toString().replace(/\s*$/,"")},n.cacheHelpMessage=function(){w=this.help()},n.clearCachedHelpMessage=function(){w=void 0},n.hasCachedHelpMessage=function(){return!!w},n.showHelp=e=>{const s=t.getInternalMethods().getLoggerInstance();e||(e="error");("function"==typeof e?e:s[e])(n.help())},n.functionDescription=t=>["(",t.name?s.Parser.decamelize(t.name,"-"):i("generated-value"),")"].join(""),n.stringifiedValues=function(t,e){let s="";const i=e||", ",n=[].concat(t);return t&&n.length?(n.forEach((t=>{s.length&&(s+=i),s+=JSON.stringify(t)})),s):s};let _=null;n.version=t=>{_=t},n.showVersion=e=>{const s=t.getInternalMethods().getLoggerInstance();e||(e="error");("function"==typeof e?e:s[e])(_)},n.reset=function(t){return o=null,h=!1,l=[],c=!1,p=[],f=[],d=[],u=g(u,(e=>!t[e])),n};const M=[];return n.freeze=function(){M.push({failMessage:o,failureOutput:h,usages:l,usageDisabled:c,epilogs:p,examples:f,commands:d,descriptions:u})},n.unfreeze=function(){const t=M.pop();t&&({failMessage:o,failureOutput:h,usages:l,usageDisabled:c,epilogs:p,examples:f,commands:d,descriptions:u}=t)},n}function P(t){return"object"==typeof t}function $(t){return P(t)?t.indentation:0}function I(t){return P(t)?t.text:t}class D{constructor(t,e,s,i){var n,r,o;this.yargs=t,this.usage=e,this.command=s,this.shim=i,this.completionKey="get-yargs-completions",this.aliases=null,this.customCompletionFunction=null,this.zshShell=null!==(o=(null===(n=this.shim.getEnv("SHELL"))||void 0===n?void 0:n.includes("zsh"))||(null===(r=this.shim.getEnv("ZSH_NAME"))||void 0===r?void 0:r.includes("zsh")))&&void 0!==o&&o}defaultCompletion(t,e,s,i){const n=this.command.getCommandHandlers();for(let e=0,s=t.length;e<s;++e)if(n[t[e]]&&n[t[e]].builder){const s=n[t[e]].builder;if(E(s)){const t=this.yargs.getInternalMethods().reset();return s(t,!0),t.argv}}const r=[];this.commandCompletions(r,t,s),this.optionCompletions(r,t,e,s),this.choicesCompletions(r,t,e,s),i(null,r)}commandCompletions(t,e,s){const i=this.yargs.getInternalMethods().getContext().commands;s.match(/^-/)||i[i.length-1]===s||this.previousArgHasChoices(e)||this.usage.getCommands().forEach((s=>{const i=o(s[0]).cmd;if(-1===e.indexOf(i))if(this.zshShell){const e=s[1]||"";t.push(i.replace(/:/g,"\\:")+":"+e)}else t.push(i)}))}optionCompletions(t,e,s,i){if((i.match(/^-/)||""===i&&0===t.length)&&!this.previousArgHasChoices(e)){const n=this.yargs.getOptions(),r=this.yargs.getGroups()[this.usage.getPositionalGroupName()]||[];Object.keys(n.key).forEach((o=>{const a=!!n.configuration["boolean-negation"]&&n.boolean.includes(o);r.includes(o)||this.argsContainKey(e,s,o,a)||(this.completeOptionKey(o,t,i),a&&n.default[o]&&this.completeOptionKey(`no-${o}`,t,i))}))}}choicesCompletions(t,e,s,i){if(this.previousArgHasChoices(e)){const s=this.getPreviousArgChoices(e);s&&s.length>0&&t.push(...s)}}getPreviousArgChoices(t){if(t.length<1)return;let e=t[t.length-1],s="";if(!e.startsWith("--")&&t.length>1&&(s=e,e=t[t.length-2]),!e.startsWith("--"))return;const i=e.replace(/-/g,""),n=this.yargs.getOptions();return Object.keys(n.key).some((t=>t===i))&&Array.isArray(n.choices[i])?n.choices[i].filter((t=>!s||t.startsWith(s))):void 0}previousArgHasChoices(t){const e=this.getPreviousArgChoices(t);return void 0!==e&&e.length>0}argsContainKey(t,e,s,i){if(-1!==t.indexOf(`--${s}`))return!0;if(i&&-1!==t.indexOf(`--no-${s}`))return!0;if(this.aliases)for(const t of this.aliases[s])if(void 0!==e[t])return!0;return!1}completeOptionKey(t,e,s){const i=this.usage.getDescriptions(),n=!/^--/.test(s)&&(t=>/^[^0-9]$/.test(t))(t)?"-":"--";if(this.zshShell){const s=i[t]||"";e.push(n+`${t.replace(/:/g,"\\:")}:${s.replace("__yargsString__:","")}`)}else e.push(n+t)}customCompletion(t,e,s,i){if(d(this.customCompletionFunction,null,this.shim),this.customCompletionFunction.length<3){const t=this.customCompletionFunction(s,e);return f(t)?t.then((t=>{this.shim.process.nextTick((()=>{i(null,t)}))})).catch((t=>{this.shim.process.nextTick((()=>{i(t,void 0)}))})):i(null,t)}return function(t){return t.length>3}(this.customCompletionFunction)?this.customCompletionFunction(s,e,((n=i)=>this.defaultCompletion(t,e,s,n)),(t=>{i(null,t)})):this.customCompletionFunction(s,e,(t=>{i(null,t)}))}getCompletion(t,e){const s=t.length?t[t.length-1]:"",i=this.yargs.parse(t,!0),n=this.customCompletionFunction?i=>this.customCompletion(t,i,s,e):i=>this.defaultCompletion(t,i,s,e);return f(i)?i.then(n):n(i)}generateCompletionScript(t,e){let s=this.zshShell?'#compdef {{app_name}}\n###-begin-{{app_name}}-completions-###\n#\n# yargs command completion script\n#\n# Installation: {{app_path}} {{completion_command}} >> ~/.zshrc\n#    or {{app_path}} {{completion_command}} >> ~/.zsh_profile on OSX.\n#\n_{{app_name}}_yargs_completions()\n{\n  local reply\n  local si=$IFS\n  IFS=$\'\n\' reply=($(COMP_CWORD="$((CURRENT-1))" COMP_LINE="$BUFFER" COMP_POINT="$CURSOR" {{app_path}} --get-yargs-completions "${words[@]}"))\n  IFS=$si\n  _describe \'values\' reply\n}\ncompdef _{{app_name}}_yargs_completions {{app_name}}\n###-end-{{app_name}}-completions-###\n':'###-begin-{{app_name}}-completions-###\n#\n# yargs command completion script\n#\n# Installation: {{app_path}} {{completion_command}} >> ~/.bashrc\n#    or {{app_path}} {{completion_command}} >> ~/.bash_profile on OSX.\n#\n_{{app_name}}_yargs_completions()\n{\n    local cur_word args type_list\n\n    cur_word="${COMP_WORDS[COMP_CWORD]}"\n    args=("${COMP_WORDS[@]}")\n\n    # ask yargs to generate completions.\n    type_list=$({{app_path}} --get-yargs-completions "${args[@]}")\n\n    COMPREPLY=( $(compgen -W "${type_list}" -- ${cur_word}) )\n\n    # if no match was found, fall back to filename completion\n    if [ ${#COMPREPLY[@]} -eq 0 ]; then\n      COMPREPLY=()\n    fi\n\n    return 0\n}\ncomplete -o bashdefault -o default -F _{{app_name}}_yargs_completions {{app_name}}\n###-end-{{app_name}}-completions-###\n';const i=this.shim.path.basename(t);return t.match(/\.js$/)&&(t=`./${t}`),s=s.replace(/{{app_name}}/g,i),s=s.replace(/{{completion_command}}/g,e),s.replace(/{{app_path}}/g,t)}registerFunction(t){this.customCompletionFunction=t}setParsed(t){this.aliases=t.aliases}}function N(t,e){if(0===t.length)return e.length;if(0===e.length)return t.length;const s=[];let i,n;for(i=0;i<=e.length;i++)s[i]=[i];for(n=0;n<=t.length;n++)s[0][n]=n;for(i=1;i<=e.length;i++)for(n=1;n<=t.length;n++)e.charAt(i-1)===t.charAt(n-1)?s[i][n]=s[i-1][n-1]:i>1&&n>1&&e.charAt(i-2)===t.charAt(n-1)&&e.charAt(i-1)===t.charAt(n-2)?s[i][n]=s[i-2][n-2]+1:s[i][n]=Math.min(s[i-1][n-1]+1,Math.min(s[i][n-1]+1,s[i-1][n]+1));return s[e.length][t.length]}const H=["$0","--","_"];var z,q,W,U,F,L,V,T,R,G,K,B,Y,J,Z,X,Q,tt,et,st,it,nt,rt,ot,at,ht,lt,ct,ft,dt,ut,pt,gt;const mt=Symbol("copyDoubleDash"),yt=Symbol("copyDoubleDash"),bt=Symbol("deleteFromParserHintObject"),vt=Symbol("emitWarning"),Ot=Symbol("freeze"),wt=Symbol("getDollarZero"),Ct=Symbol("getParserConfiguration"),jt=Symbol("guessLocale"),_t=Symbol("guessVersion"),Mt=Symbol("parsePositionalNumbers"),kt=Symbol("pkgUp"),Et=Symbol("populateParserHintArray"),xt=Symbol("populateParserHintSingleValueDictionary"),At=Symbol("populateParserHintArrayDictionary"),St=Symbol("populateParserHintDictionary"),Pt=Symbol("sanitizeKey"),$t=Symbol("setKey"),It=Symbol("unfreeze"),Dt=Symbol("validateAsync"),Nt=Symbol("getCommandInstance"),Ht=Symbol("getContext"),zt=Symbol("getHasOutput"),qt=Symbol("getLoggerInstance"),Wt=Symbol("getParseContext"),Ut=Symbol("getUsageInstance"),Ft=Symbol("getValidationInstance"),Lt=Symbol("hasParseCallback"),Vt=Symbol("postProcess"),Tt=Symbol("rebase"),Rt=Symbol("reset"),Gt=Symbol("runYargsParserAndExecuteCommands"),Kt=Symbol("runValidation"),Bt=Symbol("setHasOutput"),Yt=Symbol("kTrackManuallySetKeys");class Jt{constructor(t=[],e,s,i){this.customScriptName=!1,this.parsed=!1,z.set(this,void 0),q.set(this,void 0),W.set(this,{commands:[],fullCommands:[]}),U.set(this,null),F.set(this,null),L.set(this,"show-hidden"),V.set(this,null),T.set(this,!0),R.set(this,{}),G.set(this,!0),K.set(this,[]),B.set(this,void 0),Y.set(this,{}),J.set(this,!1),Z.set(this,null),X.set(this,void 0),Q.set(this,""),tt.set(this,void 0),et.set(this,void 0),st.set(this,{}),it.set(this,null),nt.set(this,null),rt.set(this,{}),ot.set(this,{}),at.set(this,void 0),ht.set(this,!1),lt.set(this,void 0),ct.set(this,!1),ft.set(this,!1),dt.set(this,!1),ut.set(this,void 0),pt.set(this,null),gt.set(this,void 0),O(this,lt,i,"f"),O(this,at,t,"f"),O(this,q,e,"f"),O(this,et,s,"f"),O(this,B,new w(this),"f"),this.$0=this[wt](),this[Rt](),O(this,z,v(this,z,"f"),"f"),O(this,ut,v(this,ut,"f"),"f"),O(this,gt,v(this,gt,"f"),"f"),O(this,tt,v(this,tt,"f"),"f"),v(this,tt,"f").showHiddenOpt=v(this,L,"f"),O(this,X,this[yt](),"f")}addHelpOpt(t,e){return h("[string|boolean] [string]",[t,e],arguments.length),v(this,Z,"f")&&(this[bt](v(this,Z,"f")),O(this,Z,null,"f")),!1===t&&void 0===e||(O(this,Z,"string"==typeof t?t:"help","f"),this.boolean(v(this,Z,"f")),this.describe(v(this,Z,"f"),e||v(this,ut,"f").deferY18nLookup("Show help"))),this}help(t,e){return this.addHelpOpt(t,e)}addShowHiddenOpt(t,e){if(h("[string|boolean] [string]",[t,e],arguments.length),!1===t&&void 0===e)return this;const s="string"==typeof t?t:v(this,L,"f");return this.boolean(s),this.describe(s,e||v(this,ut,"f").deferY18nLookup("Show hidden options")),v(this,tt,"f").showHiddenOpt=s,this}showHidden(t,e){return this.addShowHiddenOpt(t,e)}alias(t,e){return h("<object|string|array> [string|array]",[t,e],arguments.length),this[At](this.alias.bind(this),"alias",t,e),this}array(t){return h("<array|string>",[t],arguments.length),this[Et]("array",t),this[Yt](t),this}boolean(t){return h("<array|string>",[t],arguments.length),this[Et]("boolean",t),this[Yt](t),this}check(t,e){return h("<function> [boolean]",[t,e],arguments.length),this.middleware(((e,s)=>j((()=>t(e,s.getOptions())),(s=>(s?("string"==typeof s||s instanceof Error)&&v(this,ut,"f").fail(s.toString(),s):v(this,ut,"f").fail(v(this,lt,"f").y18n.__("Argument check failed: %s",t.toString())),e)),(t=>(v(this,ut,"f").fail(t.message?t.message:t.toString(),t),e)))),!1,e),this}choices(t,e){return h("<object|string|array> [string|array]",[t,e],arguments.length),this[At](this.choices.bind(this),"choices",t,e),this}coerce(t,s){if(h("<object|string|array> [function]",[t,s],arguments.length),Array.isArray(t)){if(!s)throw new e("coerce callback must be provided");for(const e of t)this.coerce(e,s);return this}if("object"==typeof t){for(const e of Object.keys(t))this.coerce(e,t[e]);return this}if(!s)throw new e("coerce callback must be provided");return v(this,tt,"f").key[t]=!0,v(this,B,"f").addCoerceMiddleware(((i,n)=>{let r;return j((()=>(r=n.getAliases(),s(i[t]))),(e=>{if(i[t]=e,r[t])for(const s of r[t])i[s]=e;return i}),(t=>{throw new e(t.message)}))}),t),this}conflicts(t,e){return h("<string|object> [string|array]",[t,e],arguments.length),v(this,gt,"f").conflicts(t,e),this}config(t="config",e,s){return h("[object|string] [string|function] [function]",[t,e,s],arguments.length),"object"!=typeof t||Array.isArray(t)?("function"==typeof e&&(s=e,e=void 0),this.describe(t,e||v(this,ut,"f").deferY18nLookup("Path to JSON config file")),(Array.isArray(t)?t:[t]).forEach((t=>{v(this,tt,"f").config[t]=s||!0})),this):(t=n(t,v(this,q,"f"),this[Ct]()["deep-merge-config"]||!1,v(this,lt,"f")),v(this,tt,"f").configObjects=(v(this,tt,"f").configObjects||[]).concat(t),this)}completion(t,e,s){return h("[string] [string|boolean|function] [function]",[t,e,s],arguments.length),"function"==typeof e&&(s=e,e=void 0),O(this,F,t||v(this,F,"f")||"completion","f"),e||!1===e||(e="generate completion script"),this.command(v(this,F,"f"),e),s&&v(this,U,"f").registerFunction(s),this}command(t,e,s,i,n,r){return h("<string|array|object> [string|boolean] [function|object] [function] [array] [boolean|string]",[t,e,s,i,n,r],arguments.length),v(this,z,"f").addHandler(t,e,s,i,n,r),this}commands(t,e,s,i,n,r){return this.command(t,e,s,i,n,r)}commandDir(t,e){h("<string> [object]",[t,e],arguments.length);const s=v(this,et,"f")||v(this,lt,"f").require;return v(this,z,"f").addDirectory(t,s,v(this,lt,"f").getCallerFile(),e),this}count(t){return h("<array|string>",[t],arguments.length),this[Et]("count",t),this[Yt](t),this}default(t,e,s){return h("<object|string|array> [*] [string]",[t,e,s],arguments.length),s&&(u(t,v(this,lt,"f")),v(this,tt,"f").defaultDescription[t]=s),"function"==typeof e&&(u(t,v(this,lt,"f")),v(this,tt,"f").defaultDescription[t]||(v(this,tt,"f").defaultDescription[t]=v(this,ut,"f").functionDescription(e)),e=e.call()),this[xt](this.default.bind(this),"default",t,e),this}defaults(t,e,s){return this.default(t,e,s)}demandCommand(t=1,e,s,i){return h("[number] [number|string] [string|null|undefined] [string|null|undefined]",[t,e,s,i],arguments.length),"number"!=typeof e&&(s=e,e=1/0),this.global("_",!1),v(this,tt,"f").demandedCommands._={min:t,max:e,minMsg:s,maxMsg:i},this}demand(t,e,s){return Array.isArray(e)?(e.forEach((t=>{d(s,!0,v(this,lt,"f")),this.demandOption(t,s)})),e=1/0):"number"!=typeof e&&(s=e,e=1/0),"number"==typeof t?(d(s,!0,v(this,lt,"f")),this.demandCommand(t,e,s,s)):Array.isArray(t)?t.forEach((t=>{d(s,!0,v(this,lt,"f")),this.demandOption(t,s)})):"string"==typeof s?this.demandOption(t,s):!0!==s&&void 0!==s||this.demandOption(t),this}demandOption(t,e){return h("<object|string|array> [string]",[t,e],arguments.length),this[xt](this.demandOption.bind(this),"demandedOptions",t,e),this}deprecateOption(t,e){return h("<string> [string|boolean]",[t,e],arguments.length),v(this,tt,"f").deprecatedOptions[t]=e,this}describe(t,e){return h("<object|string|array> [string]",[t,e],arguments.length),this[$t](t,!0),v(this,ut,"f").describe(t,e),this}detectLocale(t){return h("<boolean>",[t],arguments.length),O(this,T,t,"f"),this}env(t){return h("[string|boolean]",[t],arguments.length),!1===t?delete v(this,tt,"f").envPrefix:v(this,tt,"f").envPrefix=t||"",this}epilogue(t){return h("<string>",[t],arguments.length),v(this,ut,"f").epilog(t),this}epilog(t){return this.epilogue(t)}example(t,e){return h("<string|array> [string]",[t,e],arguments.length),Array.isArray(t)?t.forEach((t=>this.example(...t))):v(this,ut,"f").example(t,e),this}exit(t,e){O(this,J,!0,"f"),O(this,V,e,"f"),v(this,G,"f")&&v(this,lt,"f").process.exit(t)}exitProcess(t=!0){return h("[boolean]",[t],arguments.length),O(this,G,t,"f"),this}fail(t){if(h("<function|boolean>",[t],arguments.length),"boolean"==typeof t&&!1!==t)throw new e("Invalid first argument. Expected function or boolean 'false'");return v(this,ut,"f").failFn(t),this}getAliases(){return this.parsed?this.parsed.aliases:{}}async getCompletion(t,e){return h("<array> [function]",[t,e],arguments.length),e?v(this,U,"f").getCompletion(t,e):new Promise(((e,s)=>{v(this,U,"f").getCompletion(t,((t,i)=>{t?s(t):e(i)}))}))}getDemandedOptions(){return h([],0),v(this,tt,"f").demandedOptions}getDemandedCommands(){return h([],0),v(this,tt,"f").demandedCommands}getDeprecatedOptions(){return h([],0),v(this,tt,"f").deprecatedOptions}getDetectLocale(){return v(this,T,"f")}getExitProcess(){return v(this,G,"f")}getGroups(){return Object.assign({},v(this,Y,"f"),v(this,ot,"f"))}getHelp(){if(O(this,J,!0,"f"),!v(this,ut,"f").hasCachedHelpMessage()){if(!this.parsed){const t=this[Gt](v(this,at,"f"),void 0,void 0,0,!0);if(f(t))return t.then((()=>v(this,ut,"f").help()))}const t=v(this,z,"f").runDefaultBuilderOn(this);if(f(t))return t.then((()=>v(this,ut,"f").help()))}return Promise.resolve(v(this,ut,"f").help())}getOptions(){return v(this,tt,"f")}getStrict(){return v(this,ct,"f")}getStrictCommands(){return v(this,ft,"f")}getStrictOptions(){return v(this,dt,"f")}global(t,e){return h("<string|array> [boolean]",[t,e],arguments.length),t=[].concat(t),!1!==e?v(this,tt,"f").local=v(this,tt,"f").local.filter((e=>-1===t.indexOf(e))):t.forEach((t=>{v(this,tt,"f").local.includes(t)||v(this,tt,"f").local.push(t)})),this}group(t,e){h("<string|array> <string>",[t,e],arguments.length);const s=v(this,ot,"f")[e]||v(this,Y,"f")[e];v(this,ot,"f")[e]&&delete v(this,ot,"f")[e];const i={};return v(this,Y,"f")[e]=(s||[]).concat(t).filter((t=>!i[t]&&(i[t]=!0))),this}hide(t){return h("<string>",[t],arguments.length),v(this,tt,"f").hiddenOptions.push(t),this}implies(t,e){return h("<string|object> [number|string|array]",[t,e],arguments.length),v(this,gt,"f").implies(t,e),this}locale(t){return h("[string]",[t],arguments.length),t?(O(this,T,!1,"f"),v(this,lt,"f").y18n.setLocale(t),this):(this[jt](),v(this,lt,"f").y18n.getLocale())}middleware(t,e,s){return v(this,B,"f").addMiddleware(t,!!e,s)}nargs(t,e){return h("<string|object|array> [number]",[t,e],arguments.length),this[xt](this.nargs.bind(this),"narg",t,e),this}normalize(t){return h("<array|string>",[t],arguments.length),this[Et]("normalize",t),this}number(t){return h("<array|string>",[t],arguments.length),this[Et]("number",t),this[Yt](t),this}option(t,e){if(h("<string|object> [object]",[t,e],arguments.length),"object"==typeof t)Object.keys(t).forEach((e=>{this.options(e,t[e])}));else{"object"!=typeof e&&(e={}),this[Yt](t),!v(this,pt,"f")||"version"!==t&&"version"!==(null==e?void 0:e.alias)||this[vt](['"version" is a reserved word.',"Please do one of the following:",'- Disable version with `yargs.version(false)` if using "version" as an option',"- Use the built-in `yargs.version` method instead (if applicable)","- Use a different option key","https://yargs.js.org/docs/#api-reference-version"].join("\n"),void 0,"versionWarning"),v(this,tt,"f").key[t]=!0,e.alias&&this.alias(t,e.alias);const s=e.deprecate||e.deprecated;s&&this.deprecateOption(t,s);const i=e.demand||e.required||e.require;i&&this.demand(t,i),e.demandOption&&this.demandOption(t,"string"==typeof e.demandOption?e.demandOption:void 0),e.conflicts&&this.conflicts(t,e.conflicts),"default"in e&&this.default(t,e.default),void 0!==e.implies&&this.implies(t,e.implies),void 0!==e.nargs&&this.nargs(t,e.nargs),e.config&&this.config(t,e.configParser),e.normalize&&this.normalize(t),e.choices&&this.choices(t,e.choices),e.coerce&&this.coerce(t,e.coerce),e.group&&this.group(t,e.group),(e.boolean||"boolean"===e.type)&&(this.boolean(t),e.alias&&this.boolean(e.alias)),(e.array||"array"===e.type)&&(this.array(t),e.alias&&this.array(e.alias)),(e.number||"number"===e.type)&&(this.number(t),e.alias&&this.number(e.alias)),(e.string||"string"===e.type)&&(this.string(t),e.alias&&this.string(e.alias)),(e.count||"count"===e.type)&&this.count(t),"boolean"==typeof e.global&&this.global(t,e.global),e.defaultDescription&&(v(this,tt,"f").defaultDescription[t]=e.defaultDescription),e.skipValidation&&this.skipValidation(t);const n=e.describe||e.description||e.desc;this.describe(t,n),e.hidden&&this.hide(t),e.requiresArg&&this.requiresArg(t)}return this}options(t,e){return this.option(t,e)}parse(t,e,s){h("[string|array] [function|boolean|object] [function]",[t,e,s],arguments.length),this[Ot](),void 0===t&&(t=v(this,at,"f")),"object"==typeof e&&(O(this,nt,e,"f"),e=s),"function"==typeof e&&(O(this,it,e,"f"),e=!1),e||O(this,at,t,"f"),v(this,it,"f")&&O(this,G,!1,"f");const i=this[Gt](t,!!e),n=this.parsed;return v(this,U,"f").setParsed(this.parsed),f(i)?i.then((t=>(v(this,it,"f")&&v(this,it,"f").call(this,v(this,V,"f"),t,v(this,Q,"f")),t))).catch((t=>{throw v(this,it,"f")&&v(this,it,"f")(t,this.parsed.argv,v(this,Q,"f")),t})).finally((()=>{this[It](),this.parsed=n})):(v(this,it,"f")&&v(this,it,"f").call(this,v(this,V,"f"),i,v(this,Q,"f")),this[It](),this.parsed=n,i)}parseAsync(t,e,s){const i=this.parse(t,e,s);return f(i)?i:Promise.resolve(i)}parseSync(t,s,i){const n=this.parse(t,s,i);if(f(n))throw new e(".parseSync() must not be used with asynchronous builders, handlers, or middleware");return n}parserConfiguration(t){return h("<object>",[t],arguments.length),O(this,st,t,"f"),this}pkgConf(t,e){h("<string> [string]",[t,e],arguments.length);let s=null;const i=this[kt](e||v(this,q,"f"));return i[t]&&"object"==typeof i[t]&&(s=n(i[t],e||v(this,q,"f"),this[Ct]()["deep-merge-config"]||!1,v(this,lt,"f")),v(this,tt,"f").configObjects=(v(this,tt,"f").configObjects||[]).concat(s)),this}positional(t,e){h("<string> <object>",[t,e],arguments.length);const s=["default","defaultDescription","implies","normalize","choices","conflicts","coerce","type","describe","desc","description","alias"];e=g(e,((t,e)=>!("type"===t&&!["string","number","boolean"].includes(e))&&s.includes(t)));const i=v(this,W,"f").fullCommands[v(this,W,"f").fullCommands.length-1],n=i?v(this,z,"f").cmdToParseOptions(i):{array:[],alias:{},default:{},demand:{}};return p(n).forEach((s=>{const i=n[s];Array.isArray(i)?-1!==i.indexOf(t)&&(e[s]=!0):i[t]&&!(s in e)&&(e[s]=i[t])})),this.group(t,v(this,ut,"f").getPositionalGroupName()),this.option(t,e)}recommendCommands(t=!0){return h("[boolean]",[t],arguments.length),O(this,ht,t,"f"),this}required(t,e,s){return this.demand(t,e,s)}require(t,e,s){return this.demand(t,e,s)}requiresArg(t){return h("<array|string|object> [number]",[t],arguments.length),"string"==typeof t&&v(this,tt,"f").narg[t]||this[xt](this.requiresArg.bind(this),"narg",t,NaN),this}showCompletionScript(t,e){return h("[string] [string]",[t,e],arguments.length),t=t||this.$0,v(this,X,"f").log(v(this,U,"f").generateCompletionScript(t,e||v(this,F,"f")||"completion")),this}showHelp(t){if(h("[string|function]",[t],arguments.length),O(this,J,!0,"f"),!v(this,ut,"f").hasCachedHelpMessage()){if(!this.parsed){const e=this[Gt](v(this,at,"f"),void 0,void 0,0,!0);if(f(e))return e.then((()=>{v(this,ut,"f").showHelp(t)})),this}const e=v(this,z,"f").runDefaultBuilderOn(this);if(f(e))return e.then((()=>{v(this,ut,"f").showHelp(t)})),this}return v(this,ut,"f").showHelp(t),this}scriptName(t){return this.customScriptName=!0,this.$0=t,this}showHelpOnFail(t,e){return h("[boolean|string] [string]",[t,e],arguments.length),v(this,ut,"f").showHelpOnFail(t,e),this}showVersion(t){return h("[string|function]",[t],arguments.length),v(this,ut,"f").showVersion(t),this}skipValidation(t){return h("<array|string>",[t],arguments.length),this[Et]("skipValidation",t),this}strict(t){return h("[boolean]",[t],arguments.length),O(this,ct,!1!==t,"f"),this}strictCommands(t){return h("[boolean]",[t],arguments.length),O(this,ft,!1!==t,"f"),this}strictOptions(t){return h("[boolean]",[t],arguments.length),O(this,dt,!1!==t,"f"),this}string(t){return h("<array|string>",[t],arguments.length),this[Et]("string",t),this[Yt](t),this}terminalWidth(){return h([],0),v(this,lt,"f").process.stdColumns}updateLocale(t){return this.updateStrings(t)}updateStrings(t){return h("<object>",[t],arguments.length),O(this,T,!1,"f"),v(this,lt,"f").y18n.updateLocale(t),this}usage(t,s,i,n){if(h("<string|null|undefined> [string|boolean] [function|object] [function]",[t,s,i,n],arguments.length),void 0!==s){if(d(t,null,v(this,lt,"f")),(t||"").match(/^\$0( |$)/))return this.command(t,s,i,n);throw new e(".usage() description must start with $0 if being used as alias for .command()")}return v(this,ut,"f").usage(t),this}version(t,e,s){const i="version";if(h("[boolean|string] [string] [string]",[t,e,s],arguments.length),v(this,pt,"f")&&(this[bt](v(this,pt,"f")),v(this,ut,"f").version(void 0),O(this,pt,null,"f")),0===arguments.length)s=this[_t](),t=i;else if(1===arguments.length){if(!1===t)return this;s=t,t=i}else 2===arguments.length&&(s=e,e=void 0);return O(this,pt,"string"==typeof t?t:i,"f"),e=e||v(this,ut,"f").deferY18nLookup("Show version number"),v(this,ut,"f").version(s||void 0),this.boolean(v(this,pt,"f")),this.describe(v(this,pt,"f"),e),this}wrap(t){return h("<number|null|undefined>",[t],arguments.length),v(this,ut,"f").wrap(t),this}[(z=new WeakMap,q=new WeakMap,W=new WeakMap,U=new WeakMap,F=new WeakMap,L=new WeakMap,V=new WeakMap,T=new WeakMap,R=new WeakMap,G=new WeakMap,K=new WeakMap,B=new WeakMap,Y=new WeakMap,J=new WeakMap,Z=new WeakMap,X=new WeakMap,Q=new WeakMap,tt=new WeakMap,et=new WeakMap,st=new WeakMap,it=new WeakMap,nt=new WeakMap,rt=new WeakMap,ot=new WeakMap,at=new WeakMap,ht=new WeakMap,lt=new WeakMap,ct=new WeakMap,ft=new WeakMap,dt=new WeakMap,ut=new WeakMap,pt=new WeakMap,gt=new WeakMap,mt)](t){if(!t._||!t["--"])return t;t._.push.apply(t._,t["--"]);try{delete t["--"]}catch(t){}return t}[yt](){return{log:(...t)=>{this[Lt]()||console.log(...t),O(this,J,!0,"f"),v(this,Q,"f").length&&O(this,Q,v(this,Q,"f")+"\n","f"),O(this,Q,v(this,Q,"f")+t.join(" "),"f")},error:(...t)=>{this[Lt]()||console.error(...t),O(this,J,!0,"f"),v(this,Q,"f").length&&O(this,Q,v(this,Q,"f")+"\n","f"),O(this,Q,v(this,Q,"f")+t.join(" "),"f")}}}[bt](t){p(v(this,tt,"f")).forEach((e=>{if("configObjects"===e)return;const s=v(this,tt,"f")[e];Array.isArray(s)?s.includes(t)&&s.splice(s.indexOf(t),1):"object"==typeof s&&delete s[t]})),delete v(this,ut,"f").getDescriptions()[t]}[vt](t,e,s){v(this,R,"f")[s]||(v(this,lt,"f").process.emitWarning(t,e),v(this,R,"f")[s]=!0)}[Ot](){v(this,K,"f").push({options:v(this,tt,"f"),configObjects:v(this,tt,"f").configObjects.slice(0),exitProcess:v(this,G,"f"),groups:v(this,Y,"f"),strict:v(this,ct,"f"),strictCommands:v(this,ft,"f"),strictOptions:v(this,dt,"f"),completionCommand:v(this,F,"f"),output:v(this,Q,"f"),exitError:v(this,V,"f"),hasOutput:v(this,J,"f"),parsed:this.parsed,parseFn:v(this,it,"f"),parseContext:v(this,nt,"f")}),v(this,ut,"f").freeze(),v(this,gt,"f").freeze(),v(this,z,"f").freeze(),v(this,B,"f").freeze()}[wt](){let t,e="";return t=/\b(node|iojs|electron)(\.exe)?$/.test(v(this,lt,"f").process.argv()[0])?v(this,lt,"f").process.argv().slice(1,2):v(this,lt,"f").process.argv().slice(0,1),e=t.map((t=>{const e=this[Tt](v(this,q,"f"),t);return t.match(/^(\/|([a-zA-Z]:)?\\)/)&&e.length<t.length?e:t})).join(" ").trim(),v(this,lt,"f").getEnv("_")&&v(this,lt,"f").getProcessArgvBin()===v(this,lt,"f").getEnv("_")&&(e=v(this,lt,"f").getEnv("_").replace(`${v(this,lt,"f").path.dirname(v(this,lt,"f").process.execPath())}/`,"")),e}[Ct](){return v(this,st,"f")}[jt](){if(!v(this,T,"f"))return;const t=v(this,lt,"f").getEnv("LC_ALL")||v(this,lt,"f").getEnv("LC_MESSAGES")||v(this,lt,"f").getEnv("LANG")||v(this,lt,"f").getEnv("LANGUAGE")||"en_US";this.locale(t.replace(/[.:].*/,""))}[_t](){return this[kt]().version||"unknown"}[Mt](t){const e=t["--"]?t["--"]:t._;for(let t,s=0;void 0!==(t=e[s]);s++)v(this,lt,"f").Parser.looksLikeNumber(t)&&Number.isSafeInteger(Math.floor(parseFloat(`${t}`)))&&(e[s]=Number(t));return t}[kt](t){const e=t||"*";if(v(this,rt,"f")[e])return v(this,rt,"f")[e];let s={};try{let e=t||v(this,lt,"f").mainFilename;!t&&v(this,lt,"f").path.extname(e)&&(e=v(this,lt,"f").path.dirname(e));const i=v(this,lt,"f").findUp(e,((t,e)=>e.includes("package.json")?"package.json":void 0));d(i,void 0,v(this,lt,"f")),s=JSON.parse(v(this,lt,"f").readFileSync(i,"utf8"))}catch(t){}return v(this,rt,"f")[e]=s||{},v(this,rt,"f")[e]}[Et](t,e){(e=[].concat(e)).forEach((e=>{e=this[Pt](e),v(this,tt,"f")[t].push(e)}))}[xt](t,e,s,i){this[St](t,e,s,i,((t,e,s)=>{v(this,tt,"f")[t][e]=s}))}[At](t,e,s,i){this[St](t,e,s,i,((t,e,s)=>{v(this,tt,"f")[t][e]=(v(this,tt,"f")[t][e]||[]).concat(s)}))}[St](t,e,s,i,n){if(Array.isArray(s))s.forEach((e=>{t(e,i)}));else if((t=>"object"==typeof t)(s))for(const e of p(s))t(e,s[e]);else n(e,this[Pt](s),i)}[Pt](t){return"__proto__"===t?"___proto___":t}[$t](t,e){return this[xt](this[$t].bind(this),"key",t,e),this}[It](){var t,e,s,i,n,r,o,a,h,l,c,f;const u=v(this,K,"f").pop();let p;d(u,void 0,v(this,lt,"f")),t=this,e=this,s=this,i=this,n=this,r=this,o=this,a=this,h=this,l=this,c=this,f=this,({options:{set value(e){O(t,tt,e,"f")}}.value,configObjects:p,exitProcess:{set value(t){O(e,G,t,"f")}}.value,groups:{set value(t){O(s,Y,t,"f")}}.value,output:{set value(t){O(i,Q,t,"f")}}.value,exitError:{set value(t){O(n,V,t,"f")}}.value,hasOutput:{set value(t){O(r,J,t,"f")}}.value,parsed:this.parsed,strict:{set value(t){O(o,ct,t,"f")}}.value,strictCommands:{set value(t){O(a,ft,t,"f")}}.value,strictOptions:{set value(t){O(h,dt,t,"f")}}.value,completionCommand:{set value(t){O(l,F,t,"f")}}.value,parseFn:{set value(t){O(c,it,t,"f")}}.value,parseContext:{set value(t){O(f,nt,t,"f")}}.value}=u),v(this,tt,"f").configObjects=p,v(this,ut,"f").unfreeze(),v(this,gt,"f").unfreeze(),v(this,z,"f").unfreeze(),v(this,B,"f").unfreeze()}[Dt](t,e){return j(e,(e=>(t(e),e)))}getInternalMethods(){return{getCommandInstance:this[Nt].bind(this),getContext:this[Ht].bind(this),getHasOutput:this[zt].bind(this),getLoggerInstance:this[qt].bind(this),getParseContext:this[Wt].bind(this),getParserConfiguration:this[Ct].bind(this),getUsageInstance:this[Ut].bind(this),getValidationInstance:this[Ft].bind(this),hasParseCallback:this[Lt].bind(this),postProcess:this[Vt].bind(this),reset:this[Rt].bind(this),runValidation:this[Kt].bind(this),runYargsParserAndExecuteCommands:this[Gt].bind(this),setHasOutput:this[Bt].bind(this)}}[Nt](){return v(this,z,"f")}[Ht](){return v(this,W,"f")}[zt](){return v(this,J,"f")}[qt](){return v(this,X,"f")}[Wt](){return v(this,nt,"f")||{}}[Ut](){return v(this,ut,"f")}[Ft](){return v(this,gt,"f")}[Lt](){return!!v(this,it,"f")}[Vt](t,e,s,i){if(s)return t;if(f(t))return t;e||(t=this[mt](t));return(this[Ct]()["parse-positional-numbers"]||void 0===this[Ct]()["parse-positional-numbers"])&&(t=this[Mt](t)),i&&(t=C(t,this,v(this,B,"f").getMiddleware(),!1)),t}[Rt](t={}){O(this,tt,v(this,tt,"f")||{},"f");const e={};e.local=v(this,tt,"f").local||[],e.configObjects=v(this,tt,"f").configObjects||[];const s={};e.local.forEach((e=>{s[e]=!0,(t[e]||[]).forEach((t=>{s[t]=!0}))})),Object.assign(v(this,ot,"f"),Object.keys(v(this,Y,"f")).reduce(((t,e)=>{const i=v(this,Y,"f")[e].filter((t=>!(t in s)));return i.length>0&&(t[e]=i),t}),{})),O(this,Y,{},"f");return["array","boolean","string","skipValidation","count","normalize","number","hiddenOptions"].forEach((t=>{e[t]=(v(this,tt,"f")[t]||[]).filter((t=>!s[t]))})),["narg","key","alias","default","defaultDescription","config","choices","demandedOptions","demandedCommands","deprecatedOptions"].forEach((t=>{e[t]=g(v(this,tt,"f")[t],(t=>!s[t]))})),e.envPrefix=v(this,tt,"f").envPrefix,O(this,tt,e,"f"),O(this,ut,v(this,ut,"f")?v(this,ut,"f").reset(s):S(this,v(this,lt,"f")),"f"),O(this,gt,v(this,gt,"f")?v(this,gt,"f").reset(s):function(t,e,s){const i=s.y18n.__,n=s.y18n.__n,r={nonOptionCount:function(s){const i=t.getDemandedCommands(),r=s._.length+(s["--"]?s["--"].length:0)-t.getInternalMethods().getContext().commands.length;i._&&(r<i._.min||r>i._.max)&&(r<i._.min?void 0!==i._.minMsg?e.fail(i._.minMsg?i._.minMsg.replace(/\$0/g,r.toString()).replace(/\$1/,i._.min.toString()):null):e.fail(n("Not enough non-option arguments: got %s, need at least %s","Not enough non-option arguments: got %s, need at least %s",r,r.toString(),i._.min.toString())):r>i._.max&&(void 0!==i._.maxMsg?e.fail(i._.maxMsg?i._.maxMsg.replace(/\$0/g,r.toString()).replace(/\$1/,i._.max.toString()):null):e.fail(n("Too many non-option arguments: got %s, maximum of %s","Too many non-option arguments: got %s, maximum of %s",r,r.toString(),i._.max.toString()))))},positionalCount:function(t,s){s<t&&e.fail(n("Not enough non-option arguments: got %s, need at least %s","Not enough non-option arguments: got %s, need at least %s",s,s+"",t+""))},requiredArguments:function(t,s){let i=null;for(const e of Object.keys(s))Object.prototype.hasOwnProperty.call(t,e)&&void 0!==t[e]||(i=i||{},i[e]=s[e]);if(i){const t=[];for(const e of Object.keys(i)){const s=i[e];s&&t.indexOf(s)<0&&t.push(s)}const s=t.length?`\n${t.join("\n")}`:"";e.fail(n("Missing required argument: %s","Missing required arguments: %s",Object.keys(i).length,Object.keys(i).join(", ")+s))}},unknownArguments:function(s,i,o,a,h=!0){var l;const c=t.getInternalMethods().getCommandInstance().getCommands(),f=[],d=t.getInternalMethods().getContext();if(Object.keys(s).forEach((e=>{H.includes(e)||Object.prototype.hasOwnProperty.call(o,e)||Object.prototype.hasOwnProperty.call(t.getInternalMethods().getParseContext(),e)||r.isValidAndSomeAliasIsNotNew(e,i)||f.push(e)})),h&&(d.commands.length>0||c.length>0||a)&&s._.slice(d.commands.length).forEach((t=>{c.includes(""+t)||f.push(""+t)})),h){const e=(null===(l=t.getDemandedCommands()._)||void 0===l?void 0:l.max)||0,i=d.commands.length+e;i<s._.length&&s._.slice(i).forEach((t=>{t=String(t),d.commands.includes(t)||f.includes(t)||f.push(t)}))}f.length&&e.fail(n("Unknown argument: %s","Unknown arguments: %s",f.length,f.join(", ")))},unknownCommands:function(s){const i=t.getInternalMethods().getCommandInstance().getCommands(),r=[],o=t.getInternalMethods().getContext();return(o.commands.length>0||i.length>0)&&s._.slice(o.commands.length).forEach((t=>{i.includes(""+t)||r.push(""+t)})),r.length>0&&(e.fail(n("Unknown command: %s","Unknown commands: %s",r.length,r.join(", "))),!0)},isValidAndSomeAliasIsNotNew:function(e,s){if(!Object.prototype.hasOwnProperty.call(s,e))return!1;const i=t.parsed.newAliases;return[e,...s[e]].some((t=>!Object.prototype.hasOwnProperty.call(i,t)||!i[e]))},limitedChoices:function(s){const n=t.getOptions(),r={};if(!Object.keys(n.choices).length)return;Object.keys(s).forEach((t=>{-1===H.indexOf(t)&&Object.prototype.hasOwnProperty.call(n.choices,t)&&[].concat(s[t]).forEach((e=>{-1===n.choices[t].indexOf(e)&&void 0!==e&&(r[t]=(r[t]||[]).concat(e))}))}));const o=Object.keys(r);if(!o.length)return;let a=i("Invalid values:");o.forEach((t=>{a+=`\n  ${i("Argument: %s, Given: %s, Choices: %s",t,e.stringifiedValues(r[t]),e.stringifiedValues(n.choices[t]))}`})),e.fail(a)}};let o={};function a(t,e){const s=Number(e);return"number"==typeof(e=isNaN(s)?e:s)?e=t._.length>=e:e.match(/^--no-.+/)?(e=e.match(/^--no-(.+)/)[1],e=!Object.prototype.hasOwnProperty.call(t,e)):e=Object.prototype.hasOwnProperty.call(t,e),e}r.implies=function(e,i){h("<string|object> [array|number|string]",[e,i],arguments.length),"object"==typeof e?Object.keys(e).forEach((t=>{r.implies(t,e[t])})):(t.global(e),o[e]||(o[e]=[]),Array.isArray(i)?i.forEach((t=>r.implies(e,t))):(d(i,void 0,s),o[e].push(i)))},r.getImplied=function(){return o},r.implications=function(t){const s=[];if(Object.keys(o).forEach((e=>{const i=e;(o[e]||[]).forEach((e=>{let n=i;const r=e;n=a(t,n),e=a(t,e),n&&!e&&s.push(` ${i} -> ${r}`)}))})),s.length){let t=`${i("Implications failed:")}\n`;s.forEach((e=>{t+=e})),e.fail(t)}};let l={};r.conflicts=function(e,s){h("<string|object> [array|string]",[e,s],arguments.length),"object"==typeof e?Object.keys(e).forEach((t=>{r.conflicts(t,e[t])})):(t.global(e),l[e]||(l[e]=[]),Array.isArray(s)?s.forEach((t=>r.conflicts(e,t))):l[e].push(s))},r.getConflicting=()=>l,r.conflicting=function(n){Object.keys(n).forEach((t=>{l[t]&&l[t].forEach((s=>{s&&void 0!==n[t]&&void 0!==n[s]&&e.fail(i("Arguments %s and %s are mutually exclusive",t,s))}))})),t.getInternalMethods().getParserConfiguration()["strip-dashed"]&&Object.keys(l).forEach((t=>{l[t].forEach((r=>{r&&void 0!==n[s.Parser.camelCase(t)]&&void 0!==n[s.Parser.camelCase(r)]&&e.fail(i("Arguments %s and %s are mutually exclusive",t,r))}))}))},r.recommendCommands=function(t,s){s=s.sort(((t,e)=>e.length-t.length));let n=null,r=1/0;for(let e,i=0;void 0!==(e=s[i]);i++){const s=N(t,e);s<=3&&s<r&&(r=s,n=e)}n&&e.fail(i("Did you mean %s?",n))},r.reset=function(t){return o=g(o,(e=>!t[e])),l=g(l,(e=>!t[e])),r};const c=[];return r.freeze=function(){c.push({implied:o,conflicting:l})},r.unfreeze=function(){const t=c.pop();d(t,void 0,s),({implied:o,conflicting:l}=t)},r}(this,v(this,ut,"f"),v(this,lt,"f")),"f"),O(this,z,v(this,z,"f")?v(this,z,"f").reset():function(t,e,s,i){return new M(t,e,s,i)}(v(this,ut,"f"),v(this,gt,"f"),v(this,B,"f"),v(this,lt,"f")),"f"),v(this,U,"f")||O(this,U,function(t,e,s,i){return new D(t,e,s,i)}(this,v(this,ut,"f"),v(this,z,"f"),v(this,lt,"f")),"f"),v(this,B,"f").reset(),O(this,F,null,"f"),O(this,Q,"","f"),O(this,V,null,"f"),O(this,J,!1,"f"),this.parsed=!1,this}[Tt](t,e){return v(this,lt,"f").path.relative(t,e)}[Gt](t,s,i,n=0,r=!1){let o=!!i||r;t=t||v(this,at,"f"),v(this,tt,"f").__=v(this,lt,"f").y18n.__,v(this,tt,"f").configuration=this[Ct]();const a=!!v(this,tt,"f").configuration["populate--"],h=Object.assign({},v(this,tt,"f").configuration,{"populate--":!0}),l=v(this,lt,"f").Parser.detailed(t,Object.assign({},v(this,tt,"f"),{configuration:{"parse-positional-numbers":!1,...h}})),c=Object.assign(l.argv,v(this,nt,"f"));let d;const u=l.aliases;let p=!1,g=!1;Object.keys(c).forEach((t=>{t===v(this,Z,"f")&&c[t]?p=!0:t===v(this,pt,"f")&&c[t]&&(g=!0)})),c.$0=this.$0,this.parsed=l,0===n&&v(this,ut,"f").clearCachedHelpMessage();try{if(this[jt](),s)return this[Vt](c,a,!!i,!1);if(v(this,Z,"f")){[v(this,Z,"f")].concat(u[v(this,Z,"f")]||[]).filter((t=>t.length>1)).includes(""+c._[c._.length-1])&&(c._.pop(),p=!0)}const h=v(this,z,"f").getCommands(),m=v(this,U,"f").completionKey in c,y=p||m||r;if(c._.length){if(h.length){let t;for(let e,s=n||0;void 0!==c._[s];s++){if(e=String(c._[s]),h.includes(e)&&e!==v(this,F,"f")){const t=v(this,z,"f").runCommand(e,this,l,s+1,r,p||g||r);return this[Vt](t,a,!!i,!1)}if(!t&&e!==v(this,F,"f")){t=e;break}}!v(this,z,"f").hasDefaultCommand()&&v(this,ht,"f")&&t&&!y&&v(this,gt,"f").recommendCommands(t,h)}v(this,F,"f")&&c._.includes(v(this,F,"f"))&&!m&&(v(this,G,"f")&&x(!0),this.showCompletionScript(),this.exit(0))}if(v(this,z,"f").hasDefaultCommand()&&!y){const t=v(this,z,"f").runCommand(null,this,l,0,r,p||g||r);return this[Vt](t,a,!!i,!1)}if(m){v(this,G,"f")&&x(!0);const s=(t=[].concat(t)).slice(t.indexOf(`--${v(this,U,"f").completionKey}`)+1);return v(this,U,"f").getCompletion(s,((t,s)=>{if(t)throw new e(t.message);(s||[]).forEach((t=>{v(this,X,"f").log(t)})),this.exit(0)})),this[Vt](c,!a,!!i,!1)}if(v(this,J,"f")||(p?(v(this,G,"f")&&x(!0),o=!0,this.showHelp("log"),this.exit(0)):g&&(v(this,G,"f")&&x(!0),o=!0,v(this,ut,"f").showVersion("log"),this.exit(0))),!o&&v(this,tt,"f").skipValidation.length>0&&(o=Object.keys(c).some((t=>v(this,tt,"f").skipValidation.indexOf(t)>=0&&!0===c[t]))),!o){if(l.error)throw new e(l.error.message);if(!m){const t=this[Kt](u,{},l.error);i||(d=C(c,this,v(this,B,"f").getMiddleware(),!0)),d=this[Dt](t,null!=d?d:c),f(d)&&!i&&(d=d.then((()=>C(c,this,v(this,B,"f").getMiddleware(),!1))))}}}catch(t){if(!(t instanceof e))throw t;v(this,ut,"f").fail(t.message,t)}return this[Vt](null!=d?d:c,a,!!i,!0)}[Kt](t,s,i,n){const r={...this.getDemandedOptions()};return o=>{if(i)throw new e(i.message);v(this,gt,"f").nonOptionCount(o),v(this,gt,"f").requiredArguments(o,r);let a=!1;v(this,ft,"f")&&(a=v(this,gt,"f").unknownCommands(o)),v(this,ct,"f")&&!a?v(this,gt,"f").unknownArguments(o,t,s,!!n):v(this,dt,"f")&&v(this,gt,"f").unknownArguments(o,t,{},!1,!1),v(this,gt,"f").limitedChoices(o),v(this,gt,"f").implications(o),v(this,gt,"f").conflicting(o)}}[Bt](){O(this,J,!0,"f")}[Yt](t){if("string"==typeof t)v(this,tt,"f").key[t]=!0;else for(const e of t)v(this,tt,"f").key[e]=!0}}var Zt,Xt;const{readFileSync:Qt}=__nccwpck_require__(7147),{inspect:te}=__nccwpck_require__(3837),{resolve:ee}=__nccwpck_require__(1017),se=__nccwpck_require__(452),ie=__nccwpck_require__(2356);var ne,re={assert:{notStrictEqual:t.notStrictEqual,strictEqual:t.strictEqual},cliui:__nccwpck_require__(7059),findUp:__nccwpck_require__(2644),getEnv:t=>process.env[t],getCallerFile:__nccwpck_require__(351),getProcessArgvBin:y,inspect:te,mainFilename:null!==(Xt=null===(Zt= false||void 0===__nccwpck_require__(9167)?void 0:__nccwpck_require__.c[__nccwpck_require__.s])||void 0===Zt?void 0:Zt.filename)&&void 0!==Xt?Xt:process.cwd(),Parser:ie,path:__nccwpck_require__(1017),process:{argv:()=>process.argv,cwd:process.cwd,emitWarning:(t,e)=>process.emitWarning(t,e),execPath:()=>process.execPath,exit:t=>{process.exit(t)},nextTick:process.nextTick,stdColumns:void 0!==process.stdout.columns?process.stdout.columns:null},readFileSync:Qt,require:__nccwpck_require__(9167),requireDirectory:__nccwpck_require__(9200),stringWidth:__nccwpck_require__(2577),y18n:se({directory:ee(__dirname,"../locales"),updateFiles:!1})};const oe=(null===(ne=null===process||void 0===process?void 0:process.env)||void 0===ne?void 0:ne.YARGS_MIN_NODE_VERSION)?Number(process.env.YARGS_MIN_NODE_VERSION):12;if(process&&process.version){if(Number(process.version.match(/v([^.]+)/)[1])<oe)throw Error(`yargs supports a minimum Node.js version of ${oe}. Read our version support policy: https://github.com/yargs/yargs#supported-nodejs-versions`)}const ae=__nccwpck_require__(2356);var he,le={applyExtends:n,cjsPlatformShim:re,Yargs:(he=re,(t=[],e=he.process.cwd(),s)=>{const i=new Jt(t,e,s,he);return Object.defineProperty(i,"argv",{get:()=>i.parse(),enumerable:!0}),i.help(),i.version(),i}),argsert:h,isPromise:f,objFilter:g,parseCommand:o,Parser:ae,processArgv:b,YError:e};module.exports=le;
+
+
+/***/ }),
+
+/***/ 8822:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+// classic singleton yargs API, to use yargs
+// without running as a singleton do:
+// require('yargs/yargs')(process.argv.slice(2))
+const {Yargs, processArgv} = __nccwpck_require__(9562);
+
+Argv(processArgv.hideBin(process.argv));
+
+module.exports = Argv;
+
+function Argv(processArgs, cwd) {
+  const argv = Yargs(processArgs, cwd, __nccwpck_require__(4907));
+  singletonify(argv);
+  // TODO(bcoe): warn if argv.parse() or argv.argv is used directly.
+  return argv;
+}
+
+function defineGetter(obj, key, getter) {
+  Object.defineProperty(obj, key, {
+    configurable: true,
+    enumerable: true,
+    get: getter,
+  });
+}
+function lookupGetter(obj, key) {
+  const desc = Object.getOwnPropertyDescriptor(obj, key);
+  if (typeof desc !== 'undefined') {
+    return desc.get;
+  }
+}
+
+/*  Hack an instance of Argv with process.argv into Argv
+    so people can do
+    require('yargs')(['--beeble=1','-z','zizzle']).argv
+    to parse a list of args and
+    require('yargs').argv
+    to get a parsed version of process.argv.
+*/
+function singletonify(inst) {
+  [
+    ...Object.keys(inst),
+    ...Object.getOwnPropertyNames(inst.constructor.prototype),
+  ].forEach(key => {
+    if (key === 'argv') {
+      defineGetter(Argv, key, lookupGetter(inst, key));
+    } else if (typeof inst[key] === 'function') {
+      Argv[key] = inst[key].bind(inst);
+    } else {
+      defineGetter(Argv, '$0', () => inst.$0);
+      defineGetter(Argv, 'parsed', () => inst.parsed);
+    }
+  });
+}
+
+
+/***/ }),
+
+/***/ 2356:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+var util = __nccwpck_require__(3837);
+var path = __nccwpck_require__(1017);
+var fs = __nccwpck_require__(7147);
+
+function camelCase(str) {
+    const isCamelCase = str !== str.toLowerCase() && str !== str.toUpperCase();
+    if (!isCamelCase) {
+        str = str.toLowerCase();
+    }
+    if (str.indexOf('-') === -1 && str.indexOf('_') === -1) {
+        return str;
+    }
+    else {
+        let camelcase = '';
+        let nextChrUpper = false;
+        const leadingHyphens = str.match(/^-+/);
+        for (let i = leadingHyphens ? leadingHyphens[0].length : 0; i < str.length; i++) {
+            let chr = str.charAt(i);
+            if (nextChrUpper) {
+                nextChrUpper = false;
+                chr = chr.toUpperCase();
+            }
+            if (i !== 0 && (chr === '-' || chr === '_')) {
+                nextChrUpper = true;
+            }
+            else if (chr !== '-' && chr !== '_') {
+                camelcase += chr;
+            }
         }
-        else if (includePatterns.length === 1) {
-            includePattern = includePatterns[0];
+        return camelcase;
+    }
+}
+function decamelize(str, joinString) {
+    const lowercase = str.toLowerCase();
+    joinString = joinString || '-';
+    let notCamelcase = '';
+    for (let i = 0; i < str.length; i++) {
+        const chrLower = lowercase.charAt(i);
+        const chrString = str.charAt(i);
+        if (chrLower !== chrString && i > 0) {
+            notCamelcase += `${joinString}${lowercase.charAt(i)}`;
         }
         else {
-            includePattern = `{${includePatterns.join(',')}}`;
+            notCamelcase += chrString;
         }
-        const options = {
-            ignore: excludePatterns,
-            cwd,
-            nodir: true // only return files (no directories)
+    }
+    return notCamelcase;
+}
+function looksLikeNumber(x) {
+    if (x === null || x === undefined)
+        return false;
+    if (typeof x === 'number')
+        return true;
+    if (/^0x[0-9a-f]+$/i.test(x))
+        return true;
+    if (/^0[^.]/.test(x))
+        return false;
+    return /^[-]?(?:\d+(?:\.\d*)?|\.\d+)(e[-+]?\d+)?$/.test(x);
+}
+
+function tokenizeArgString(argString) {
+    if (Array.isArray(argString)) {
+        return argString.map(e => typeof e !== 'string' ? e + '' : e);
+    }
+    argString = argString.trim();
+    let i = 0;
+    let prevC = null;
+    let c = null;
+    let opening = null;
+    const args = [];
+    for (let ii = 0; ii < argString.length; ii++) {
+        prevC = c;
+        c = argString.charAt(ii);
+        if (c === ' ' && !opening) {
+            if (!(prevC === ' ')) {
+                i++;
+            }
+            continue;
+        }
+        if (c === opening) {
+            opening = null;
+        }
+        else if ((c === "'" || c === '"') && !opening) {
+            opening = c;
+        }
+        if (!args[i])
+            args[i] = '';
+        args[i] += c;
+    }
+    return args;
+}
+
+var DefaultValuesForTypeKey;
+(function (DefaultValuesForTypeKey) {
+    DefaultValuesForTypeKey["BOOLEAN"] = "boolean";
+    DefaultValuesForTypeKey["STRING"] = "string";
+    DefaultValuesForTypeKey["NUMBER"] = "number";
+    DefaultValuesForTypeKey["ARRAY"] = "array";
+})(DefaultValuesForTypeKey || (DefaultValuesForTypeKey = {}));
+
+let mixin;
+class YargsParser {
+    constructor(_mixin) {
+        mixin = _mixin;
+    }
+    parse(argsInput, options) {
+        const opts = Object.assign({
+            alias: undefined,
+            array: undefined,
+            boolean: undefined,
+            config: undefined,
+            configObjects: undefined,
+            configuration: undefined,
+            coerce: undefined,
+            count: undefined,
+            default: undefined,
+            envPrefix: undefined,
+            narg: undefined,
+            normalize: undefined,
+            string: undefined,
+            number: undefined,
+            __: undefined,
+            key: undefined
+        }, options);
+        const args = tokenizeArgString(argsInput);
+        const inputIsString = typeof argsInput === 'string';
+        const aliases = combineAliases(Object.assign(Object.create(null), opts.alias));
+        const configuration = Object.assign({
+            'boolean-negation': true,
+            'camel-case-expansion': true,
+            'combine-arrays': false,
+            'dot-notation': true,
+            'duplicate-arguments-array': true,
+            'flatten-duplicate-arrays': true,
+            'greedy-arrays': true,
+            'halt-at-non-option': false,
+            'nargs-eats-options': false,
+            'negation-prefix': 'no-',
+            'parse-numbers': true,
+            'parse-positional-numbers': true,
+            'populate--': false,
+            'set-placeholder-key': false,
+            'short-option-groups': true,
+            'strip-aliased': false,
+            'strip-dashed': false,
+            'unknown-options-as-args': false
+        }, opts.configuration);
+        const defaults = Object.assign(Object.create(null), opts.default);
+        const configObjects = opts.configObjects || [];
+        const envPrefix = opts.envPrefix;
+        const notFlagsOption = configuration['populate--'];
+        const notFlagsArgv = notFlagsOption ? '--' : '_';
+        const newAliases = Object.create(null);
+        const defaulted = Object.create(null);
+        const __ = opts.__ || mixin.format;
+        const flags = {
+            aliases: Object.create(null),
+            arrays: Object.create(null),
+            bools: Object.create(null),
+            strings: Object.create(null),
+            numbers: Object.create(null),
+            counts: Object.create(null),
+            normalize: Object.create(null),
+            configs: Object.create(null),
+            nargs: Object.create(null),
+            coercions: Object.create(null),
+            keys: []
         };
-        const files = yield new Promise((resolve, reject) => {
-            (0,glob.glob)(includePattern, options, (err, matches) => {
-                if (err == null) {
-                    resolve(matches);
-                }
-                else {
-                    reject(new Error(`scanning files has failed with error '${err.message}'`));
+        const negative = /^-([0-9]+(\.[0-9]+)?|\.[0-9]+)$/;
+        const negatedBoolean = new RegExp('^--' + configuration['negation-prefix'] + '(.+)');
+        [].concat(opts.array || []).filter(Boolean).forEach(function (opt) {
+            const key = typeof opt === 'object' ? opt.key : opt;
+            const assignment = Object.keys(opt).map(function (key) {
+                const arrayFlagKeys = {
+                    boolean: 'bools',
+                    string: 'strings',
+                    number: 'numbers'
+                };
+                return arrayFlagKeys[key];
+            }).filter(Boolean).pop();
+            if (assignment) {
+                flags[assignment][key] = true;
+            }
+            flags.arrays[key] = true;
+            flags.keys.push(key);
+        });
+        [].concat(opts.boolean || []).filter(Boolean).forEach(function (key) {
+            flags.bools[key] = true;
+            flags.keys.push(key);
+        });
+        [].concat(opts.string || []).filter(Boolean).forEach(function (key) {
+            flags.strings[key] = true;
+            flags.keys.push(key);
+        });
+        [].concat(opts.number || []).filter(Boolean).forEach(function (key) {
+            flags.numbers[key] = true;
+            flags.keys.push(key);
+        });
+        [].concat(opts.count || []).filter(Boolean).forEach(function (key) {
+            flags.counts[key] = true;
+            flags.keys.push(key);
+        });
+        [].concat(opts.normalize || []).filter(Boolean).forEach(function (key) {
+            flags.normalize[key] = true;
+            flags.keys.push(key);
+        });
+        if (typeof opts.narg === 'object') {
+            Object.entries(opts.narg).forEach(([key, value]) => {
+                if (typeof value === 'number') {
+                    flags.nargs[key] = value;
+                    flags.keys.push(key);
                 }
             });
-        });
-        // files are relative to cwd, hence join them:
-        return files.map(f => external_path_.join(cwd, f));
-    });
-}
-/*
-async function getFilesRecursively(path: string): Promise<string[]> {
-    const dirContent = await readdir(path);
-    const stats = await Promise.all(dirContent.map(stat));
-    const dirs = stats.filter(stat => stat.isDir);
-    const files = stats.filter(stat => stat.isFile)
-        .map(stat => stat.path);
-
-    const recursiveFiles = await Promise.all(dirs.map(dir => getFilesRecursively(dir.path)))
-        .then(flatten);
-    return files.concat(recursiveFiles);
-}
-
-function readdir(path: string): Promise<string[]> {
-    return new Promise((resolve, reject) => {
-        fs.readdir(path, (err, files) => {
-            if (err == null) {
-                resolve(files);
-            } else {
-                reject(new Error(`reading directory ${path} failed with error ${err.message}`));
+        }
+        if (typeof opts.coerce === 'object') {
+            Object.entries(opts.coerce).forEach(([key, value]) => {
+                if (typeof value === 'function') {
+                    flags.coercions[key] = value;
+                    flags.keys.push(key);
+                }
+            });
+        }
+        if (typeof opts.config !== 'undefined') {
+            if (Array.isArray(opts.config) || typeof opts.config === 'string') {
+                [].concat(opts.config).filter(Boolean).forEach(function (key) {
+                    flags.configs[key] = true;
+                });
             }
-        });
-    })
-}
-
-function stat(path: string): Promise<Status> {
-    return new Promise((resolve, reject) => {
-        fs.stat(path, (err, stats) => {
-            if (err == null) {
-                resolve({path: path, isDir: stats.isDirectory(), isFile: stats.isFile()});
-            } else {
-                reject(new Error(`getting file status for ${path} failed with error ${err.message}`));
+            else if (typeof opts.config === 'object') {
+                Object.entries(opts.config).forEach(([key, value]) => {
+                    if (typeof value === 'boolean' || typeof value === 'function') {
+                        flags.configs[key] = value;
+                    }
+                });
             }
-        })
-    })
-}
-
-interface Status {
-    path: string;
-    isDir: boolean;
-    isFile: boolean;
-}
-
-function flatten<T>(matrix: T[][]): T[] {
-
-}
-*/
-
-;// CONCATENATED MODULE: ./src/check.ts
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-//
-// Copyright (c) 2011-2020 ETH Zurich.
-var check_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-
-
-const CURRENT_YEAR_IDENTIFIER = '%year%';
-function checkLicenses(cwd, configPath) {
-    return check_awaiter(this, void 0, void 0, function* () {
-        const config = yield getConfig(configPath);
-        return checkLicensesWithConfig(cwd, config);
-    });
-}
-function getConfig(configPath) {
-    const configString = external_fs_.readFileSync(configPath, 'utf8');
-    return parseConfig(configString);
-}
-function checkLicensesWithConfig(cwd, config) {
-    return check_awaiter(this, void 0, void 0, function* () {
-        const results = yield Promise.all(config.map(c => checkLicense(cwd, c)));
-        return flatten(results);
-    });
-}
-function getUncoveredFiles(cwd, configPath) {
-    return check_awaiter(this, void 0, void 0, function* () {
-        const config = yield getConfig(configPath);
-        return getUncoveredFilesWithConfig(cwd, config);
-    });
-}
-function getUncoveredFilesWithConfig(cwd, config) {
-    return check_awaiter(this, void 0, void 0, function* () {
-        // get all files:
-        const allFiles = new Set(yield findFiles(cwd, ['**'], []));
-        // get files covered by config:
-        const converedFilesResults = yield Promise.all(config.map(c => getFiles(cwd, c)));
-        const coveredFiles = new Set(flatten(converedFilesResults));
-        const remainingFiles = setminus(allFiles, coveredFiles);
-        return [...remainingFiles];
-    });
-}
-function filterFailures(results) {
-    return results.filter(r => !r.success).map(f => f);
-}
-function setminus(set1, set2) {
-    const copy = new Set(set1);
-    for (const elem of set2) {
-        copy.delete(elem);
-    }
-    return copy;
-}
-function checkLicense(cwd, licenseConfig) {
-    return check_awaiter(this, void 0, void 0, function* () {
-        if (!licenseConfig.license) {
-            // no license provided
-            return [];
         }
-        let licensePath;
-        if (external_path_.isAbsolute(licenseConfig.license)) {
-            licensePath = licenseConfig.license;
+        extendAliases(opts.key, aliases, opts.default, flags.arrays);
+        Object.keys(defaults).forEach(function (key) {
+            (flags.aliases[key] || []).forEach(function (alias) {
+                defaults[alias] = defaults[key];
+            });
+        });
+        let error = null;
+        checkConfiguration();
+        let notFlags = [];
+        const argv = Object.assign(Object.create(null), { _: [] });
+        const argvReturn = {};
+        for (let i = 0; i < args.length; i++) {
+            const arg = args[i];
+            const truncatedArg = arg.replace(/^-{3,}/, '---');
+            let broken;
+            let key;
+            let letters;
+            let m;
+            let next;
+            let value;
+            if (arg !== '--' && isUnknownOptionAsArg(arg)) {
+                pushPositional(arg);
+            }
+            else if (truncatedArg.match(/---+(=|$)/)) {
+                pushPositional(arg);
+                continue;
+            }
+            else if (arg.match(/^--.+=/) || (!configuration['short-option-groups'] && arg.match(/^-.+=/))) {
+                m = arg.match(/^--?([^=]+)=([\s\S]*)$/);
+                if (m !== null && Array.isArray(m) && m.length >= 3) {
+                    if (checkAllAliases(m[1], flags.arrays)) {
+                        i = eatArray(i, m[1], args, m[2]);
+                    }
+                    else if (checkAllAliases(m[1], flags.nargs) !== false) {
+                        i = eatNargs(i, m[1], args, m[2]);
+                    }
+                    else {
+                        setArg(m[1], m[2], true);
+                    }
+                }
+            }
+            else if (arg.match(negatedBoolean) && configuration['boolean-negation']) {
+                m = arg.match(negatedBoolean);
+                if (m !== null && Array.isArray(m) && m.length >= 2) {
+                    key = m[1];
+                    setArg(key, checkAllAliases(key, flags.arrays) ? [false] : false);
+                }
+            }
+            else if (arg.match(/^--.+/) || (!configuration['short-option-groups'] && arg.match(/^-[^-]+/))) {
+                m = arg.match(/^--?(.+)/);
+                if (m !== null && Array.isArray(m) && m.length >= 2) {
+                    key = m[1];
+                    if (checkAllAliases(key, flags.arrays)) {
+                        i = eatArray(i, key, args);
+                    }
+                    else if (checkAllAliases(key, flags.nargs) !== false) {
+                        i = eatNargs(i, key, args);
+                    }
+                    else {
+                        next = args[i + 1];
+                        if (next !== undefined && (!next.match(/^-/) ||
+                            next.match(negative)) &&
+                            !checkAllAliases(key, flags.bools) &&
+                            !checkAllAliases(key, flags.counts)) {
+                            setArg(key, next);
+                            i++;
+                        }
+                        else if (/^(true|false)$/.test(next)) {
+                            setArg(key, next);
+                            i++;
+                        }
+                        else {
+                            setArg(key, defaultValue(key));
+                        }
+                    }
+                }
+            }
+            else if (arg.match(/^-.\..+=/)) {
+                m = arg.match(/^-([^=]+)=([\s\S]*)$/);
+                if (m !== null && Array.isArray(m) && m.length >= 3) {
+                    setArg(m[1], m[2]);
+                }
+            }
+            else if (arg.match(/^-.\..+/) && !arg.match(negative)) {
+                next = args[i + 1];
+                m = arg.match(/^-(.\..+)/);
+                if (m !== null && Array.isArray(m) && m.length >= 2) {
+                    key = m[1];
+                    if (next !== undefined && !next.match(/^-/) &&
+                        !checkAllAliases(key, flags.bools) &&
+                        !checkAllAliases(key, flags.counts)) {
+                        setArg(key, next);
+                        i++;
+                    }
+                    else {
+                        setArg(key, defaultValue(key));
+                    }
+                }
+            }
+            else if (arg.match(/^-[^-]+/) && !arg.match(negative)) {
+                letters = arg.slice(1, -1).split('');
+                broken = false;
+                for (let j = 0; j < letters.length; j++) {
+                    next = arg.slice(j + 2);
+                    if (letters[j + 1] && letters[j + 1] === '=') {
+                        value = arg.slice(j + 3);
+                        key = letters[j];
+                        if (checkAllAliases(key, flags.arrays)) {
+                            i = eatArray(i, key, args, value);
+                        }
+                        else if (checkAllAliases(key, flags.nargs) !== false) {
+                            i = eatNargs(i, key, args, value);
+                        }
+                        else {
+                            setArg(key, value);
+                        }
+                        broken = true;
+                        break;
+                    }
+                    if (next === '-') {
+                        setArg(letters[j], next);
+                        continue;
+                    }
+                    if (/[A-Za-z]/.test(letters[j]) &&
+                        /^-?\d+(\.\d*)?(e-?\d+)?$/.test(next) &&
+                        checkAllAliases(next, flags.bools) === false) {
+                        setArg(letters[j], next);
+                        broken = true;
+                        break;
+                    }
+                    if (letters[j + 1] && letters[j + 1].match(/\W/)) {
+                        setArg(letters[j], next);
+                        broken = true;
+                        break;
+                    }
+                    else {
+                        setArg(letters[j], defaultValue(letters[j]));
+                    }
+                }
+                key = arg.slice(-1)[0];
+                if (!broken && key !== '-') {
+                    if (checkAllAliases(key, flags.arrays)) {
+                        i = eatArray(i, key, args);
+                    }
+                    else if (checkAllAliases(key, flags.nargs) !== false) {
+                        i = eatNargs(i, key, args);
+                    }
+                    else {
+                        next = args[i + 1];
+                        if (next !== undefined && (!/^(-|--)[^-]/.test(next) ||
+                            next.match(negative)) &&
+                            !checkAllAliases(key, flags.bools) &&
+                            !checkAllAliases(key, flags.counts)) {
+                            setArg(key, next);
+                            i++;
+                        }
+                        else if (/^(true|false)$/.test(next)) {
+                            setArg(key, next);
+                            i++;
+                        }
+                        else {
+                            setArg(key, defaultValue(key));
+                        }
+                    }
+                }
+            }
+            else if (arg.match(/^-[0-9]$/) &&
+                arg.match(negative) &&
+                checkAllAliases(arg.slice(1), flags.bools)) {
+                key = arg.slice(1);
+                setArg(key, defaultValue(key));
+            }
+            else if (arg === '--') {
+                notFlags = args.slice(i + 1);
+                break;
+            }
+            else if (configuration['halt-at-non-option']) {
+                notFlags = args.slice(i);
+                break;
+            }
+            else {
+                pushPositional(arg);
+            }
         }
-        else {
-            licensePath = external_path_.join(cwd, licenseConfig.license);
+        applyEnvVars(argv, true);
+        applyEnvVars(argv, false);
+        setConfig(argv);
+        setConfigObjects();
+        applyDefaultsAndAliases(argv, flags.aliases, defaults, true);
+        applyCoercions(argv);
+        if (configuration['set-placeholder-key'])
+            setPlaceholderKeys(argv);
+        Object.keys(flags.counts).forEach(function (key) {
+            if (!hasKey(argv, key.split('.')))
+                setArg(key, 0);
+        });
+        if (notFlagsOption && notFlags.length)
+            argv[notFlagsArgv] = [];
+        notFlags.forEach(function (key) {
+            argv[notFlagsArgv].push(key);
+        });
+        if (configuration['camel-case-expansion'] && configuration['strip-dashed']) {
+            Object.keys(argv).filter(key => key !== '--' && key.includes('-')).forEach(key => {
+                delete argv[key];
+            });
         }
-        const errorMessageGenerator = (file) => `'${file}' does not contain license from '${licensePath}'`;
-        const licenseString = external_fs_.readFileSync(licensePath, 'utf8');
-        const licenseRegex = convertHeaderToRegex(licenseString);
-        const files = yield getFiles(cwd, licenseConfig);
-        return yield Promise.all(files.map(f => contains(f, licenseRegex, errorMessageGenerator)));
-    });
-}
-function getFiles(cwd, licenseConfig) {
-    const excludePatterns = licenseConfig.exclude || [];
-    return findFiles(cwd, licenseConfig.include, excludePatterns);
-}
-function convertHeaderToRegex(header) {
-    let modifiedHeader = header;
-    // escape characters that have a special meaning in a regex
-    // taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
-    modifiedHeader = modifiedHeader.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-    // replace sequences of the following form to the corresponding regex
-    // "%regexp:\d{x}%" is escaped "%regexp:\\d\{x\}%" where x is a number digits
-    // the corresponding regex to find this escaped sequence is "%regexp:\\\\d\\{(\d+)\\}%"
-    // this character sequence should be replaced by "\d{x}"
-    modifiedHeader = modifiedHeader.replace(/%regexp:\\\\d\\{(\d+)\\}%/g, '\\d{$1}');
-    // replace "%year%" by a regex that matches 4 digits:
-    modifiedHeader = modifiedHeader.replace(CURRENT_YEAR_IDENTIFIER, '\\d{4}');
-    return new RegExp(modifiedHeader);
-}
-function contains(file, regex, errorMessageGenerator) {
-    return new Promise((resolve, reject) => {
-        external_fs_.readFile(file, 'utf8', (err, data) => {
-            if (err == null) {
-                // check whether data contains a match:
-                if (regex.test(data)) {
-                    resolve(new CheckSuccess(file));
+        if (configuration['strip-aliased']) {
+            [].concat(...Object.keys(aliases).map(k => aliases[k])).forEach(alias => {
+                if (configuration['camel-case-expansion'] && alias.includes('-')) {
+                    delete argv[alias.split('.').map(prop => camelCase(prop)).join('.')];
+                }
+                delete argv[alias];
+            });
+        }
+        function pushPositional(arg) {
+            const maybeCoercedNumber = maybeCoerceNumber('_', arg);
+            if (typeof maybeCoercedNumber === 'string' || typeof maybeCoercedNumber === 'number') {
+                argv._.push(maybeCoercedNumber);
+            }
+        }
+        function eatNargs(i, key, args, argAfterEqualSign) {
+            let ii;
+            let toEat = checkAllAliases(key, flags.nargs);
+            toEat = typeof toEat !== 'number' || isNaN(toEat) ? 1 : toEat;
+            if (toEat === 0) {
+                if (!isUndefined(argAfterEqualSign)) {
+                    error = Error(__('Argument unexpected for: %s', key));
+                }
+                setArg(key, defaultValue(key));
+                return i;
+            }
+            let available = isUndefined(argAfterEqualSign) ? 0 : 1;
+            if (configuration['nargs-eats-options']) {
+                if (args.length - (i + 1) + available < toEat) {
+                    error = Error(__('Not enough arguments following: %s', key));
+                }
+                available = toEat;
+            }
+            else {
+                for (ii = i + 1; ii < args.length; ii++) {
+                    if (!args[ii].match(/^-[^0-9]/) || args[ii].match(negative) || isUnknownOptionAsArg(args[ii]))
+                        available++;
+                    else
+                        break;
+                }
+                if (available < toEat)
+                    error = Error(__('Not enough arguments following: %s', key));
+            }
+            let consumed = Math.min(available, toEat);
+            if (!isUndefined(argAfterEqualSign) && consumed > 0) {
+                setArg(key, argAfterEqualSign);
+                consumed--;
+            }
+            for (ii = i + 1; ii < (consumed + i + 1); ii++) {
+                setArg(key, args[ii]);
+            }
+            return (i + consumed);
+        }
+        function eatArray(i, key, args, argAfterEqualSign) {
+            let argsToSet = [];
+            let next = argAfterEqualSign || args[i + 1];
+            const nargsCount = checkAllAliases(key, flags.nargs);
+            if (checkAllAliases(key, flags.bools) && !(/^(true|false)$/.test(next))) {
+                argsToSet.push(true);
+            }
+            else if (isUndefined(next) ||
+                (isUndefined(argAfterEqualSign) && /^-/.test(next) && !negative.test(next) && !isUnknownOptionAsArg(next))) {
+                if (defaults[key] !== undefined) {
+                    const defVal = defaults[key];
+                    argsToSet = Array.isArray(defVal) ? defVal : [defVal];
+                }
+            }
+            else {
+                if (!isUndefined(argAfterEqualSign)) {
+                    argsToSet.push(processValue(key, argAfterEqualSign, true));
+                }
+                for (let ii = i + 1; ii < args.length; ii++) {
+                    if ((!configuration['greedy-arrays'] && argsToSet.length > 0) ||
+                        (nargsCount && typeof nargsCount === 'number' && argsToSet.length >= nargsCount))
+                        break;
+                    next = args[ii];
+                    if (/^-/.test(next) && !negative.test(next) && !isUnknownOptionAsArg(next))
+                        break;
+                    i = ii;
+                    argsToSet.push(processValue(key, next, inputIsString));
+                }
+            }
+            if (typeof nargsCount === 'number' && ((nargsCount && argsToSet.length < nargsCount) ||
+                (isNaN(nargsCount) && argsToSet.length === 0))) {
+                error = Error(__('Not enough arguments following: %s', key));
+            }
+            setArg(key, argsToSet);
+            return i;
+        }
+        function setArg(key, val, shouldStripQuotes = inputIsString) {
+            if (/-/.test(key) && configuration['camel-case-expansion']) {
+                const alias = key.split('.').map(function (prop) {
+                    return camelCase(prop);
+                }).join('.');
+                addNewAlias(key, alias);
+            }
+            const value = processValue(key, val, shouldStripQuotes);
+            const splitKey = key.split('.');
+            setKey(argv, splitKey, value);
+            if (flags.aliases[key]) {
+                flags.aliases[key].forEach(function (x) {
+                    const keyProperties = x.split('.');
+                    setKey(argv, keyProperties, value);
+                });
+            }
+            if (splitKey.length > 1 && configuration['dot-notation']) {
+                (flags.aliases[splitKey[0]] || []).forEach(function (x) {
+                    let keyProperties = x.split('.');
+                    const a = [].concat(splitKey);
+                    a.shift();
+                    keyProperties = keyProperties.concat(a);
+                    if (!(flags.aliases[key] || []).includes(keyProperties.join('.'))) {
+                        setKey(argv, keyProperties, value);
+                    }
+                });
+            }
+            if (checkAllAliases(key, flags.normalize) && !checkAllAliases(key, flags.arrays)) {
+                const keys = [key].concat(flags.aliases[key] || []);
+                keys.forEach(function (key) {
+                    Object.defineProperty(argvReturn, key, {
+                        enumerable: true,
+                        get() {
+                            return val;
+                        },
+                        set(value) {
+                            val = typeof value === 'string' ? mixin.normalize(value) : value;
+                        }
+                    });
+                });
+            }
+        }
+        function addNewAlias(key, alias) {
+            if (!(flags.aliases[key] && flags.aliases[key].length)) {
+                flags.aliases[key] = [alias];
+                newAliases[alias] = true;
+            }
+            if (!(flags.aliases[alias] && flags.aliases[alias].length)) {
+                addNewAlias(alias, key);
+            }
+        }
+        function processValue(key, val, shouldStripQuotes) {
+            if (shouldStripQuotes) {
+                val = stripQuotes(val);
+            }
+            if (checkAllAliases(key, flags.bools) || checkAllAliases(key, flags.counts)) {
+                if (typeof val === 'string')
+                    val = val === 'true';
+            }
+            let value = Array.isArray(val)
+                ? val.map(function (v) { return maybeCoerceNumber(key, v); })
+                : maybeCoerceNumber(key, val);
+            if (checkAllAliases(key, flags.counts) && (isUndefined(value) || typeof value === 'boolean')) {
+                value = increment();
+            }
+            if (checkAllAliases(key, flags.normalize) && checkAllAliases(key, flags.arrays)) {
+                if (Array.isArray(val))
+                    value = val.map((val) => { return mixin.normalize(val); });
+                else
+                    value = mixin.normalize(val);
+            }
+            return value;
+        }
+        function maybeCoerceNumber(key, value) {
+            if (!configuration['parse-positional-numbers'] && key === '_')
+                return value;
+            if (!checkAllAliases(key, flags.strings) && !checkAllAliases(key, flags.bools) && !Array.isArray(value)) {
+                const shouldCoerceNumber = looksLikeNumber(value) && configuration['parse-numbers'] && (Number.isSafeInteger(Math.floor(parseFloat(`${value}`))));
+                if (shouldCoerceNumber || (!isUndefined(value) && checkAllAliases(key, flags.numbers))) {
+                    value = Number(value);
+                }
+            }
+            return value;
+        }
+        function setConfig(argv) {
+            const configLookup = Object.create(null);
+            applyDefaultsAndAliases(configLookup, flags.aliases, defaults);
+            Object.keys(flags.configs).forEach(function (configKey) {
+                const configPath = argv[configKey] || configLookup[configKey];
+                if (configPath) {
+                    try {
+                        let config = null;
+                        const resolvedConfigPath = mixin.resolve(mixin.cwd(), configPath);
+                        const resolveConfig = flags.configs[configKey];
+                        if (typeof resolveConfig === 'function') {
+                            try {
+                                config = resolveConfig(resolvedConfigPath);
+                            }
+                            catch (e) {
+                                config = e;
+                            }
+                            if (config instanceof Error) {
+                                error = config;
+                                return;
+                            }
+                        }
+                        else {
+                            config = mixin.require(resolvedConfigPath);
+                        }
+                        setConfigObject(config);
+                    }
+                    catch (ex) {
+                        if (ex.name === 'PermissionDenied')
+                            error = ex;
+                        else if (argv[configKey])
+                            error = Error(__('Invalid JSON config file: %s', configPath));
+                    }
+                }
+            });
+        }
+        function setConfigObject(config, prev) {
+            Object.keys(config).forEach(function (key) {
+                const value = config[key];
+                const fullKey = prev ? prev + '.' + key : key;
+                if (typeof value === 'object' && value !== null && !Array.isArray(value) && configuration['dot-notation']) {
+                    setConfigObject(value, fullKey);
                 }
                 else {
-                    resolve(new CheckFailure(file, errorMessageGenerator(file)));
+                    if (!hasKey(argv, fullKey.split('.')) || (checkAllAliases(fullKey, flags.arrays) && configuration['combine-arrays'])) {
+                        setArg(fullKey, value);
+                    }
+                }
+            });
+        }
+        function setConfigObjects() {
+            if (typeof configObjects !== 'undefined') {
+                configObjects.forEach(function (configObject) {
+                    setConfigObject(configObject);
+                });
+            }
+        }
+        function applyEnvVars(argv, configOnly) {
+            if (typeof envPrefix === 'undefined')
+                return;
+            const prefix = typeof envPrefix === 'string' ? envPrefix : '';
+            const env = mixin.env();
+            Object.keys(env).forEach(function (envVar) {
+                if (prefix === '' || envVar.lastIndexOf(prefix, 0) === 0) {
+                    const keys = envVar.split('__').map(function (key, i) {
+                        if (i === 0) {
+                            key = key.substring(prefix.length);
+                        }
+                        return camelCase(key);
+                    });
+                    if (((configOnly && flags.configs[keys.join('.')]) || !configOnly) && !hasKey(argv, keys)) {
+                        setArg(keys.join('.'), env[envVar]);
+                    }
+                }
+            });
+        }
+        function applyCoercions(argv) {
+            let coerce;
+            const applied = new Set();
+            Object.keys(argv).forEach(function (key) {
+                if (!applied.has(key)) {
+                    coerce = checkAllAliases(key, flags.coercions);
+                    if (typeof coerce === 'function') {
+                        try {
+                            const value = maybeCoerceNumber(key, coerce(argv[key]));
+                            ([].concat(flags.aliases[key] || [], key)).forEach(ali => {
+                                applied.add(ali);
+                                argv[ali] = value;
+                            });
+                        }
+                        catch (err) {
+                            error = err;
+                        }
+                    }
+                }
+            });
+        }
+        function setPlaceholderKeys(argv) {
+            flags.keys.forEach((key) => {
+                if (~key.indexOf('.'))
+                    return;
+                if (typeof argv[key] === 'undefined')
+                    argv[key] = undefined;
+            });
+            return argv;
+        }
+        function applyDefaultsAndAliases(obj, aliases, defaults, canLog = false) {
+            Object.keys(defaults).forEach(function (key) {
+                if (!hasKey(obj, key.split('.'))) {
+                    setKey(obj, key.split('.'), defaults[key]);
+                    if (canLog)
+                        defaulted[key] = true;
+                    (aliases[key] || []).forEach(function (x) {
+                        if (hasKey(obj, x.split('.')))
+                            return;
+                        setKey(obj, x.split('.'), defaults[key]);
+                    });
+                }
+            });
+        }
+        function hasKey(obj, keys) {
+            let o = obj;
+            if (!configuration['dot-notation'])
+                keys = [keys.join('.')];
+            keys.slice(0, -1).forEach(function (key) {
+                o = (o[key] || {});
+            });
+            const key = keys[keys.length - 1];
+            if (typeof o !== 'object')
+                return false;
+            else
+                return key in o;
+        }
+        function setKey(obj, keys, value) {
+            let o = obj;
+            if (!configuration['dot-notation'])
+                keys = [keys.join('.')];
+            keys.slice(0, -1).forEach(function (key) {
+                key = sanitizeKey(key);
+                if (typeof o === 'object' && o[key] === undefined) {
+                    o[key] = {};
+                }
+                if (typeof o[key] !== 'object' || Array.isArray(o[key])) {
+                    if (Array.isArray(o[key])) {
+                        o[key].push({});
+                    }
+                    else {
+                        o[key] = [o[key], {}];
+                    }
+                    o = o[key][o[key].length - 1];
+                }
+                else {
+                    o = o[key];
+                }
+            });
+            const key = sanitizeKey(keys[keys.length - 1]);
+            const isTypeArray = checkAllAliases(keys.join('.'), flags.arrays);
+            const isValueArray = Array.isArray(value);
+            let duplicate = configuration['duplicate-arguments-array'];
+            if (!duplicate && checkAllAliases(key, flags.nargs)) {
+                duplicate = true;
+                if ((!isUndefined(o[key]) && flags.nargs[key] === 1) || (Array.isArray(o[key]) && o[key].length === flags.nargs[key])) {
+                    o[key] = undefined;
                 }
             }
-            else {
-                reject(new Error(`Error while reading file '${file}': '${err.message}'`));
+            if (value === increment()) {
+                o[key] = increment(o[key]);
             }
-        });
-    });
-}
-function flatten(matrix) {
-    const res = [];
-    for (const elem of matrix) {
-        res.push(...elem);
-    }
-    return res;
-}
-class CheckSuccess {
-    constructor(filePath) {
-        this.path = filePath;
-    }
-    get success() {
-        return true;
-    }
-    get filePath() {
-        return this.path;
-    }
-}
-class CheckFailure {
-    constructor(filePath, msg) {
-        this.path = filePath;
-        this.msg = msg;
-    }
-    get success() {
-        return false;
-    }
-    get filePath() {
-        return this.path;
-    }
-    get message() {
-        return this.msg;
-    }
-}
-
-;// CONCATENATED MODULE: ./src/bin.ts
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
-//
-// Copyright (c) 2011-2020 ETH Zurich.
-var bin_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-// entry point for the binary version, e.g. when locally running it using `npx`
-// turn no-console es-lint errors off for this file:
-/* eslint no-console: 0 */
-function run() {
-    return bin_awaiter(this, void 0, void 0, function* () {
-        try {
-            const argv = yargs_namespaceObject.usage('Usage: $0 <command> [options]')
-                .command('check', 'Check license headers', function (y) {
-                return y.option('strict', {
-                    description: 'Specifies whether files not covered by the configuration should be treated as errors',
-                    type: 'boolean',
-                    default: false
+            else if (Array.isArray(o[key])) {
+                if (duplicate && isTypeArray && isValueArray) {
+                    o[key] = configuration['flatten-duplicate-arrays'] ? o[key].concat(value) : (Array.isArray(o[key][0]) ? o[key] : [o[key]]).concat([value]);
+                }
+                else if (!duplicate && Boolean(isTypeArray) === Boolean(isValueArray)) {
+                    o[key] = value;
+                }
+                else {
+                    o[key] = o[key].concat([value]);
+                }
+            }
+            else if (o[key] === undefined && isTypeArray) {
+                o[key] = isValueArray ? value : [value];
+            }
+            else if (duplicate && !(o[key] === undefined ||
+                checkAllAliases(key, flags.counts) ||
+                checkAllAliases(key, flags.bools))) {
+                o[key] = [o[key], value];
+            }
+            else {
+                o[key] = value;
+            }
+        }
+        function extendAliases(...args) {
+            args.forEach(function (obj) {
+                Object.keys(obj || {}).forEach(function (key) {
+                    if (flags.aliases[key])
+                        return;
+                    flags.aliases[key] = [].concat(aliases[key] || []);
+                    flags.aliases[key].concat(key).forEach(function (x) {
+                        if (/-/.test(x) && configuration['camel-case-expansion']) {
+                            const c = camelCase(x);
+                            if (c !== key && flags.aliases[key].indexOf(c) === -1) {
+                                flags.aliases[key].push(c);
+                                newAliases[c] = true;
+                            }
+                        }
+                    });
+                    flags.aliases[key].concat(key).forEach(function (x) {
+                        if (x.length > 1 && /[A-Z]/.test(x) && configuration['camel-case-expansion']) {
+                            const c = decamelize(x, '-');
+                            if (c !== key && flags.aliases[key].indexOf(c) === -1) {
+                                flags.aliases[key].push(c);
+                                newAliases[c] = true;
+                            }
+                        }
+                    });
+                    flags.aliases[key].forEach(function (x) {
+                        flags.aliases[x] = [key].concat(flags.aliases[key].filter(function (y) {
+                            return x !== y;
+                        }));
+                    });
                 });
-            })
-                .example('$0 check --config config.js', 'Check license headers using configuration stored in config.js')
-                .command('update', 'Update license headers. Currently, only updating "%year%" to the current year is supported')
-                // at least one command is required
-                .demand(1, 'Please specify one of the commands!')
-                .strict()
-                // both command use the following two options:
-                .option('c', {
-                alias: 'config',
-                type: 'string',
-                demand: 'Please specify path to config file',
-                nargs: 1,
-                describe: 'Path to JSON config file',
-                global: true
-            })
-                .option('path', {
-                description: 'Path to working directory',
-                type: 'string',
-                default: process.cwd(),
-                global: true
-            })
-                .help('h')
-                .alias('h', 'help').argv;
-            const path = argv.path;
-            const configPath = argv.c;
-            if (argv._.length === 1 && argv._[0] === 'check') {
-                const strictMode = argv.strict;
-                return check(path, configPath, strictMode);
+            });
+        }
+        function checkAllAliases(key, flag) {
+            const toCheck = [].concat(flags.aliases[key] || [], key);
+            const keys = Object.keys(flag);
+            const setAlias = toCheck.find(key => keys.includes(key));
+            return setAlias ? flag[setAlias] : false;
+        }
+        function hasAnyFlag(key) {
+            const flagsKeys = Object.keys(flags);
+            const toCheck = [].concat(flagsKeys.map(k => flags[k]));
+            return toCheck.some(function (flag) {
+                return Array.isArray(flag) ? flag.includes(key) : flag[key];
+            });
+        }
+        function hasFlagsMatching(arg, ...patterns) {
+            const toCheck = [].concat(...patterns);
+            return toCheck.some(function (pattern) {
+                const match = arg.match(pattern);
+                return match && hasAnyFlag(match[1]);
+            });
+        }
+        function hasAllShortFlags(arg) {
+            if (arg.match(negative) || !arg.match(/^-[^-]+/)) {
+                return false;
+            }
+            let hasAllFlags = true;
+            let next;
+            const letters = arg.slice(1).split('');
+            for (let j = 0; j < letters.length; j++) {
+                next = arg.slice(j + 2);
+                if (!hasAnyFlag(letters[j])) {
+                    hasAllFlags = false;
+                    break;
+                }
+                if ((letters[j + 1] && letters[j + 1] === '=') ||
+                    next === '-' ||
+                    (/[A-Za-z]/.test(letters[j]) && /^-?\d+(\.\d*)?(e-?\d+)?$/.test(next)) ||
+                    (letters[j + 1] && letters[j + 1].match(/\W/))) {
+                    break;
+                }
+            }
+            return hasAllFlags;
+        }
+        function isUnknownOptionAsArg(arg) {
+            return configuration['unknown-options-as-args'] && isUnknownOption(arg);
+        }
+        function isUnknownOption(arg) {
+            arg = arg.replace(/^-{3,}/, '--');
+            if (arg.match(negative)) {
+                return false;
+            }
+            if (hasAllShortFlags(arg)) {
+                return false;
+            }
+            const flagWithEquals = /^-+([^=]+?)=[\s\S]*$/;
+            const normalFlag = /^-+([^=]+?)$/;
+            const flagEndingInHyphen = /^-+([^=]+?)-$/;
+            const flagEndingInDigits = /^-+([^=]+?\d+)$/;
+            const flagEndingInNonWordCharacters = /^-+([^=]+?)\W+.*$/;
+            return !hasFlagsMatching(arg, flagWithEquals, negatedBoolean, normalFlag, flagEndingInHyphen, flagEndingInDigits, flagEndingInNonWordCharacters);
+        }
+        function defaultValue(key) {
+            if (!checkAllAliases(key, flags.bools) &&
+                !checkAllAliases(key, flags.counts) &&
+                `${key}` in defaults) {
+                return defaults[key];
             }
             else {
-                console.error(`unknown command specified, has to be 'check'`);
-                process.exit(1);
+                return defaultForType(guessType(key));
             }
         }
-        catch (error) {
-            console.error(error.message);
-            process.exit(1);
+        function defaultForType(type) {
+            const def = {
+                [DefaultValuesForTypeKey.BOOLEAN]: true,
+                [DefaultValuesForTypeKey.STRING]: '',
+                [DefaultValuesForTypeKey.NUMBER]: undefined,
+                [DefaultValuesForTypeKey.ARRAY]: []
+            };
+            return def[type];
+        }
+        function guessType(key) {
+            let type = DefaultValuesForTypeKey.BOOLEAN;
+            if (checkAllAliases(key, flags.strings))
+                type = DefaultValuesForTypeKey.STRING;
+            else if (checkAllAliases(key, flags.numbers))
+                type = DefaultValuesForTypeKey.NUMBER;
+            else if (checkAllAliases(key, flags.bools))
+                type = DefaultValuesForTypeKey.BOOLEAN;
+            else if (checkAllAliases(key, flags.arrays))
+                type = DefaultValuesForTypeKey.ARRAY;
+            return type;
+        }
+        function isUndefined(num) {
+            return num === undefined;
+        }
+        function checkConfiguration() {
+            Object.keys(flags.counts).find(key => {
+                if (checkAllAliases(key, flags.arrays)) {
+                    error = Error(__('Invalid configuration: %s, opts.count excludes opts.array.', key));
+                    return true;
+                }
+                else if (checkAllAliases(key, flags.nargs)) {
+                    error = Error(__('Invalid configuration: %s, opts.count excludes opts.narg.', key));
+                    return true;
+                }
+                return false;
+            });
+        }
+        return {
+            aliases: Object.assign({}, flags.aliases),
+            argv: Object.assign(argvReturn, argv),
+            configuration: configuration,
+            defaulted: Object.assign({}, defaulted),
+            error: error,
+            newAliases: Object.assign({}, newAliases)
+        };
+    }
+}
+function combineAliases(aliases) {
+    const aliasArrays = [];
+    const combined = Object.create(null);
+    let change = true;
+    Object.keys(aliases).forEach(function (key) {
+        aliasArrays.push([].concat(aliases[key], key));
+    });
+    while (change) {
+        change = false;
+        for (let i = 0; i < aliasArrays.length; i++) {
+            for (let ii = i + 1; ii < aliasArrays.length; ii++) {
+                const intersect = aliasArrays[i].filter(function (v) {
+                    return aliasArrays[ii].indexOf(v) !== -1;
+                });
+                if (intersect.length) {
+                    aliasArrays[i] = aliasArrays[i].concat(aliasArrays[ii]);
+                    aliasArrays.splice(ii, 1);
+                    change = true;
+                    break;
+                }
+            }
+        }
+    }
+    aliasArrays.forEach(function (aliasArray) {
+        aliasArray = aliasArray.filter(function (v, i, self) {
+            return self.indexOf(v) === i;
+        });
+        const lastAlias = aliasArray.pop();
+        if (lastAlias !== undefined && typeof lastAlias === 'string') {
+            combined[lastAlias] = aliasArray;
         }
     });
+    return combined;
 }
-function check(path, configPath, strictMode) {
-    return bin_awaiter(this, void 0, void 0, function* () {
-        const results = yield checkLicenses(path, configPath);
-        const errors = filterFailures(results);
-        const missedFiles = yield getUncoveredFiles(path, configPath);
-        // emit a warning for all missed files:
-        for (const missedFile of missedFiles) {
-            console.warn(`Config does not cover the file '${missedFile}'`);
-        }
-        // emit an error for all erroneous files:
-        for (const error of errors) {
-            console.error(error.message);
-        }
-        if (strictMode) {
-            console.error(`${errors.length} error(s) and ${missedFiles.length} warning(s) found. Warnings are treated as errors.`);
-            process.exit(1);
-        }
-        else if (errors.length !== 0) {
-            console.error(`${errors.length} error(s) found`);
-            process.exit(1);
-        }
-        else {
-            console.info(`${errors.length} error(s) and ${missedFiles.length} warning(s) found.`);
-            process.exit(0);
-        }
-    });
+function increment(orig) {
+    return orig !== undefined ? orig + 1 : 1;
 }
-run();
+function sanitizeKey(key) {
+    if (key === '__proto__')
+        return '___proto___';
+    return key;
+}
+function stripQuotes(val) {
+    return (typeof val === 'string' &&
+        (val[0] === "'" || val[0] === '"') &&
+        val[val.length - 1] === val[0])
+        ? val.substring(1, val.length - 1)
+        : val;
+}
 
-})();
+const minNodeVersion = (process && process.env && process.env.YARGS_MIN_NODE_VERSION)
+    ? Number(process.env.YARGS_MIN_NODE_VERSION)
+    : 12;
+if (process && process.version) {
+    const major = Number(process.version.match(/v([^.]+)/)[1]);
+    if (major < minNodeVersion) {
+        throw Error(`yargs parser supports a minimum Node.js version of ${minNodeVersion}. Read our version support policy: https://github.com/yargs/yargs-parser#supported-nodejs-versions`);
+    }
+}
+const env = process ? process.env : {};
+const parser = new YargsParser({
+    cwd: process.cwd,
+    env: () => {
+        return env;
+    },
+    format: util.format,
+    normalize: path.normalize,
+    resolve: path.resolve,
+    require: (path) => {
+        if (true) {
+            return __nccwpck_require__(5977)(path);
+        }
+        else {}
+    }
+});
+const yargsParser = function Parser(args, opts) {
+    const result = parser.parse(args.slice(), opts);
+    return result.argv;
+};
+yargsParser.detailed = function (args, opts) {
+    return parser.parse(args.slice(), opts);
+};
+yargsParser.camelCase = camelCase;
+yargsParser.decamelize = decamelize;
+yargsParser.looksLikeNumber = looksLikeNumber;
 
-module.exports = __webpack_exports__;
+module.exports = yargsParser;
+
+
+/***/ }),
+
+/***/ 4775:
+/***/ ((module) => {
+
+"use strict";
+module.exports = JSON.parse('{"$id":"https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#","description":"Meta-schema for $data reference (JSON AnySchema extension proposal)","type":"object","required":["$data"],"properties":{"$data":{"type":"string","anyOf":[{"format":"relative-json-pointer"},{"format":"json-pointer"}]}},"additionalProperties":false}');
+
+/***/ }),
+
+/***/ 98:
+/***/ ((module) => {
+
+"use strict";
+module.exports = JSON.parse('{"$schema":"http://json-schema.org/draft-07/schema#","$id":"http://json-schema.org/draft-07/schema#","title":"Core schema meta-schema","definitions":{"schemaArray":{"type":"array","minItems":1,"items":{"$ref":"#"}},"nonNegativeInteger":{"type":"integer","minimum":0},"nonNegativeIntegerDefault0":{"allOf":[{"$ref":"#/definitions/nonNegativeInteger"},{"default":0}]},"simpleTypes":{"enum":["array","boolean","integer","null","number","object","string"]},"stringArray":{"type":"array","items":{"type":"string"},"uniqueItems":true,"default":[]}},"type":["object","boolean"],"properties":{"$id":{"type":"string","format":"uri-reference"},"$schema":{"type":"string","format":"uri"},"$ref":{"type":"string","format":"uri-reference"},"$comment":{"type":"string"},"title":{"type":"string"},"description":{"type":"string"},"default":true,"readOnly":{"type":"boolean","default":false},"examples":{"type":"array","items":true},"multipleOf":{"type":"number","exclusiveMinimum":0},"maximum":{"type":"number"},"exclusiveMaximum":{"type":"number"},"minimum":{"type":"number"},"exclusiveMinimum":{"type":"number"},"maxLength":{"$ref":"#/definitions/nonNegativeInteger"},"minLength":{"$ref":"#/definitions/nonNegativeIntegerDefault0"},"pattern":{"type":"string","format":"regex"},"additionalItems":{"$ref":"#"},"items":{"anyOf":[{"$ref":"#"},{"$ref":"#/definitions/schemaArray"}],"default":true},"maxItems":{"$ref":"#/definitions/nonNegativeInteger"},"minItems":{"$ref":"#/definitions/nonNegativeIntegerDefault0"},"uniqueItems":{"type":"boolean","default":false},"contains":{"$ref":"#"},"maxProperties":{"$ref":"#/definitions/nonNegativeInteger"},"minProperties":{"$ref":"#/definitions/nonNegativeIntegerDefault0"},"required":{"$ref":"#/definitions/stringArray"},"additionalProperties":{"$ref":"#"},"definitions":{"type":"object","additionalProperties":{"$ref":"#"},"default":{}},"properties":{"type":"object","additionalProperties":{"$ref":"#"},"default":{}},"patternProperties":{"type":"object","additionalProperties":{"$ref":"#"},"propertyNames":{"format":"regex"},"default":{}},"dependencies":{"type":"object","additionalProperties":{"anyOf":[{"$ref":"#"},{"$ref":"#/definitions/stringArray"}]}},"propertyNames":{"$ref":"#"},"const":true,"enum":{"type":"array","items":true,"minItems":1,"uniqueItems":true},"type":{"anyOf":[{"$ref":"#/definitions/simpleTypes"},{"type":"array","items":{"$ref":"#/definitions/simpleTypes"},"minItems":1,"uniqueItems":true}]},"format":{"type":"string"},"contentMediaType":{"type":"string"},"contentEncoding":{"type":"string"},"if":{"$ref":"#"},"then":{"$ref":"#"},"else":{"$ref":"#"},"allOf":{"$ref":"#/definitions/schemaArray"},"anyOf":{"$ref":"#/definitions/schemaArray"},"oneOf":{"$ref":"#/definitions/schemaArray"},"not":{"$ref":"#"}},"default":true}');
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __nccwpck_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			id: moduleId,
+/******/ 			loaded: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		var threw = true;
+/******/ 		try {
+/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
+/******/ 			threw = false;
+/******/ 		} finally {
+/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
+/******/ 		}
+/******/ 	
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/******/ 	// expose the module cache
+/******/ 	__nccwpck_require__.c = __webpack_module_cache__;
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/node module decorator */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.nmd = (module) => {
+/******/ 			module.paths = [];
+/******/ 			if (!module.children) module.children = [];
+/******/ 			return module;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/compat */
+/******/ 	
+/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// module cache are used so entry inlining is disabled
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	var __webpack_exports__ = __nccwpck_require__(__nccwpck_require__.s = 3370);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
 /******/ })()
 ;
