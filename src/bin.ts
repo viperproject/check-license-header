@@ -62,7 +62,7 @@ async function run(): Promise<void> {
             process.exit(1);
         }
     } catch (error) {
-        console.error(error.message);
+        console.error(error);
         process.exit(1);
     }
 }
