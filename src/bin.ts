@@ -13,7 +13,7 @@ import {checkLicenses, filterFailures, getUncoveredFiles} from './check';
 /* eslint no-console: 0 */
 async function run(): Promise<void> {
     try {
-        const argv = yargs
+        const argv = await yargs
             .usage('Usage: $0 <command> [options]')
             .command('check', 'Check license headers', function (y) {
                 return y.option('strict', {
