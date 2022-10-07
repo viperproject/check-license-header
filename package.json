@@ -37,7 +37,7 @@
   "devDependencies": {
     "@octokit/core": "^4.0.5",
     "@types/glob": "^8.0.0",
-    "@types/jest": "^29.1.1",
+    "@types/jest": "^29.1.2",
     "@types/node": "^18.8.0",
     "@types/tmp": "^0.2.2",
     "@typescript-eslint/parser": "^5.38.1",
