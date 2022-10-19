@@ -38,7 +38,7 @@
     "@octokit/core": "^4.0.5",
     "@types/glob": "^8.0.0",
     "@types/jest": "^29.1.1",
-    "@types/node": "^18.8.0",
+    "@types/node": "^18.11.2",
     "@types/tmp": "^0.2.2",
     "@typescript-eslint/parser": "^5.38.1",
     "@vercel/ncc": "^0.34.0",
