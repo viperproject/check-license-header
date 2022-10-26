@@ -14,10 +14,11 @@ const CURRENT_YEAR_IDENTIFIER = '%year%';
 
 export async function checkLicenses(
     cwd: string,
-    configPath: string
+    configPath: string,
+    filterPath: (p: string) => boolean = () => true
 ): Promise<CheckResult[]> {
     const config = await getConfig(configPath);
-    return checkLicensesWithConfig(cwd, config);
+    return checkLicensesWithConfig(cwd, config, filterPath);
 }
 
 function getConfig(configPath: string): Promise<Config> {
@@ -27,26 +28,33 @@ function getConfig(configPath: string): Promise<Config> {
 
 export async function checkLicensesWithConfig(
     cwd: string,
-    config: Config
+    config: Config,
+    pathFilter: (p: string) => boolean = () => true
 ): Promise<CheckResult[]> {
-    const results = await Promise.all(config.map(c => checkLicense(cwd, c)));
+    const results = await Promise.all(
+        config.map(c => checkLicense(cwd, c, pathFilter))
+    );
     return flatten(results);
 }
 
 export async function getUncoveredFiles(
     cwd: string,
-    configPath: string
+    configPath: string,
+    pathFilter: (p: string) => boolean = () => true
 ): Promise<string[]> {
     const config = await getConfig(configPath);
-    return getUncoveredFilesWithConfig(cwd, config);
+    return getUncoveredFilesWithConfig(cwd, config, pathFilter);
 }
 
 export async function getUncoveredFilesWithConfig(
     cwd: string,
-    config: Config
+    config: Config,
+    pathFilter: (p: string) => boolean = () => true
 ): Promise<string[]> {
     // get all files:
-    const allFiles = new Set(await findFiles(cwd, ['**'], []));
+    const allFiles = new Set(
+        (await findFiles(cwd, ['**'], [])).filter(pathFilter)
+    );
     // get files covered by config:
     const converedFilesResults = await Promise.all(
         config.map(c => getFiles(cwd, c))
@@ -70,7 +78,8 @@ function setminus<T>(set1: Set<T>, set2: Set<T>): Set<T> {
 
 async function checkLicense(
     cwd: string,
-    licenseConfig: LicenseConfig
+    licenseConfig: LicenseConfig,
+    pathFilter: (p: string) => boolean
 ): Promise<CheckResult[]> {
     if (!licenseConfig.license) {
         // no license provided
@@ -88,7 +97,9 @@ async function checkLicense(
     const licenseRegex = convertHeaderToRegex(licenseString);
     const files = await getFiles(cwd, licenseConfig);
     return await Promise.all(
-        files.map(f => contains(f, licenseRegex, errorMessageGenerator))
+        files
+            .filter(pathFilter)
+            .map(f => contains(f, licenseRegex, errorMessageGenerator))
     );
 }
 
