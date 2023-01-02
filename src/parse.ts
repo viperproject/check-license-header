@@ -6,6 +6,7 @@
 
 import Ajv from 'ajv';
 import {Config} from './config';
+import json5 from 'json5';
 
 export function parseConfig(text: string): Promise<Config> {
     const ajv = new Ajv();
@@ -36,7 +37,7 @@ export function parseConfig(text: string): Promise<Config> {
 
     let data: Config;
     try {
-        data = JSON.parse(text);
+        data = json5.parse(text);
     } catch {
         return Promise.reject(new Error(`Parsing configuration has failed`));
     }

@@ -6,6 +6,8 @@
 
 import * as yargs from 'yargs';
 import {checkLicenses, filterFailures, getUncoveredFiles} from './check';
+import {spawnSync} from 'child_process';
+import {findFiles} from './find';
 
 // entry point for the binary version, e.g. when locally running it using `npx`
 
@@ -16,12 +18,18 @@ async function run(): Promise<void> {
         const argv = await yargs
             .usage('Usage: $0 <command> [options]')
             .command('check', 'Check license headers', function (y) {
-                return y.option('strict', {
-                    description:
-                        'Specifies whether files not covered by the configuration should be treated as errors',
-                    type: 'boolean',
-                    default: false
-                });
+                return y
+                    .option('strict', {
+                        description:
+                            'Specifies whether files not covered by the configuration should be treated as errors',
+                        type: 'boolean',
+                        default: false
+                    })
+                    .option('gitignore', {
+                        description: 'Ignore git-ignored files',
+                        type: 'boolean',
+                        default: false
+                    });
             })
             .example(
                 '$0 check --config config.js',
@@ -56,7 +64,8 @@ async function run(): Promise<void> {
         const configPath: string = argv.c;
         if (argv._.length === 1 && argv._[0] === 'check') {
             const strictMode: boolean = argv.strict;
-            return check(path, configPath, strictMode);
+            const gitignore: boolean = argv.gitignore;
+            return check(path, configPath, strictMode, gitignore);
         } else {
             console.error(`unknown command specified, has to be 'check'`);
             process.exit(1);
@@ -70,11 +79,13 @@ async function run(): Promise<void> {
 async function check(
     path: string,
     configPath: string,
-    strictMode: boolean
+    strictMode: boolean,
+    gitignore: boolean
 ): Promise<void> {
-    const results = await checkLicenses(path, configPath);
+    const filter = gitignore ? await createFilterGitIgnored(path) : () => true;
+    const results = await checkLicenses(path, configPath, filter);
     const errors = filterFailures(results);
-    const missedFiles = await getUncoveredFiles(path, configPath);
+    const missedFiles = await getUncoveredFiles(path, configPath, filter);
 
     // emit a warning for all missed files:
     for (const missedFile of missedFiles) {
@@ -90,7 +101,7 @@ async function check(
         console.error(
             `${errors.length} error(s) and ${missedFiles.length} warning(s) found. Warnings are treated as errors.`
         );
-        process.exit(1);
+        process.exit(errors.length === 0 && missedFiles.length === 0 ? 0 : 1);
     } else if (errors.length !== 0) {
         console.error(`${errors.length} error(s) found`);
         process.exit(1);
@@ -100,6 +111,37 @@ async function check(
         );
         process.exit(0);
     }
+}
+
+async function createFilterGitIgnored(
+    path: string
+): Promise<(p: string) => boolean> {
+    const files = await findFiles(path, ['**'], []);
+
+    function* chunks<T>(arr: T[], len: number): Generator<T[]> {
+        for (let i = 0; i < arr.length; i += len) {
+            yield arr.slice(i, i + len);
+        }
+    }
+
+    const ignoredFiles = new Set<string>();
+
+    for (const chunked of chunks(files, 100)) {
+        const stdin = chunked.reduce((x, y) => `${x}\0${y}`);
+
+        const result = spawnSync('git', ['check-ignore', '-z', '--stdin'], {
+            input: Buffer.from(stdin, 'utf8'),
+            stdio: ['pipe', 'pipe', 'inherit'],
+            encoding: 'utf-8',
+            cwd: path
+        });
+
+        for (const p of result.stdout.split('\0')) {
+            ignoredFiles.add(p);
+        }
+    }
+
+    return p => !ignoredFiles.has(p);
 }
 
 run();
