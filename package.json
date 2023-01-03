@@ -33,7 +33,7 @@
   "dependencies": {
     "@actions/core": "^1.9.1",
     "@actions/github": "^5.0.0",
-    "json5": "^2.2.1"
+    "json5": "^2.2.2"
   },
   "devDependencies": {
     "@octokit/core": "^4.0.5",
