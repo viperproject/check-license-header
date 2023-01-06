@@ -8,7 +8,7 @@ GitHub action to check whether all files have a specified copyright license head
 ## Usage
 ```
 - name: Check license headers
-  uses: viperproject/check-license-header@v1
+  uses: viperproject/check-license-header@v2
   with:
     path: <working directory>
     config: <path to JSON config file>
@@ -53,19 +53,19 @@ Currently, two special patterns are supported in files containing a license head
 
 ## Create a new Release
 1. Checkout this repository and pull remote changes `git pull`
-2. Checkout or create a release branch (replace `v1` with the major version number): 
-  - `git checkout releases/v1; git pull origin main` or 
-  - `git checkout -b releases/v1`
+2. Checkout or create a release branch (replace `v2` with the major version number): 
+  - `git checkout releases/v2; git pull origin main` or 
+  - `git checkout -b releases/v2`
 3. Run `rm -rf dist; rm -rf node_modules; npm ci`
 4. Run `npm run package`
 5. Force add the dist folder: `git add -f dist`
 6. Commit: `git commit -m "<commit message>`
 7. Push release branch: `git push`
-8. Create a GitHub release with a tag, e.g. `v1.0.0`
-9. Move the major tag (e.g. `v1`) to the latest release:
+8. Create a GitHub release with a tag, e.g. `v2.0.0`
+9. Move the major tag (e.g. `v2`) to the latest release:
 ```
-git tag -fa v1 -m "Update v1 tag"
-git push origin v1 --force
+git tag -fa v2 -m "Update v2 tag"
+git push origin v2 --force
 ```
 
 [More information](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
