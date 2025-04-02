@@ -2,9 +2,10 @@
     "name": "check-license-header",
     "version": "2.0.1",
     "description": "GitHub action to check whether all files have a specified copyright license header",
-    "main": "lib/main.js",
-    "bin": "dist/bin/index.js",
     "type": "module",
+    "exports": {
+        ".": "./dist/index.js"
+    },
     "engines": {
         "node": ">=20"
     },
