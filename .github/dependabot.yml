@@ -28,4 +28,18 @@ updates:
     directory: '/'
     # Check the npm registry for updates every day (weekdays)
     schedule:
-      interval: 'daily'
+      interval: monthly
+      day: monday
+    groups:
+      all:
+        patterns:
+  # Enable version updates for GitHub actions
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+      day: monday
+    groups:
+      all:
+        patterns:
+          - "*"
