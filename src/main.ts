@@ -5,9 +5,9 @@
 // Copyright (c) 2011-2020 ETH Zurich.
 
 import * as core from '@actions/core';
-import {checkLicenses, filterFailures, getUncoveredFiles} from './check';
+import {checkLicenses, filterFailures, getUncoveredFiles} from './check.js';
 
-async function run(): Promise<void> {
+export async function run(): Promise<void> {
     try {
         const path: string = core.getInput('path');
         const configPath: string = core.getInput('config');

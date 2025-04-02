@@ -20,14 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-{
-    "$schema": "https://json.schemastore.org/tsconfig",
-    "extends": "./tsconfig.base.json",
-    "compilerOptions": {
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
-        "outDir": "./dist"
+// See: https://rollupjs.org/introduction/
+
+import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
+import nodeResolve from '@rollup/plugin-node-resolve';
+import typescript from '@rollup/plugin-typescript';
+
+const config = {
+    input: 'src/index.ts',
+    output: {
+        esModule: true,
+        file: 'dist/index.js',
+        format: 'es',
+        sourcemap: true
     },
-    "exclude": ["test", "coverage", "dist", "node_modules"],
-    "include": ["src"]
-}
+    plugins: [
+        typescript(),
+        nodeResolve({preferBuiltins: true}),
+        commonjs(),
+        json()
+    ]
+};
+
+export default config;

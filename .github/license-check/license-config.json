@@ -1,31 +1,38 @@
 [
     {
-        "include": [
-            "**/*.ts"
-        ],
+        "include": ["**/*.ts"],
         "exclude": [
+            "src/index.ts",
             "src/test/main.test.ts",
+            "rollup.config.ts",
             "node_modules/**"
         ],
         "license": "./.github/license-check/header-ETH-MPLv2.txt"
     },
     {
-        "include": [
-            "action.yml"
-        ],
+        "include": ["action.yml"],
         "license": "./.github/license-check/header-ETH-MPLv2-hashtag.txt"
     },
     {
         "include": [
-            ".eslintrc.json",
+            "src/index.ts",
+            "eslint.config.mjs",
             "jest.config.js",
+            "rollup.config.ts",
+            "tsconfig.base.json",
+            "tsconfig.eslint.json",
             "tsconfig.json"
         ],
         "license": "./.github/license-check/header-GitHub-MIT.txt"
     },
     {
+        "include": ["script/release"],
+        "license": "./.github/license-check/header-GitHub-MIT-hashtag.txt"
+    },
+    {
         "include": [
             "node_modules/**",
+            "coverage/**",
             "dist/**",
             "lib/**",
             "test/data/**",

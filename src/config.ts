@@ -11,6 +11,5 @@ export interface LicenseConfig {
     exclude?: string[];
     license?: string;
 }
-[];
 
 export default Config;

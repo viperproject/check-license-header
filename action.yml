@@ -7,19 +7,19 @@
 name: 'check-license-header'
 description: 'GitHub action to check whether all files have a specified copyright license header'
 inputs:
-  path:
-    description: 'Path to working directory'
-    required: true
-  config:
-    description: 'Path to JSON config file'
-    required: true
-  strict:
-    description: 'Specifies whether files not covered by the configuration should be treated as errors'
-    required: false
-    default: false
+    path:
+        description: 'Path to working directory'
+        required: true
+    config:
+        description: 'Path to JSON config file'
+        required: true
+    strict:
+        description: 'Specifies whether files not covered by the configuration should be treated as errors'
+        required: false
+        default: false
 runs:
-  using: 'node16'
-  main: 'dist/main/index.js'
+    using: 'node20'
+    main: 'dist/main/index.js'
 branding:
-  icon: 'check'
-  color: 'gray-dark'
+    icon: 'check'
+    color: 'gray-dark'
