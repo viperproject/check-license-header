@@ -33,6 +33,8 @@ updates:
     groups:
       all:
         patterns:
+          - "*"
+
   # Enable version updates for GitHub actions
   - package-ecosystem: github-actions
     directory: "/"
