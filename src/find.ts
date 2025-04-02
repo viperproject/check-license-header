@@ -26,19 +26,7 @@ export async function findFiles(
         cwd,
         nodir: true // only return files (no directories)
     };
-    const files = await new Promise<string[]>((resolve, reject) => {
-        glob(includePattern, options, (err, matches) => {
-            if (err == null) {
-                resolve(matches);
-            } else {
-                reject(
-                    new Error(
-                        `scanning files has failed with error '${err.message}'`
-                    )
-                );
-            }
-        });
-    });
+    const files = await glob(includePattern, options);
     // files are relative to cwd, hence join them:
     return files.map(f => path.join(cwd, f));
 }
