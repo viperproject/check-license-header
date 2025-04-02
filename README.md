@@ -1,6 +1,6 @@
 # check-license-header
 
-[![Test Status](https://github.com/viperproject/check-license-header/workflows/build-test/badge.svg?branch=main)](https://github.com/viperproject/check-license-header/actions?query=workflow%3Abuild-test+branch%3Amain)
+[![Test Status](https://github.com/viperproject/check-license-header/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/viperproject/check-license-header/actions/workflows/test.yml?query=branch%3Amain)
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](./LICENSE)
 
 GitHub action to check whether all files have a specified copyright license header.
