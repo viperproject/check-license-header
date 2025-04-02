@@ -19,31 +19,3 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-
-name: 'build-test'
-on: # rebuild any PRs and main branch changes
-    pull_request:
-    push:
-
-jobs:
-    build: # make sure build/ci work properly
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version-file: .node-version
-                  cache: npm
-            - run: npm ci --cache .npm --prefer-offline
-            - run: npm run all
-    test: # make sure the action works on a clean machine without building
-        if: contains(github.ref, 'refs/heads/releases/')
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - uses: ./
-              with:
-                  path: ./
-                  config: ./.github/license-check/license-config.json
-                  strict: true

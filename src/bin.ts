@@ -4,10 +4,11 @@
 //
 // Copyright (c) 2011-2020 ETH Zurich.
 
-import * as yargs from 'yargs';
-import {checkLicenses, filterFailures, getUncoveredFiles} from './check';
+import yargsFactory from 'yargs';
+import {hideBin} from 'yargs/helpers';
+import {checkLicenses, filterFailures, getUncoveredFiles} from './check.js';
 import {spawnSync} from 'child_process';
-import {findFiles} from './find';
+import {findFiles} from './find.js';
 
 // entry point for the binary version, e.g. when locally running it using `npx`
 
@@ -15,6 +16,7 @@ import {findFiles} from './find';
 /* eslint no-console: 0 */
 async function run(): Promise<void> {
     try {
+        const yargs = yargsFactory(hideBin(process.argv));
         const argv = await yargs
             .usage('Usage: $0 <command> [options]')
             .command('check', 'Check license headers', function (y) {
@@ -63,8 +65,8 @@ async function run(): Promise<void> {
         const path: string = argv.path;
         const configPath: string = argv.c;
         if (argv._.length === 1 && argv._[0] === 'check') {
-            const strictMode: boolean = argv.strict;
-            const gitignore: boolean = argv.gitignore;
+            const strictMode: boolean = argv.strict as boolean;
+            const gitignore: boolean = argv.gitignore as boolean;
             return check(path, configPath, strictMode, gitignore);
         } else {
             console.error(`unknown command specified, has to be 'check'`);

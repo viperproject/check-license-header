@@ -4,9 +4,12 @@
 //
 // Copyright (c) 2011-2020 ETH Zurich.
 
-import Ajv from 'ajv';
-import {Config} from './config';
+// import ajvModule from 'ajv';
+import {Config} from './config.js';
 import json5 from 'json5';
+// see https://github.com/ajv-validator/ajv/issues/2132#issuecomment-1290409907
+// const Ajv = ajvModule as unknown as typeof ajvModule.default;
+import {Ajv} from 'ajv';
 
 export function parseConfig(text: string): Promise<Config> {
     const ajv = new Ajv();

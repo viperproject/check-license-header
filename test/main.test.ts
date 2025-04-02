@@ -6,6 +6,7 @@
 
 import * as path from 'path';
 import * as assert from 'assert';
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["assert.strictEqual"] }] */
 import * as fs from 'fs';
 import * as tmp from 'tmp';
 import {
@@ -20,7 +21,7 @@ import Config from '../src/config';
 const FILES_PATH = path.join(__dirname, 'data', 'files');
 const HEADERS_PATH = path.join(__dirname, 'data', 'headers');
 
-test('test check outdated license', async () => {
+test('outdated license', async () => {
     const filename = 'mplv2-2019.scala';
     const config: Config = [
         {
@@ -35,7 +36,7 @@ test('test check outdated license', async () => {
     assert.strictEqual(results[0].filePath, path.join(FILES_PATH, filename));
 });
 
-test('test check license with current year', async () => {
+test('license with current year', async () => {
     const filename = 'mplv2-year.scala';
 
     const transform = (origContent: string) => {
@@ -54,7 +55,7 @@ test('test check license with current year', async () => {
     assert.strictEqual(result.filePath, path.join(tmpFolderPath, filename));
 });
 
-test('test check file with wrong license', async () => {
+test('file with wrong license', async () => {
     const filename = 'cc0.gobra';
     const config: Config = [
         {

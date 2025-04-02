@@ -24,10 +24,9 @@
     "$schema": "https://json.schemastore.org/tsconfig",
     "extends": "./tsconfig.base.json",
     "compilerOptions": {
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
-        "outDir": "./dist"
+        "allowJs": true,
+        "noEmit": true
     },
-    "exclude": ["test", "coverage", "dist", "node_modules"],
-    "include": ["src"]
+    "exclude": ["dist", "node_modules"],
+    "include": ["src", "test", "eslint.config.mjs", "jest.config.js"]
 }

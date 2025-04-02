@@ -20,14 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-{
-    "$schema": "https://json.schemastore.org/tsconfig",
-    "extends": "./tsconfig.base.json",
-    "compilerOptions": {
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
-        "outDir": "./dist"
-    },
-    "exclude": ["test", "coverage", "dist", "node_modules"],
-    "include": ["src"]
-}
+/**
+ * The entrypoint for the action. This file simply imports and runs the action's
+ * main logic.
+ */
+import {run} from './main.js';
+
+/* istanbul ignore next */
+run();
